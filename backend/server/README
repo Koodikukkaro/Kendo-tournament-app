@@ -1,0 +1,26 @@
+
+
+Create directories for
+	models
+	controllers
+
+Create code with swagger.yaml ...
+
+
+
+package.json may require editing
+
+swagger-tools
+js-yaml
+cors
+mongoose
+dotenv
+
+
+
+nodejs server port must match Dockerfile
+
+
+
+Todo: check Dockerhub node image license issues
+

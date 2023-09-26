@@ -1,0 +1,86 @@
+# start backend: `docker-compose up --build`
+# (--force-recreate)
+
+# reference:
+# https://docs.docker.com/compose/compose-file/compose-file-v3/
+
+# no idea what version to use
+version: "3"
+
+services:
+  frontend:
+    # $USERNAME/$IMAGENAME:$TAG
+    image: koodikukkaro/frontend/v1
+    container_name: frontend
+    #depends_on:
+    #  - backend
+    build:
+      dockerfile: Dockerfile
+      context: ./frontend
+    ports:
+      - "80:80"
+      # only for development, totally unnecessary:
+      #- "80:3000"
+    # https://docs.docker.com/compose/networking/
+    networks:
+      - frontend
+
+  backend:
+    image: crazepiano/server-a/v1
+    container_name: backend
+    depends_on:
+      - database
+    command: ["npm", "start"]
+    #"--", "node", "./setup/setup-db.js", 
+    build:
+      dockerfile: Dockerfile
+      context:  ./backend/server-a
+    # Map the port 8080 of the container to the port 12345 of the host
+    # Container port has been exposed in the node:tag Docker Hub Dockerfile.
+    ports:
+      - "12345:8080"
+    networks:
+      - frontend
+      - backend
+
+  # docker compose exec database <command>
+  # <command>: bash | mongosh
+  # mongosh: help
+  # use <db>
+  # <db>.<cltn>.find().pretty()
+  database:
+    # https://hub.docker.com/_/mongo/
+    image: koodikukkaro/database/v1
+    container_name: database
+    build:
+      dockerfile: Dockerfile
+      context: ./backend/database
+    restart: unless-stopped
+    # Port mapping from container to host ONLY for debugging purposes.
+    # Must be commented out. Format: HOST:CONTAINER
+    #ports:
+      #- "27017:27017"
+    # "MongoDB server in the image listens on the standard MongoDB port, 27017"
+    expose:
+      - 27017
+    # "/data/db inside the container, where MongoDB by default will write
+    # its data files"
+    volumes:
+      - koodikukkaro_volume:/data/db
+    networks:
+      - backend
+
+
+networks:
+  frontend:
+  backend:
+
+# Documentation: https://docs.docker.com/storage/volumes/
+# Look at the database image's Dockerfile in Docker Hub to see
+# which directory it uses to store data.
+# "if you want to reuse a volume across multiple services,
+# then define a named volume in" this "top-level volumes key"
+volumes:
+  koodikukkaro_volume:
+
+
