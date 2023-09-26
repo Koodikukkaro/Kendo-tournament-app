@@ -26,7 +26,7 @@ services:
       - frontend
 
   backend:
-    image: crazepiano/server-a/v1
+    image: koodikukkaro/server/v1
     container_name: backend
     depends_on:
       - database
@@ -34,7 +34,7 @@ services:
     #"--", "node", "./setup/setup-db.js", 
     build:
       dockerfile: Dockerfile
-      context:  ./backend/server-a
+      context:  ./backend/server
     # Map the port 8080 of the container to the port 12345 of the host
     # Container port has been exposed in the node:tag Docker Hub Dockerfile.
     ports:
