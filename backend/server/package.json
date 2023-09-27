@@ -1,9 +1,11 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "The backend server for koodikukkaro",
   "main": "index.js",
   "scripts": {
+    "prestart": "npm install",
+	 "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

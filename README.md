@@ -38,6 +38,10 @@ Follow these commit message guidelines:
 - Use meaningful branch and commit messages.
 - Communicate with team members to coordinate changes.
 
+### Tools
+
+- Docker Desktop
+
 ## Deployment
 
 TODO: Add deployment instructions here.
