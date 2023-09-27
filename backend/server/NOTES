@@ -1,0 +1,41 @@
+
+Possible dependencies into package.json
+	bcrypt
+	bcryptjs
+	connect
+	cors
+	dotenv
+	js-yaml
+	jsonwebtoken
+	mongoose-unique-validator
+	swagger-tools
+
+Create directories for
+	models
+	controllers
+
+Create code with swagger.yaml ...
+
+nodejs server port must match Dockerfile
+
+Todo: check Dockerhub node image license issues
+
+
+
+
+
+create backend API definition in SwaggerHub
+
+Swagger Codegen
+https://swagger.io/tools/swagger-codegen/
+https://github.com/swagger-api/swagger-codegen
+https://github.com/swagger-api/swagger-codegen/wiki/Server-stub-generator-
+HOWTO#nodejs
+
+
+CORS
+https://swagger.io/docs/open-source-tools/swagger-ui/usage/cors/
+https://enable-cors.org/server_expressjs.html
+https://stackoverflow.com/questions/43875907/cors-problems-using-generated-
+nodejs-server-code-swagger
+

@@ -1,27 +1,18 @@
 {
-  "name": "koodikukkaro-server",
+  "name": "backend",
   "version": "1.0.0",
   "description": "The backend server for koodikukkaro",
   "main": "index.js",
   "scripts": {
     "prestart": "npm install",
-    "start": "node index.js"
+	 "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "swagger"
-  ],
-  "license": "",
-  "private": true,
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "bcrypt": "^5.1.0",
-    "bcryptjs": "^2.4.3",
-    "connect": "^3.2.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.0.3",
-    "js-yaml": "^3.3.0",
-    "jsonwebtoken": "^9.0.0",
-    "mongoose": "^7.0.3",
-    "mongoose-unique-validator": "^4.0.0",
-    "swagger-tools": "^0.10.1"
+    "express": "^4.18.2",
+    "mongoose": "^7.5.3"
   }
 }
