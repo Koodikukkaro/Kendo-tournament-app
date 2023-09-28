@@ -19,8 +19,9 @@ These instructions will help you set up the project locally for development and 
 
 ### Prerequisites
 
-- Node.js (v14.x or higher)
+- Node.js (v18.x or higher)
 - MongoDB (local or Atlas)
+
   
 ### Installation
 
@@ -51,7 +52,7 @@ These instructions will help you set up the project locally for development and 
 5. Start the dev server
 
     ```bash
-    node index.js
+    npm run start
     ```
 
 ## Usage
