@@ -34,7 +34,7 @@ These instructions will help you set up the project locally for development and 
 2. Navigate to the project directory
 
     ```bash
-    cd backend
+    cd backend/server
     ```
 
 3. Install dependencies
