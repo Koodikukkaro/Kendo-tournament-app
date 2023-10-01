@@ -4,7 +4,6 @@
 # reference:
 # https://docs.docker.com/compose/compose-file/compose-file-v3/
 
-# no idea what version to use
 version: "3"
 
 services:
@@ -12,8 +11,8 @@ services:
     # $USERNAME/$IMAGENAME:$TAG
     image: koodikukkaro/frontend/v1
     container_name: frontend
-    #depends_on:
-    #  - backend
+    depends_on:
+      - backend
     build:
       dockerfile: Dockerfile
       context: ./frontend
@@ -26,8 +25,8 @@ services:
       - frontend
 
   backend:
-    image: koodikukkaro/server/v1
-    container_name: backend
+    image: koodikukkaro/backend-server/v1
+    container_name: backend-server
     depends_on:
       - database
     command: ["npm", "start"]
@@ -47,7 +46,7 @@ services:
   # <command>: bash | mongosh
   # mongosh: help
   # use <db>
-  # <db>.<cltn>.find().pretty()
+  # db.<cltn>.find().pretty()
   database:
     # https://hub.docker.com/_/mongo/
     image: koodikukkaro/database/v1
