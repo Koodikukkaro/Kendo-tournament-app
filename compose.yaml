@@ -31,8 +31,6 @@ services:
     depends_on:
       database:
         condition: service_healthy
-    command: ["npm", "start"]
-    #"--", "node", "./setup/setup-db.js", 
     build:
       dockerfile: Dockerfile
       context:  ./backend/server
