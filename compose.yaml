@@ -12,7 +12,8 @@ services:
     image: koodikukkaro/frontend/v1
     container_name: frontend
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     build:
       dockerfile: Dockerfile
       context: ./frontend
@@ -28,7 +29,8 @@ services:
     image: koodikukkaro/backend-server/v1
     container_name: backend-server
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     command: ["npm", "start"]
     #"--", "node", "./setup/setup-db.js", 
     build:

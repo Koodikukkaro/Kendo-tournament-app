@@ -21,8 +21,14 @@ FROM mongo:latest
 #ENV MONGO_INITDB_ROOT_USERNAME=root
 #ENV MONGO_INITDB_ROOT_PASSWORD=pass
 #ENV MONGO_INITDB_DATABASE=
+#ENV MONGO_INITDB_ROOT_PASSWORD_FILE=
 
 #EXPOSE 27017
 #CMD ["mongod"]
+
+
+HEALTHCHECK --start-period=15s \
+	CMD echo 'db.runCommand({serverStatus:1}).ok' | \
+	mongosh localhost:27017 || exit 1
 
 
