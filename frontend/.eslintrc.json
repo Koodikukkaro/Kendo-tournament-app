@@ -14,9 +14,12 @@
     "project": "./tsconfig.json"
   },
   "plugins": [
-    "react"
+    "react",
+    "prettier"
   ],
-  "rules": {},
+  "rules": {
+    "prettier/prettier": "error"
+  },
   "settings": {
     "react": {
       "version": "detect"
