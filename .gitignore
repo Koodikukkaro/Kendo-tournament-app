@@ -1,0 +1,46 @@
+# Node.js
+node_modules/
+package-lock.json
+npm-debug.log
+
+# TypeScript
+dist/
+*.tsbuildinfo
+*.log
+*.log.*
+
+# Frontend (assuming you have a `build` directory)
+/frontend/build/
+
+# Backend (assuming you have a `dist` directory)
+/backend/dist/
+
+# IDE and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*.bak
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.test
+.env.production
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# Other
+*.pid
+*.seed
+*.out
+*.gz
+*.tar
