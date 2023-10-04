@@ -22,7 +22,6 @@ These instructions will help you set up the project locally for development and 
 - Node.js (v18.x or higher)
 - MongoDB (local or Atlas)
 
-  
 ### Installation
 
 1. Clone the repository
@@ -77,4 +76,3 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 ## License
 
 See `LICENSE` for more information.
-
