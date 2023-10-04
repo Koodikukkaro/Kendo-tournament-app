@@ -11,3 +11,15 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - "27017:27017"
+
+  backend:
+    build:
+      context: ./backend/server
+      dockerfile: Dockerfile.dev
+    environment:
+      - PORT=8080
+      - MONGO_URL=mongodb://root:example@mongo:27017/mydatabase
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo

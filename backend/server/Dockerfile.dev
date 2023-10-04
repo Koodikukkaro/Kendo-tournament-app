@@ -1,0 +1,24 @@
+FROM node:latest
+
+# Create app directory
+WORKDIR /usr/src/app
+
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+# where available (npm@5+)
+COPY package*.json ./
+
+# Install app dependencies
+RUN npm install
+
+# Bundle app source code
+COPY --chown=node:node . .
+
+EXPOSE 8080
+
+# Define the command to run your app using CMD which defines your runtime, i.e., here Node.js will execute npm run start
+CMD [ "npm", "run", "start" ]
+
+# Install curl and add healthcheck
+RUN apt-get update && apt-get install -y curl
+HEALTHCHECK --start-period=15s \
+    CMD curl -f http://localhost:8080/ || exit 1
