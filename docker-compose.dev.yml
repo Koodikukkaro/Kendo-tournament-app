@@ -11,6 +11,10 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     ports:
       - "27017:27017"
+    networks:
+      - my_demon_network
+    volumes:
+      - ./backend/database/data:/data/db
 
   backend:
     build:
@@ -23,3 +27,10 @@ services:
       - "8080:8080"
     depends_on:
       - mongo
+    networks:
+      - my_demon_network
+
+networks:
+  my_demon_network:
+    # custom network
+    driver: bridge
