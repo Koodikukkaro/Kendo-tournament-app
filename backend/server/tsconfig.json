@@ -13,5 +13,10 @@
     "lib": [
       "esnext"
     ]
-  }
+  },
+  "exclude": [
+    "./test/",
+    "./node_modules/",
+    "./dist/"
+  ]
 }

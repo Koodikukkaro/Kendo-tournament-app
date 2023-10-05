@@ -7,7 +7,7 @@
   "scripts": {
     "prestart": "npm install",
     "start": "npx tsx src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "ts-mocha test/*.ts",
     "lint": "eslint './src/**/*.ts' --cache --cache-strategy content ",
     "lint:fix": "eslint --fix './src/**/*.ts'"
   },
@@ -23,9 +23,12 @@
     "mongoose": "^7.5.3"
   },
   "devDependencies": {
+    "@types/chai": "^4.3.6",
     "@types/express": "^4.17.18",
-    "@types/node": "^20.7.1",
+    "@types/mocha": "^10.0.2",
+    "@types/node": "^20.8.2",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
+    "chai": "^4.3.10",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-standard-with-typescript": "^39.1.0",
@@ -33,7 +36,9 @@
     "eslint-plugin-n": "^16.1.0",
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-promise": "^6.1.1",
+    "mocha": "^10.2.0",
     "prettier": "^3.0.3",
+    "ts-mocha": "^10.0.0",
     "typescript": "^5.2.2"
   }
 }
