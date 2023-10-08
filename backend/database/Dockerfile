@@ -20,14 +20,16 @@ FROM mongo:latest
 # Probably entirely useless environment variables (not used):
 #ENV MONGO_INITDB_ROOT_USERNAME=root
 #ENV MONGO_INITDB_ROOT_PASSWORD=pass
-#ENV MONGO_INITDB_DATABASE=
 #ENV MONGO_INITDB_ROOT_PASSWORD_FILE=
+#ENV MONGO_INITDB_DATABASE=koodikukkaro
 
 #EXPOSE 27017
 #CMD ["mongod"]
 
-
-HEALTHCHECK --start-period=15s \
+# Shorter start interval for (hopefully) shorter startup
+# https://github.com/docker/cli/issues/4486
+# --start-interval=3s
+HEALTHCHECK --start-period=30s \
 	CMD echo 'db.runCommand({serverStatus:1}).ok' | \
 	mongosh localhost:27017 || exit 1
 
