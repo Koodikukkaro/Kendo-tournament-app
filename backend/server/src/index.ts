@@ -6,6 +6,7 @@ import { registerAPI } from './controllers/user-controller.js';
 import swaggerUi from "swagger-ui-express";
 import swaggerSpecs from './swagger.js';
 
+
 dotenv.config();
 
 // initialize mongo connection.
@@ -20,6 +21,7 @@ const port = process.env.PORT ?? 8080;
  */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 
 /**
  * Serves swagger
