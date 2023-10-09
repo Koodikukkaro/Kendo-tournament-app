@@ -3,7 +3,7 @@ import User from '../models/user-model.js';
 
 /**
  * @swagger
- * /api/login:
+ * /api/users/login:
  *   post:
  *     summary: Login existing user
  *     tags:
