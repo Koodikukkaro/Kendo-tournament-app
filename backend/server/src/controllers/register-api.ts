@@ -6,7 +6,8 @@ import User from '../models/user-model.js';
  * /api/register:
  *   post:
  *     summary: Register a new user
- *     tags: [User]
+ *     tags:
+ *       - User
  *     requestBody:
  *       required: true
  *       content:
@@ -20,9 +21,11 @@ import User from '../models/user-model.js';
  *               email:
  *                 type: string
  *                 example: user@example.com
+ *                 description: Valid email address
  *               password:
  *                 type: string
  *                 example: mypassword123
+ *                 description: Alphanumeric and 8-30 characters long
  *     responses:
  *       200:
  *         description: Successfully registered user
@@ -31,10 +34,12 @@ import User from '../models/user-model.js';
  *             schema:
  *               type: object
  *               properties:
- *                 email:
+ *                 state:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
  *                   type: string
- *                 password:
- *                   type: string
+ *                   example: "user registration successful"
  *       400:
  *         description: Registration failed
  *         content:
@@ -47,6 +52,18 @@ import User from '../models/user-model.js';
  * */
 export const registerAPI = async (req: any, res: any) => {
     const { email, password } = req.body;
+
+    // Email validation using a simple regular expression
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: "Invalid email format" });
+    }
+
+    // Password validation: between 8 and 30 characters, and alphanumeric
+    const passwordRegex = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]{8,30})$/;
+    if (!passwordRegex.test(password)) {
+        return res.status(400).json({ error: "Password must be 8-30 characters long and alphanumeric" });
+    }
 
     // Check if email exists
     const existingUser = await User.findOne({ email });
@@ -66,7 +83,10 @@ export const registerAPI = async (req: any, res: any) => {
 
     try {
         const savedUser = await newUser.save();
-        res.json(savedUser);
+        res.json({
+            "state": true,
+            "message": "user registration successful"
+        });
     } catch (err) {
         res.status(400).json({ error: err });
     }

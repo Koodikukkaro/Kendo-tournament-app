@@ -2,7 +2,7 @@ import express, { Request, Response, Application } from 'express';
 import dotenv from 'dotenv';
 import connectDB from './db.js';
 import mongoose from 'mongoose';
-import { registerAPI } from './controllers/user-controller.js';
+import { registerAPI } from './controllers/register-api.js';
 import swaggerUi from "swagger-ui-express";
 import swaggerSpecs from './swagger.js';
 
