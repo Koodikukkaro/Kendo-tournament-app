@@ -1,6 +1,50 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/user-model.js';
 
+/**
+ * @swagger
+ * /api/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [User]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user@example.com
+ *               password:
+ *                 type: string
+ *                 example: mypassword123
+ *     responses:
+ *       200:
+ *         description: Successfully registered user
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 email:
+ *                   type: string
+ *                 password:
+ *                   type: string
+ *       400:
+ *         description: Registration failed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ * */
 export const registerAPI = async (req: any, res: any) => {
     const { email, password } = req.body;
 
