@@ -3,11 +3,10 @@ import User from '../models/user-model.js';
 
 /**
  * @swagger
- * /api/users/register:
+ * /api/register:
  *   post:
  *     summary: Register a new user
- *     tags:
- *       - User
+ *     tags: [User]
  *     requestBody:
  *       required: true
  *       content:
@@ -17,15 +16,39 @@ import User from '../models/user-model.js';
  *             required:
  *               - email
  *               - password
+ *               - firstName
+ *               - lastName
+ *               - phoneNumber
+ *               - clubName
+ *               - danRank
  *             properties:
  *               email:
  *                 type: string
  *                 example: user@example.com
- *                 description: Valid email address
  *               password:
  *                 type: string
  *                 example: mypassword123
- *                 description: Alphanumeric and 8-30 characters long
+ *               firstName:
+ *                 type: string
+ *                 example: John
+ *               lastName:
+ *                 type: string
+ *                 example: Doe
+ *               phoneNumber:
+ *                 type: string
+ *                 example: +1234567890
+ *               clubName:
+ *                 type: string
+ *                 example: EliteClub
+ *               danRank:
+ *                 type: string
+ *                 example: 1st Dan
+ *               underage:
+ *                 type: boolean
+ *                 example: false
+ *               guardiansEmail:
+ *                 type: string
+ *                 example: guardian@example.com
  *     responses:
  *       200:
  *         description: Successfully registered user
@@ -36,10 +59,8 @@ import User from '../models/user-model.js';
  *               properties:
  *                 state:
  *                   type: boolean
- *                   example: true
  *                 message:
  *                   type: string
- *                   example: "user registration successful"
  *       400:
  *         description: Registration failed
  *         content:
@@ -50,8 +71,9 @@ import User from '../models/user-model.js';
  *                 error:
  *                   type: string
  * */
+
 export const registerAPI = async (req: any, res: any) => {
-    const { email, password } = req.body;
+    const { email, password, firstName, lastName, phoneNumber, clubName, danRank, underage, guardiansEmail } = req.body;
 
     // Email validation using a simple regular expression
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -79,13 +101,19 @@ export const registerAPI = async (req: any, res: any) => {
     const newUser = new User({
         email,
         password: hashedPassword,
+        firstName,
+        lastName,
+        phoneNumber,
+        clubName,
+        danRank,
+        underage: underage || false,
+        guardiansEmail,
     });
 
     try {
         const savedUser = await newUser.save();
         res.json({
-            "state": true,
-            "message": "user registration successful"
+            "message": "User registration successful"
         });
     } catch (err) {
         res.status(400).json({ error: err });
