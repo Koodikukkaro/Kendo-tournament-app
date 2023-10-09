@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 import connectDB from './db.js';
 import mongoose from 'mongoose';
 import { registerAPI } from './controllers/user-controller.js';
+import swaggerUi from "swagger-ui-express";
+import swaggerSpecs from './swagger.js';
 
 dotenv.config();
 
@@ -18,6 +20,12 @@ const port = process.env.PORT ?? 8080;
  */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+/**
+ * Serves swagger
+ */
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+
 
 /**
  * USER - API
