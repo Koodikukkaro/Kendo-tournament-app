@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import { registerAPI } from './controllers/register-api.js';
 import swaggerUi from "swagger-ui-express";
 import swaggerSpecs from './swagger.js';
+import { loginAPI } from './controllers/login.js';
 
 
 dotenv.config();
@@ -33,6 +34,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
  * USER - API
  */
 app.post('/api/register', registerAPI);
+app.post('/api/login', loginAPI);
 
 app.get('/', (req: Request, res: Response) => {
   if (mongoose.connection.readyState === 0) {
