@@ -33,8 +33,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 /**
  * USER - API
  */
-app.post('/api/register', registerAPI);
-app.post('/api/login', loginAPI);
+app.post('/api/users/register', registerAPI);
+app.post('/api/users/login', loginAPI);
 
 app.get('/', (req: Request, res: Response) => {
   if (mongoose.connection.readyState === 0) {
