@@ -50,6 +50,14 @@ import User from '../models/user-model.js';
  *                   type: boolean
  *                 guardian:
  *                   type: string
+ *                 createdOn:
+ *                   type: string
+ *                   format: date-time
+ *                   example: '2021-10-04T08:30:00.000Z'
+ *                 lastUpdatedOn:
+ *                   type: string
+ *                   format: date-time
+ *                   example: '2021-10-04T09:30:00.000Z'
  *       401:
  *         description: Unauthorized
  *         content:
@@ -86,6 +94,8 @@ export const loginAPI = async (req: any, res: any) => {
         club: user.clubName,
         dan: user.danRank,
         underage: user.underage,
-        guardian: user.guardiansEmail
+        guardian: user.guardiansEmail,
+        created_on: user.createdAt,
+        last_updated_on: user.updatedAt
     });
 };

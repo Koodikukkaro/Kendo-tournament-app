@@ -10,6 +10,8 @@ const userSchema = new mongoose.Schema({
     danRank: { type: String, required: true },
     underage: { type: Boolean, default: false }, // Default to false if not provided
     guardiansEmail: { type: String }, // Optional, so not required
+}, {
+    timestamps: true // Enable timestamps
 });
 
 const User = mongoose.model('User', userSchema);
