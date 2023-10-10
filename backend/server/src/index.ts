@@ -1,16 +1,19 @@
-import express, { Request, Response, Application } from 'express';
-import dotenv from 'dotenv';
-import connectDB from './db.js';
-import mongoose from 'mongoose';
+import express, {
+  type Request,
+  type Response,
+  type Application
+} from "express";
+import dotenv from "dotenv";
+import connectDB from "./db.js";
+import mongoose from "mongoose";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from './swagger.json';
-import mainRouter from './routes/index.js';
-
+import swaggerDocument from "./swagger.json";
+import mainRouter from "./routes/index.js";
 
 dotenv.config();
 
 // initialize mongo connection.
-connectDB();
+await connectDB();
 
 const app: Application = express();
 const port = process.env.PORT ?? 8080;
@@ -21,7 +24,6 @@ const port = process.env.PORT ?? 8080;
  */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 
 /**
  * Serves swagger
@@ -36,24 +38,21 @@ app.use((req: Request, res: Response, next) => {
   next();
 });
 
-
 /**
  * Main Router;
  * All routes will now be prefixed with /api
  */
-app.use('/api', mainRouter);
+app.use("/api", mainRouter);
 
-app.get('/', (req: Request, res: Response) => {
+app.get("/", (req: Request, res: Response) => {
   if (mongoose.connection.readyState === 0) {
-    res.send('Mongo connection disconnected. API works.');
+    res.send("Mongo connection disconnected. API works.");
   } else if (mongoose.connection.readyState === 1) {
-    res.send('Mongo connection connected. API works.');
-  }
-  else if (mongoose.connection.readyState === 2) {
-    res.send('Mongo connection connecting. API works.');
-  }
-  else {
-    res.send('Mongo connection disconnecting. API works.');
+    res.send("Mongo connection connected. API works.");
+  } else if (mongoose.connection.readyState === 2) {
+    res.send("Mongo connection connecting. API works.");
+  } else {
+    res.send("Mongo connection disconnecting. API works.");
   }
 });
 

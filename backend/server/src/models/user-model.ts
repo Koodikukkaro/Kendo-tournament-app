@@ -1,6 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
+const userSchema = new mongoose.Schema(
+  {
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     firstName: { type: String, required: true },
@@ -9,11 +10,13 @@ const userSchema = new mongoose.Schema({
     clubName: { type: String, required: true },
     danRank: { type: String, required: true },
     underage: { type: Boolean, default: false }, // Default to false if not provided
-    guardiansEmail: { type: String }, // Optional, so not required
-}, {
+    guardiansEmail: { type: String } // Optional, so not required
+  },
+  {
     timestamps: true // Enable timestamps
-});
+  }
+);
 
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model("User", userSchema);
 
 export default User;
