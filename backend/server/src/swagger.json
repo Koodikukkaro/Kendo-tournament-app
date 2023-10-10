@@ -1,0 +1,267 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "version": "1.0.0",
+        "title": "Kendo Tournament Management API"
+    },
+    "paths": {
+        "/api/user/register": {
+            "post": {
+                "summary": "Register a new user",
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "name": "email",
+                        "required": true,
+                        "type": "string",
+                        "example": "user@example.com"
+                    },
+                    {
+                        "name": "password",
+                        "required": true,
+                        "type": "string",
+                        "example": "mypassword123"
+                    },
+                    {
+                        "name": "firstName",
+                        "required": true,
+                        "type": "string",
+                        "example": "John"
+                    },
+                    {
+                        "name": "lastName",
+                        "required": true,
+                        "type": "string",
+                        "example": "Doe"
+                    },
+                    {
+                        "name": "phoneNumber",
+                        "required": true,
+                        "type": "string",
+                        "example": "+1234567890"
+                    },
+                    {
+                        "name": "clubName",
+                        "required": true,
+                        "type": "string",
+                        "example": "EliteClub"
+                    },
+                    {
+                        "name": "danRank",
+                        "required": true,
+                        "type": "string",
+                        "example": "1st Dan"
+                    },
+                    {
+                        "name": "underage",
+                        "required": false,
+                        "type": "boolean",
+                        "example": false,
+                        "description": "If true, guardiansEmail is required"
+                    },
+                    {
+                        "name": "guardiansEmail",
+                        "required": false,
+                        "type": "string",
+                        "example": "guardian@example.com",
+                        "description": "required, if underage is true."
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully registered user",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "message": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Registration failed",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/login": {
+            "post": {
+                "summary": "Login existing user",
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "name": "email",
+                        "required": true,
+                        "type": "string",
+                        "example": "user@example.com"
+                    },
+                    {
+                        "name": "password",
+                        "required": true,
+                        "type": "string",
+                        "example": "mypassword123"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully logged in",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "user_id": {
+                                    "type": "string"
+                                },
+                                "first_name": {
+                                    "type": "string"
+                                },
+                                "last_name": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                },
+                                "phone": {
+                                    "type": "string"
+                                },
+                                "club": {
+                                    "type": "string"
+                                },
+                                "dan": {
+                                    "type": "string"
+                                },
+                                "underage": {
+                                    "type": "boolean"
+                                },
+                                "guardian": {
+                                    "type": "string"
+                                },
+                                "createdOn": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "example": "2021-10-04T08:30:00.000Z"
+                                },
+                                "lastUpdatedOn": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "example": "2021-10-04T09:30:00.000Z"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/{id}": {
+            "get": {
+                "summary": "Retrieve user profile information.",
+                "tags": [
+                    "User"
+                ],
+                "parameters": [
+                    {
+                        "in": "path",
+                        "name": "id",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true,
+                        "description": "User ID"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successfully retrieved user profile",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "user_id": {
+                                    "type": "string"
+                                },
+                                "first_name": {
+                                    "type": "string"
+                                },
+                                "last_name": {
+                                    "type": "string"
+                                },
+                                "email": {
+                                    "type": "string"
+                                },
+                                "phone": {
+                                    "type": "string"
+                                },
+                                "club": {
+                                    "type": "string"
+                                },
+                                "dan": {
+                                    "type": "string"
+                                },
+                                "underage": {
+                                    "type": "boolean"
+                                },
+                                "guardian": {
+                                    "type": "string"
+                                },
+                                "createdOn": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "example": "2021-10-04T08:30:00.000Z"
+                                },
+                                "lastUpdatedOn": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "example": "2021-10-04T09:30:00.000Z"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "User not found",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "An error occurred while retrieving the user profile",
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "error": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import connectDB from './db.js';
 import mongoose from 'mongoose';
 import swaggerUi from "swagger-ui-express";
-import swaggerSpecs from './swagger.js';
+import swaggerDocument from './swagger.json';
 import mainRouter from './routes/index.js';
 
 
@@ -26,7 +26,7 @@ app.use(express.urlencoded({ extended: true }));
 /**
  * Serves swagger
  */
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 /**
  * Logging middleware
