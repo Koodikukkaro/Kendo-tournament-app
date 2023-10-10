@@ -2,10 +2,9 @@ import express, { Request, Response, Application } from 'express';
 import dotenv from 'dotenv';
 import connectDB from './db.js';
 import mongoose from 'mongoose';
-import { registerAPI } from './controllers/register-api.js';
 import swaggerUi from "swagger-ui-express";
 import swaggerSpecs from './swagger.js';
-import { loginAPI } from './controllers/login.js';
+import mainRouter from './routes/index.js';
 
 
 dotenv.config();
@@ -31,10 +30,10 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
 
 /**
- * USER - API
+ * Main Router;
+ * All routes will now be prefixed with /api
  */
-app.post('/api/users/register', registerAPI);
-app.post('/api/users/login', loginAPI);
+app.use('/api', mainRouter);
 
 app.get('/', (req: Request, res: Response) => {
   if (mongoose.connection.readyState === 0) {
