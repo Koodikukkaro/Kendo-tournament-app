@@ -51,7 +51,7 @@ export const registerAPI = async (
   }
 
   // Check if underage is true and guardiansEmail is empty
-  if (underage === true && (!guardiansEmail || guardiansEmail === "")) {
+  if (underage === true && (guardiansEmail != null || guardiansEmail === "")) {
     return res
       .status(400)
       .json({ error: "Guardian's email is required for underage users" });
