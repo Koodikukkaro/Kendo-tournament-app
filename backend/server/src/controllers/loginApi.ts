@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/user-model.js';
-
+import { Express } from 'express';
 /**
  * @swagger
  * /api/user/login:
@@ -69,7 +69,7 @@ import User from '../models/user-model.js';
  *                   type: string
  * */
 
-export const loginAPI = async (req: any, res: any) => {
+export const loginAPI = async (req: Express.Request, res: Express.Response) => {
     const { email, password } = req.body;
 
     // Check if the email exists

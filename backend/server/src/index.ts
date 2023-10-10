@@ -28,6 +28,14 @@ app.use(express.urlencoded({ extended: true }));
  */
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpecs));
 
+/**
+ * Logging middleware
+ */
+app.use((req: Request, res: Response, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
 
 /**
  * Main Router;

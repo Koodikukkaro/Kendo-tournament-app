@@ -1,8 +1,9 @@
 import User from '../models/user-model.js';
+import { Express } from 'express';
 
 /**
  * @swagger
- * /api/users/{id}:
+ * /api/user/{id}:
  *   get:
  *     summary: Retrieve user profile information.
  *     tags: [User]
@@ -67,7 +68,7 @@ import User from '../models/user-model.js';
  *                   type: string
  */
 
-export const getProfileAPI = async (req: any, res: any) => {
+export const getProfileAPI = async (req: Express.Request, res: Express.Response) => {
     const userId = req.params.id;
 
     try {

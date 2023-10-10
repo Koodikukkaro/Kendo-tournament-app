@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/user-model.js';
+import { Express } from 'express';
 
 /**
  * @swagger
@@ -72,7 +73,7 @@ import User from '../models/user-model.js';
  * */
 
 
-export const registerAPI = async (req: any, res: any) => {
+export const registerAPI = async (req: Express.Request, res: Express.Response) => {
     const { email, password, firstName, lastName, phoneNumber, clubName, danRank, underage, guardiansEmail } = req.body;
 
     // Email validation using a simple regular expression
