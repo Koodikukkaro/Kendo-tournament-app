@@ -34,6 +34,22 @@ import User from '../models/user-model.js';
  *               properties:
  *                 user_id:
  *                   type: string
+ *                 first_name:
+ *                   type: string
+ *                 last_name:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 phone:
+ *                   type: string
+ *                 club:
+ *                   type: string
+ *                 dan:
+ *                   type: string
+ *                 underage:
+ *                   type: boolean
+ *                 guardian:
+ *                   type: string
  *       401:
  *         description: Unauthorized
  *         content:
@@ -60,7 +76,16 @@ export const loginAPI = async (req: any, res: any) => {
         return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    //TODO: generate session, refreshtoken or whatever else needed
-    // Return the user_id
-    res.json({ user_id: user._id });
+    // Todo: need to generate a session here.
+    res.json({
+        user_id: user._id,
+        first_name: user.firstName,
+        last_name: user.lastName,
+        email: user.email,
+        phone: user.phoneNumber,
+        club: user.clubName,
+        dan: user.danRank,
+        underage: user.underage,
+        guardian: user.guardiansEmail
+    });
 };
