@@ -3,7 +3,7 @@ import User from '../models/user-model.js';
 
 /**
  * @swagger
- * /api/register:
+ * /api/user/register:
  *   post:
  *     summary: Register a new user
  *     tags: [User]
@@ -46,6 +46,7 @@ import User from '../models/user-model.js';
  *               underage:
  *                 type: boolean
  *                 example: false
+ *                 description: If true, guardiansEmail is required
  *               guardiansEmail:
  *                 type: string
  *                 example: guardian@example.com
@@ -57,8 +58,6 @@ import User from '../models/user-model.js';
  *             schema:
  *               type: object
  *               properties:
- *                 state:
- *                   type: boolean
  *                 message:
  *                   type: string
  *       400:
@@ -71,6 +70,7 @@ import User from '../models/user-model.js';
  *                 error:
  *                   type: string
  * */
+
 
 export const registerAPI = async (req: any, res: any) => {
     const { email, password, firstName, lastName, phoneNumber, clubName, danRank, underage, guardiansEmail } = req.body;
@@ -87,10 +87,36 @@ export const registerAPI = async (req: any, res: any) => {
         return res.status(400).json({ error: "Password must be 8-30 characters long and alphanumeric" });
     }
 
+    // Validate required fields
+    if (!firstName || !lastName) {
+        return res.status(400).json({ error: "First name and last name are required" });
+    }
+
+    // Check if phone number is provided
+    if (!phoneNumber) {
+        return res.status(400).json({ error: "Phone number is required" });
+    }
+
+    // Simple phone number validation using a regular expression
+    const phoneRegex = /^[0-9]{10,15}$/;  // Adjust the length as needed
+    if (!phoneRegex.test(phoneNumber)) {
+        return res.status(400).json({ error: "Invalid phone number format" });
+    }
+
+    // Check if underage is true and guardiansEmail is empty
+    if (underage && !guardiansEmail) {
+        return res.status(400).json({ error: "Guardian's email is required for underage users" });
+    }
+
     // Check if email exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-        return res.status(400).json({ error: "Email already exists" });
+    try {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ error: "Email already exists" });
+        }
+    } catch (err) {
+        console.log(err);
+        return res.status(400).json({ "message": "An error occurred. User registration failed!" });
     }
 
     // Hash the password
@@ -116,6 +142,7 @@ export const registerAPI = async (req: any, res: any) => {
             "message": "User registration successful"
         });
     } catch (err) {
-        res.status(400).json({ error: err });
+        console.log(err);
+        res.status(400).json({ "message": "An error occurred. User registration failed!" });
     }
 };
