@@ -1,16 +1,15 @@
 import mongoose, { Schema } from "mongoose";
 
-
 interface User {
-  email: string,
-  password: string,
-  phoneNumber: string,
-  firstName: string,
-  lastName: string,
-  clubName: string,
-  danRank: string,
-  underage?: boolean,
-  guardiansEmail?: string
+  email: string;
+  password: string;
+  phoneNumber: string;
+  firstName: string;
+  lastName: string;
+  clubName: string;
+  danRank: string;
+  underage?: boolean;
+  guardiansEmail?: string;
 }
 
 const userSchema = new Schema(

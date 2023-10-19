@@ -20,11 +20,11 @@ userRoutes.get("/:id", authenticateJWT, (req, res, next) => {
   getProfileAPI(req, res).catch(next);
 });
 
-userRoutes.post('/logout', authenticateJWT, (req, res, next) => {
-  res.clearCookie('token');
+userRoutes.post("/logout", authenticateJWT, (req, res, next) => {
+  res.clearCookie("token");
   res.json({
-    "message": "Successfully logged out!"
-  })
+    message: "Successfully logged out!"
+  });
 });
 
 export default userRoutes;

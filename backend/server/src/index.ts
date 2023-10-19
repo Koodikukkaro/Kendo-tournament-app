@@ -7,7 +7,7 @@ import express, {
 import dotenv from "dotenv";
 import connectDB from "./utility/db.js";
 
-import cookieParser from 'cookie-parser';
+import cookieParser from "cookie-parser";
 
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json";
@@ -50,9 +50,9 @@ app.use((req: Request, res: Response, next) => {
 app.use("/api", mainRouter);
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-  if (err.name === 'UnauthorizedError') {
+  if (err.name === "UnauthorizedError") {
     res.status(401).json({
-      "message": 'Invalid or expired token'
+      message: "Invalid or expired token"
     });
   } else {
     next(err);

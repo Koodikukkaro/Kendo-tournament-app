@@ -27,7 +27,7 @@ export const loginAPI = async (
     email: user.email
   });
 
-  res.cookie('token', jwtToken, { httpOnly: true }); //sameSite: 'strict'
+  res.cookie("token", jwtToken, { httpOnly: true }); // sameSite: 'strict'
   return res.json({
     user_id: user._id,
     first_name: user.firstName,
