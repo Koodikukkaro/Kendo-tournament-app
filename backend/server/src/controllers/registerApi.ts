@@ -1,11 +1,12 @@
-import { type Express } from "express";
+import { type Request, type Response } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/user-model.js";
+import { emailRegex, passwordRegex } from "../utility/common.js";
 
 export const registerAPI = async (
-  req: Express.Request,
-  res: Express.Response
-): Promise<void> => {
+  req: Request,
+  res: Response
+): Promise<Response> => {
   const {
     email,
     password,
@@ -19,13 +20,11 @@ export const registerAPI = async (
   } = req.body;
 
   // Email validation using a simple regular expression
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!emailRegex.test(email)) {
     return res.status(400).json({ error: "Invalid email format" });
   }
 
   // Password validation: between 8 and 30 characters, and alphanumeric
-  const passwordRegex = /^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]{8,30})$/;
   if (!passwordRegex.test(password)) {
     return res.status(400).json({
       error: "Password must be 8-30 characters long and alphanumeric"
@@ -89,12 +88,12 @@ export const registerAPI = async (
 
   try {
     await newUser.save();
-    res.json({
+    return res.json({
       message: "User registration successful"
     });
   } catch (err) {
     console.log(err);
-    res
+    return res
       .status(400)
       .json({ message: "An error occurred. User registration failed!" });
   }

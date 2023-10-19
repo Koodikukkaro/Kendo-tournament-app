@@ -1,10 +1,10 @@
-import { type Express } from "express";
+import { type Request, type Response } from "express";
 import User from "../models/user-model.js";
 
 export const getProfileAPI = async (
-  req: Express.Request,
-  res: Express.Response
-): Promise<void> => {
+  req: Request,
+  res: Response
+): Promise<Response> => {
   const userId = req.params.id;
 
   try {
@@ -13,7 +13,7 @@ export const getProfileAPI = async (
       return res.status(404).json({ error: "User not found" });
     }
 
-    res.json({
+    return res.json({
       user_id: user._id,
       first_name: user.firstName,
       last_name: user.lastName,
@@ -28,7 +28,7 @@ export const getProfileAPI = async (
     });
   } catch (err) {
     console.log(err);
-    res
+    return res
       .status(500)
       .json({ error: "An error occurred while retrieving the user profile" });
   }

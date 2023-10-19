@@ -4,7 +4,7 @@ import express, {
   type Application
 } from "express";
 import dotenv from "dotenv";
-import connectDB from "./db.js";
+import connectDB from "./utility/db.js";
 import mongoose from "mongoose";
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json";

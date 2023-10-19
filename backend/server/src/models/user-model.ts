@@ -1,6 +1,19 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
-const userSchema = new mongoose.Schema(
+
+interface User {
+  email: string,
+  password: string,
+  phoneNumber: string,
+  firstName: string,
+  lastName: string,
+  clubName: string,
+  danRank: string,
+  underage?: boolean,
+  guardiansEmail?: string
+}
+
+const userSchema = new Schema(
   {
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },

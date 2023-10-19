@@ -1,10 +1,10 @@
-import express from "express";
+import { Router } from "express";
 
 // Import controller methods
 import { registerAPI } from "../controllers/registerApi.js";
 import { loginAPI } from "../controllers/loginApi.js";
 import { getProfileAPI } from "../controllers/profileApi.js";
-const userRoutes = express.Router();
+const userRoutes = Router();
 
 // Define routes
 userRoutes.post("/register", (req, res, next) => {
