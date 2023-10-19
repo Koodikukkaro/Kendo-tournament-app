@@ -1,13 +1,17 @@
 import express, {
   type Request,
   type Response,
-  type Application
+  type Application,
+  type NextFunction
 } from "express";
 import dotenv from "dotenv";
 import connectDB from "./utility/db.js";
-import mongoose from "mongoose";
+
+import cookieParser from 'cookie-parser';
+
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json";
+
 import mainRouter from "./routes/index.js";
 
 dotenv.config();
@@ -24,6 +28,7 @@ const port = process.env.PORT ?? 8080;
  */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 /**
  * Serves swagger
@@ -44,16 +49,18 @@ app.use((req: Request, res: Response, next) => {
  */
 app.use("/api", mainRouter);
 
-app.get("/", (req: Request, res: Response) => {
-  if (mongoose.connection.readyState === 0) {
-    res.send("Mongo connection disconnected. API works.");
-  } else if (mongoose.connection.readyState === 1) {
-    res.send("Mongo connection connected. API works.");
-  } else if (mongoose.connection.readyState === 2) {
-    res.send("Mongo connection connecting. API works.");
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  if (err.name === 'UnauthorizedError') {
+    res.status(401).json({
+      "message": 'Invalid or expired token'
+    });
   } else {
-    res.send("Mongo connection disconnecting. API works.");
+    next(err);
   }
+});
+
+app.get("/", (req: Request, res: Response) => {
+  res.send("Hello World!");
 });
 
 app.listen(port, () => {
