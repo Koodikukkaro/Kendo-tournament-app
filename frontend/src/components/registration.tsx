@@ -51,9 +51,11 @@ const RegisterForm: React.FC = () => {
       </p>
 
       <div className="field">
+        <label htmlFor="firstname"></label>
         <input
           type="text"
           name="firstname"
+          id="firstname"
           placeholder="First name *"
           required
           value={formData.firstname}
@@ -68,6 +70,7 @@ const RegisterForm: React.FC = () => {
         <input
           type="text"
           name="lastname"
+          id="lastname"
           placeholder="Last name *"
           required
           value={formData.lastname}
@@ -82,6 +85,7 @@ const RegisterForm: React.FC = () => {
         <input
           type="text"
           name="username"
+          id="username"
           placeholder="Username *"
           required
           value={formData.username}
@@ -96,6 +100,7 @@ const RegisterForm: React.FC = () => {
         <input
           type="email"
           name="email"
+          id="email"
           placeholder="Email *"
           required
           value={formData.email}
@@ -110,6 +115,7 @@ const RegisterForm: React.FC = () => {
         <input
           type="tel"
           name="tel"
+          id="tel"
           placeholder="Phone number * (e.g. +358...)"
           required
           value={formData.tel}
@@ -124,6 +130,7 @@ const RegisterForm: React.FC = () => {
         <input
           type="password"
           name="password"
+          id="password"
           placeholder="Password *"
           required
           value={formData.password}
@@ -139,6 +146,7 @@ const RegisterForm: React.FC = () => {
         <input
           type="password"
           name="passwordConfirmation"
+          id="passwordConfirmation"
           placeholder="Password again *"
           required
           value={formData.passwordConfirmation}
@@ -154,6 +162,7 @@ const RegisterForm: React.FC = () => {
         <input
           type="text"
           name="rank"
+          id="rank"
           placeholder="Rank"
           value={formData.rank}
           onChange={(e) => {
@@ -167,6 +176,7 @@ const RegisterForm: React.FC = () => {
         <input
           type="text"
           name="club"
+          id="club"
           placeholder="Club"
           value={formData.club}
           onChange={(e) => {
@@ -180,6 +190,7 @@ const RegisterForm: React.FC = () => {
         <input
           type="text"
           name="suomisport"
+          id="suomisport"
           placeholder="Suomisport ID"
           value={formData.suomisport}
           onChange={(e) => {
@@ -191,6 +202,7 @@ const RegisterForm: React.FC = () => {
         <input
           type="checkbox"
           name="underage"
+          id="underage"
           checked={formData.underage}
           onChange={(e) => {
             handleInputChange(e, "underage");
@@ -204,6 +216,7 @@ const RegisterForm: React.FC = () => {
             <input
               type="text"
               name="guardianEmail"
+              id="guardianEmail"
               placeholder="Guardian's email"
               required
             />
@@ -213,7 +226,8 @@ const RegisterForm: React.FC = () => {
       <div className="field-checkbox">
         <input
           type="checkbox"
-          name="consent"
+          name="conditions"
+          id="conditions"
           required
           checked={formData.conditions}
           onChange={(e) => {
