@@ -1,28 +1,46 @@
-import React, { useState } from "react";
+import React, { type SyntheticEvent, useState } from "react";
 import "./registration.css";
 
-const Component: React.RegisterForm = () => {
-  const [firstname, setFirstname] = useState("");
-  const [lastname, setLastname] = useState("");
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [tel, setTel] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState("");
-  const [rank, setRank] = useState("");
-  const [club, setClub] = useState("");
-  const [suomisport, setSuomisport] = useState("");
-  const [underage, setUnderAge] = useState(false);
-  const [consent, setConsent] = useState(false);
-  const [guardianEmail, setGuardianEmail] = useState("");
+const RegisterForm: React.FC = () => {
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    username: "",
+    email: "",
+    tel: "",
+    password: "",
+    passwordConfirmation: "",
+    rank: "",
+    club: "",
+    suomisport: "",
+    underage: false,
+    guardianEmail: "",
+    conditions: false
+  });
 
-  const onSubmit = (event: { preventDefault: () => void }) => {
-    event.preventDefault();
-    /** here how user is actually added somewhere */
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    fieldName: string
+  ): void => {
+    const value =
+      event.target.type === "checkbox"
+        ? event.target.checked
+        : event.target.value;
+    setFormData((prevData) => ({
+      ...prevData,
+      [fieldName]: value
+    }));
   };
 
   return (
-    <form id="registerForm" className="form" onSubmit={onSubmit}>
+    <form
+      id="registerForm"
+      className="form"
+      onSubmit={(event: SyntheticEvent) => {
+        event.preventDefault();
+        /** here how user is actually added somewhere */
+      }}
+    >
       <h1 className="header">Create a KendoApp account</h1>
       <p className="subtext">
         Already have an account? <a href="url">Log in</a>{" "}
@@ -36,13 +54,12 @@ const Component: React.RegisterForm = () => {
         <input
           type="text"
           name="firstname"
-          id="firstname"
           placeholder="First name *"
-          value={firstname}
-          onChange={({ target }) => {
-            setFirstname(target.value);
-          }}
           required
+          value={formData.firstname}
+          onChange={(e) => {
+            handleInputChange(e, "firstname");
+          }}
         />
       </div>
       <div className="field">
@@ -51,13 +68,12 @@ const Component: React.RegisterForm = () => {
         <input
           type="text"
           name="lastname"
-          id="lastname"
           placeholder="Last name *"
-          value={lastname}
-          onChange={({ target }) => {
-            setLastname(target.value);
-          }}
           required
+          value={formData.lastname}
+          onChange={(e) => {
+            handleInputChange(e, "lastname");
+          }}
         />
       </div>
       <div className="field">
@@ -66,13 +82,12 @@ const Component: React.RegisterForm = () => {
         <input
           type="text"
           name="username"
-          id="username"
           placeholder="Username *"
-          value={username}
-          onChange={({ target }) => {
-            setUsername(target.value);
-          }}
           required
+          value={formData.username}
+          onChange={(e) => {
+            handleInputChange(e, "username");
+          }}
         />
       </div>
       <div className="field">
@@ -81,13 +96,12 @@ const Component: React.RegisterForm = () => {
         <input
           type="email"
           name="email"
-          id="email"
           placeholder="Email *"
-          value={email}
-          onChange={({ target }) => {
-            setEmail(target.value);
-          }}
           required
+          value={formData.email}
+          onChange={(e) => {
+            handleInputChange(e, "email");
+          }}
         />
       </div>
       <div className="field">
@@ -96,13 +110,12 @@ const Component: React.RegisterForm = () => {
         <input
           type="tel"
           name="tel"
-          id="tel"
           placeholder="Phone number * (e.g. +358...)"
-          value={tel}
-          onChange={({ target }) => {
-            setTel(target.value);
-          }}
           required
+          value={formData.tel}
+          onChange={(e) => {
+            handleInputChange(e, "tel");
+          }}
         />
       </div>
       <div className="field">
@@ -111,13 +124,12 @@ const Component: React.RegisterForm = () => {
         <input
           type="password"
           name="password"
-          id="password"
           placeholder="Password *"
-          value={password}
-          onChange={({ target }) => {
-            setPassword(target.value);
-          }}
           required
+          value={formData.password}
+          onChange={(e) => {
+            handleInputChange(e, "password");
+          }}
         />
         <i className="fa-solid fa-eye" id="eye" />
       </div>
@@ -127,13 +139,12 @@ const Component: React.RegisterForm = () => {
         <input
           type="password"
           name="passwordConfirmation"
-          id="password"
-          placeholder="Password *"
-          value={passwordConfirmation}
-          onChange={({ target }) => {
-            setPasswordConfirmation(target.value);
-          }}
+          placeholder="Password again *"
           required
+          value={formData.passwordConfirmation}
+          onChange={(e) => {
+            handleInputChange(e, "passwordConfirmation");
+          }}
         />
         <i className="fa-solid fa-eye" id="eye" />
       </div>
@@ -143,11 +154,10 @@ const Component: React.RegisterForm = () => {
         <input
           type="text"
           name="rank"
-          id="rank"
           placeholder="Rank"
-          value={rank}
-          onChange={({ target }) => {
-            setRank(target.value);
+          value={formData.rank}
+          onChange={(e) => {
+            handleInputChange(e, "rank");
           }}
         />
       </div>
@@ -157,11 +167,10 @@ const Component: React.RegisterForm = () => {
         <input
           type="text"
           name="club"
-          id="club"
           placeholder="Club"
-          value={club}
-          onChange={({ target }) => {
-            setClub(target.value);
+          value={formData.club}
+          onChange={(e) => {
+            handleInputChange(e, "club");
           }}
         />
       </div>
@@ -171,37 +180,31 @@ const Component: React.RegisterForm = () => {
         <input
           type="text"
           name="suomisport"
-          id="suomisport"
           placeholder="Suomisport ID"
-          value={suomisport}
-          onChange={({ target }) => {
-            setSuomisport(target.value);
+          value={formData.suomisport}
+          onChange={(e) => {
+            handleInputChange(e, "suomisport");
           }}
         />
       </div>
       <div className="field-checkbox">
         <input
           type="checkbox"
-          id="underage"
-          checked={underage}
-          onChange={({ target }) => {
-            setUnderAge(target.checked);
+          name="underage"
+          checked={formData.underage}
+          onChange={(e) => {
+            handleInputChange(e, "underage");
           }}
         />
         <label htmlFor="underage">I&apos;m underage</label>
-        {underage && (
+        {formData.underage && (
           <div className="field">
             <br />
-            <label htmlFor="guardian-email"></label>
+            <label htmlFor="guardianEmail"></label>
             <input
               type="text"
-              name="guardian-email"
-              id="guardian-email"
+              name="guardianEmail"
               placeholder="Guardian's email"
-              value={guardianEmail}
-              onChange={({ target }) => {
-                setGuardianEmail(target.value);
-              }}
               required
             />
           </div>
@@ -210,12 +213,12 @@ const Component: React.RegisterForm = () => {
       <div className="field-checkbox">
         <input
           type="checkbox"
-          id="conditions"
-          checked={consent}
-          onChange={({ target }) => {
-            setConsent(target.checked);
-          }}
+          name="consent"
           required
+          checked={formData.conditions}
+          onChange={(e) => {
+            handleInputChange(e, "conditions");
+          }}
         />
         <label htmlFor="conditions">
           By checking this box I agree to the{" "}
@@ -231,4 +234,4 @@ const Component: React.RegisterForm = () => {
   );
 };
 
-export default Component;
+export default RegisterForm;
