@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-interface User {
+interface UserInterface {
   email: string;
   password: string;
   phoneNumber: string;
@@ -12,7 +12,7 @@ interface User {
   guardiansEmail?: string;
 }
 
-const userSchema = new Schema(
+const userSchema = new Schema<UserInterface>(
   {
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
