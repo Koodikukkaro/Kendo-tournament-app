@@ -1,11 +1,11 @@
-import { type Express } from "express";
+import { type Request, type Response } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/user-model.js";
 
 export const loginAPI = async (
-  req: Express.Request,
-  res: Express.Response
-): Promise<void> => {
+  req: Request,
+  res: Response
+): Promise<Response> => {
   const { email, password } = req.body;
 
   // Check if the email exists
@@ -21,7 +21,7 @@ export const loginAPI = async (
   }
 
   // Todo: need to generate a session here.
-  res.json({
+  return res.json({
     user_id: user._id,
     first_name: user.firstName,
     last_name: user.lastName,

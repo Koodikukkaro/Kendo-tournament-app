@@ -13,10 +13,7 @@ console.log("_---------------_");
 
 const connectDB = async (): Promise<void> => {
   try {
-    await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true
-    });
+    await mongoose.connect(mongoUri);
     console.log("MongoDB connection successful");
   } catch (err) {
     console.error(`MongoDB connection error: ${String(err)}`);
