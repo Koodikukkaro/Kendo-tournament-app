@@ -1,3 +1,4 @@
+import matchRoutes from "./routes/matchRoutes.ts";
 import express, {
   type Request,
   type Response,
@@ -9,6 +10,8 @@ dotenv.config();
 
 const app: Application = express();
 const port = process.env.PORT ?? 8080;
+
+app.use("/api/match", matchRoutes);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("success!");
