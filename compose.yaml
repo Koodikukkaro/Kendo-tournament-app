@@ -18,9 +18,10 @@ services:
       dockerfile: Dockerfile
       context: ./frontend
     ports:
-      - "80:80"
+      #- "443:443"
+      #- "80:80"
       # only for development, totally unnecessary:
-      #- "80:3000"
+      - "80:3000"
     # https://docs.docker.com/compose/networking/
     networks:
       - frontend
@@ -37,6 +38,7 @@ services:
     # Map the port 8080 of the container to the port 12345 of the host
     # Container port has been exposed in the node:tag Docker Hub Dockerfile.
     ports:
+      #- "443:8080"
       - "12345:8080"
     networks:
       - frontend
