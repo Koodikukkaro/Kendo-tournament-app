@@ -6,7 +6,8 @@
   "main": "index.ts",
   "scripts": {
     "prestart": "npm install",
-    "start": "npx tsx src/index.ts",
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
     "test": "ts-mocha test/*.ts",
     "lint": "eslint './src/**/*.ts' --cache --cache-strategy content ",
     "lint:fix": "eslint --fix './src/**/*.ts'"
@@ -20,7 +21,8 @@
   "dependencies": {
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "mongoose": "^7.5.3"
+    "mongoose": "^7.5.3",
+    "tsx": "^3.14.0"
   },
   "devDependencies": {
     "@types/chai": "^4.3.6",
