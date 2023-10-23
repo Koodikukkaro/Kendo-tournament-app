@@ -12,7 +12,6 @@ export const getProfileAPI = async (
     if (user === null || user === undefined) {
       return res.status(404).json({ error: "User not found" });
     }
-    const currentUserId = req.auth.__id; // todo: remove compile error here.
 
     return res.json({
       user_id: user._id,
