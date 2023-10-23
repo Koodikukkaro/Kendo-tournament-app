@@ -1,11 +1,34 @@
-import React, { type SyntheticEvent, useState } from "react";
-import "./registration.css";
+import React, { useState } from "react";
+import "./login.css";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "context/AuthContext";
+
+interface LocationProps {
+  state: {
+    from: Location;
+  };
+}
+
+interface FormData {
+  login: string;
+  password: string;
+}
 
 const LoginForm: React.FC = () => {
-  const [formData, setFormData] = useState({
+  const navigate = useNavigate();
+  const { login } = useAuth();
+  const location = useLocation() as unknown as LocationProps;
+  const from = location.state?.from?.pathname ?? "/";
+
+  const [formData, setFormData] = useState<FormData>({
     login: "",
     password: ""
   });
+
+  const onHandleSubmit = async (): Promise<void> => {
+    await login();
+    navigate(from, { replace: true });
+  };
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -22,14 +45,7 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <form
-      id="loginForm"
-      className="form"
-      onSubmit={(event: SyntheticEvent) => {
-        event.preventDefault();
-        /** here how user is verified */
-      }}
-    >
+    <form id="loginForm" className="form" onSubmit={onHandleSubmit}>
       <h1 className="header">Login</h1>
 
       <div className="field">
@@ -77,7 +93,7 @@ const LoginForm: React.FC = () => {
       </div>
       <br />
       <p className="register">
-        Dont have an account? <a href="url">Register here</a>
+        Dont have an account? <Link to="/register">Register here</Link>
       </p>
     </form>
   );
