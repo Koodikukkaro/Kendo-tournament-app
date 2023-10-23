@@ -20,7 +20,7 @@ These instructions will help you set up the project locally for development and 
 ### Prerequisites
 
 - Node.js (v18.x or higher)
-- MongoDB (local or Atlas)
+- Access to MongoDB (../database with Docker, local or Atlas)
 
   
 ### Installation
@@ -52,10 +52,12 @@ These instructions will help you set up the project locally for development and 
 5. Start the dev server
 
     ```bash
-    npm run start
+    npm run dev
     ```
 
 ## Usage
+
+For usage, see the scripts in package.json.
 
 Once the server is running, you can use the following endpoints:
 
@@ -63,12 +65,18 @@ Once the server is running, you can use the following endpoints:
 
 GET /: Index (hello world!)
 
+GET /api/match/:id: Retrieve match info
+POST /api/match: Create a match
+PUT /api/match/:id: Start a match or add points
+DELETE /api/match/:id: Remove a match
+
 ## Technologies
 
 - Node.js
 - Express
 - MongoDB
 - Mongoose
+- TypeScript
 
 ## Contributing
 

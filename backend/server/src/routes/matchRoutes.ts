@@ -1,30 +1,31 @@
 import { Router } from "express";
+import {
+  getMatch,
+  postMatch,
+  putMatch,
+  deleteMatch
+} from "../controllers/match-api.js";
 
-// import { controller } from "../controllers/.ts";
 const matchRoutes = Router();
 
 // Retrieve details of a specific Kendo match by its unique ID.
 matchRoutes.get("/:id", (req, res, next) => {
-  // .catch(next);
-  res.send("get");
+  getMatch(req, res).catch(next);
 });
 
 // Create a new Kendo match within a tournament.
 matchRoutes.post("/", (req, res, next) => {
-  // .catch(next);
-  res.send("post");
+  postMatch(req, res).catch(next);
 });
 
 // Update the details of an existing Kendo match.
 matchRoutes.put("/:id", (req, res, next) => {
-  // .catch(next);
-  res.send("put");
+  putMatch(req, res).catch(next);
 });
 
 // Delete a Kendo match.
 matchRoutes.delete("/:id", (req, res, next) => {
-  // .catch(next);
-  res.send("delete");
+  deleteMatch(req, res).catch(next);
 });
 
 export default matchRoutes;
