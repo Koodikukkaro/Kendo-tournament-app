@@ -5,6 +5,8 @@ import { authenticateJWT } from "../middleware/authenticateJWT.js";
 import { registerAPI } from "../controllers/registerApi.js";
 import { loginAPI } from "../controllers/loginApi.js";
 import { getProfileAPI } from "../controllers/profileApi.js";
+import { RefreshAPI } from "../controllers/refreshApi.js";
+
 const userRoutes = Router();
 
 // Define routes
@@ -26,5 +28,10 @@ userRoutes.post("/logout", authenticateJWT, (req, res, next) => {
     message: "Successfully logged out!"
   });
 });
+
+userRoutes.post("/refresh", (req, res, next) => {
+  RefreshAPI(req, res).catch(next);
+});
+
 
 export default userRoutes;

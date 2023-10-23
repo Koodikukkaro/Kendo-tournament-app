@@ -1,7 +1,7 @@
 import { type Request, type Response } from "express";
 import bcrypt from "bcryptjs";
 import User from "../models/user-model.js";
-import { generateToken } from "../utility/jwtHelper.js";
+import { generateToken, generateRefreshToken } from "../utility/jwtHelper.js";
 
 export const loginAPI = async (
   req: Request,
@@ -27,7 +27,14 @@ export const loginAPI = async (
     email: user.email
   });
 
-  res.cookie("token", jwtToken, { httpOnly: true }); // sameSite: 'strict'
+  // generate refresh token
+  const jwtRefreshToken = generateRefreshToken({
+    __id: user._id
+  });
+
+  res.cookie("token", jwtToken, { httpOnly: true });
+  res.cookie("refresh", jwtRefreshToken, { httpOnly: true });
+
   return res.json({
     user_id: user._id,
     first_name: user.firstName,

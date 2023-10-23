@@ -6,13 +6,13 @@ export const getProfileAPI = async (
   res: Response
 ): Promise<Response> => {
   const userId = req.params.id;
-
   try {
     const user = await User.findById(userId);
     if (user === null || user === undefined) {
       return res.status(404).json({ error: "User not found" });
     }
     const currentUserId = req.auth.__id; // todo: remove compile error here.
+    console.log(currentUserId);
 
     return res.json({
       user_id: user._id,
