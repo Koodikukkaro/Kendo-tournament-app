@@ -3,6 +3,7 @@ import Match, {
   type MatchPlayer
 } from "../models/match-model.js";
 import { type Request, type Response } from "express";
+import { type ClientSession } from "mongoose";
 
 // (TODO: provide user player names. Requires querying User)
 export const getMatch = async (
@@ -111,6 +112,11 @@ const checkWinner = (
   }
 };
 
+const abortSession = async (session: ClientSession): Promise<void> => {
+  await session.abortTransaction();
+  await session.endSession();
+};
+
 /**
   {
     startTimestamp: "Date string",
@@ -129,22 +135,26 @@ export const putMatch = async (
   const { startTimestamp, point, comment } = req.body;
 
   // There's something missing about mongoose validation if using update.
-  // TODO:
-  // However, this solution also creates a problem: a need for transactions.
-  // The problem doesn't matter if only one official is allowed to use the
-  // putMatch path at a time and doesn't spam the buttons.
+
+  let session = null;
 
   let updatedMatch = null;
-
   try {
-    updatedMatch = await Match.findById(matchId);
+    session = await Match.startSession();
+    session.startTransaction();
+
+    updatedMatch = await Match.findById(matchId, null, { session });
   } catch (error) {
     console.error(error);
+    session != null && (await abortSession(session));
+
     return res.status(400).json({
       error: "Getting match to put to failed. Check matchId"
     });
   }
   if (updatedMatch === null) {
+    session != null && (await abortSession(session));
+
     return res
       .status(404)
       .json({ error: "Getting match to put to failed. Not found" });
@@ -159,6 +169,8 @@ export const putMatch = async (
   if (typeof startTimestamp === "string") {
     const startDate = new Date(startTimestamp);
     if (startDate.toString() === "Invalid Date") {
+      session != null && (await abortSession(session));
+
       return res
         .status(400)
         .json({ error: "putting match failed. Invalid startTimestamp" });
@@ -166,6 +178,8 @@ export const putMatch = async (
     resetMatch(updatedMatch);
     updatedMatch.startTimestamp = startDate;
   } else if (updatedMatch.winner !== undefined) {
+    session != null && (await abortSession(session));
+
     return res
       .status(400)
       .json({ error: "Cannot add points to a finished match" });
@@ -181,11 +195,15 @@ export const putMatch = async (
     );
     if (typeof player !== "object" || typeof anotherPlayer !== "object") {
       console.error("put match: broken match document");
+      session != null && (await abortSession(session));
+
       return res.status(500).end();
     }
 
     const pointDate = new Date(point.timestamp);
     if (pointDate.toString() === "Invalid Date") {
+      session != null && (await abortSession(session));
+
       return res
         .status(400)
         .json({ error: "putting match failed. Invalid point.timestamp" });
@@ -200,9 +218,14 @@ export const putMatch = async (
   }
 
   try {
-    return res.json(await updatedMatch.save());
+    const result = res.json(await updatedMatch.save(/* { session } */));
+    await session.commitTransaction();
+    await session.endSession();
+    return result;
   } catch (error) {
     console.error(error);
+    session != null && (await abortSession(session));
+
     return res.status(500).json({ error: "putting match failed" });
   }
 };
