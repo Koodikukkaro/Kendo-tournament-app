@@ -23,7 +23,7 @@ export const loginAPI = async (
 
   // Generate a session here.
   const jwtToken = generateToken({
-    __id: user._id,
+    __id: user._id.toString(),
     email: user.email
   });
 
