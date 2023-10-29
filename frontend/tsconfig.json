@@ -11,9 +11,19 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "sourceMap": true,
-    "target": "esnext"
+    "target": "esnext",
+    "baseUrl": "src"
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
   },
   "exclude": [
     "node_modules"
+  ],
+  "include": [
+    "src",
+    "webpack.config.ts"
   ]
 }
