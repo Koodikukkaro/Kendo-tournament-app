@@ -22,9 +22,7 @@ export const getProfileAPI = async (
       club: user.clubName,
       dan: user.danRank,
       underage: user.underage,
-      guardian: user.guardiansEmail,
-      created_on: user.createdAt,
-      last_updated_on: user.updatedAt
+      guardian: user.guardiansEmail
     });
   } catch (err) {
     console.log(err);

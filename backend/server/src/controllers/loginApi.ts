@@ -30,8 +30,6 @@ export const loginAPI = async (
     club: user.clubName,
     dan: user.danRank,
     underage: user.underage,
-    guardian: user.guardiansEmail,
-    created_on: user.createdAt,
-    last_updated_on: user.updatedAt
+    guardian: user.guardiansEmail
   });
 };
