@@ -31,6 +31,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 /**
+ * Error handling middleware
+ */
+app.use(globalErrorHandlerMiddleware);
+
+/**
  * Logging middleware
  */
 app.use((req: Request, res: Response, next) => {
