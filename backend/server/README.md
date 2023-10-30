@@ -22,7 +22,6 @@ These instructions will help you set up the project locally for development and 
 - Node.js (v18.x or higher)
 - Access to MongoDB (../database with Docker, local or Atlas)
 
-  
 ### Installation
 
 1. Clone the repository
@@ -55,6 +54,16 @@ These instructions will help you set up the project locally for development and 
     npm run dev
     ```
 
+if you have `docker` installed, then
+
+1. Use `docker-compose` to run the system in dev mode:
+
+  ```bash
+  docker-compose up --build
+  ```
+
+The first time it will take time to build and run. Every other time, it will take 2-3 minutes to setting up and 20-25 seconds to shutdown the containers.
+
 ## Usage
 
 For usage, see the scripts in package.json.
@@ -64,6 +73,8 @@ Once the server is running, you can use the following endpoints:
 ### Routes
 
 GET /: Index (hello world!)
+
+GET /api-docs: Swagger API Documentation
 
 GET /api/match/:id: Retrieve match info
 POST /api/match: Create a match
@@ -77,6 +88,7 @@ DELETE /api/match/:id: Remove a match
 - MongoDB
 - Mongoose
 - TypeScript
+etc...
 
 ## Contributing
 
@@ -85,4 +97,3 @@ Pull requests are welcome! For major changes, please open an issue first to disc
 ## License
 
 See `LICENSE` for more information.
-

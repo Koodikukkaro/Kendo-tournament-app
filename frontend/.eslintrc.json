@@ -18,7 +18,12 @@
     "prettier"
   ],
   "rules": {
-    "prettier/prettier": "error"
+    "prettier/prettier": "error",
+    "@typescript-eslint/no-misused-promises": [2, {
+    "checksVoidReturn": {
+      "attributes": false
+    }
+  }]
   },
   "settings": {
     "react": {
