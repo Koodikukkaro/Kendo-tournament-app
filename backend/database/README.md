@@ -27,5 +27,6 @@ so it is ideal for development.
 ## Contributing
 
 The database implementation is subject to change. No changes
-expected here.
+expected here. If we want to keep a local database, Setupping
+a replica set is likely required.
 

@@ -1,10 +1,6 @@
+import { getMatch, postMatch, deleteMatch } from "../controllers/match-api.js";
+import { putMatch } from "../controllers/match-put-api.js";
 import { Router } from "express";
-import {
-  getMatch,
-  postMatch,
-  putMatch,
-  deleteMatch
-} from "../controllers/match-api.js";
 
 const matchRoutes = Router();
 
