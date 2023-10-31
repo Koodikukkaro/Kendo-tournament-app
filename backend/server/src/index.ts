@@ -1,16 +1,15 @@
-import express, {
-  type Request,
-  type Response,
-  type Application
-} from "express";
-import dotenv from "dotenv";
 import connectDB from "./utility/db.js";
-import mongoose from "mongoose";
-import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "./swagger.json";
 import mainRouter from "./routes/index.js";
+import swaggerDocument from "./swagger.json";
 
-dotenv.config();
+import express, {
+  type Application,
+  type Request,
+  type Response
+} from "express";
+import mongoose from "mongoose";
+import "dotenv/config";
+import swaggerUi from "swagger-ui-express";
 
 // initialize mongo connection.
 await connectDB();
@@ -40,7 +39,7 @@ app.use((req: Request, res: Response, next) => {
 
 /**
  * Main Router;
- * All routes will now be prefixed with /api
+ * Provides routes beginning with /api
  */
 app.use("/api", mainRouter);
 
