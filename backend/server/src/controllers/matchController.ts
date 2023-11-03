@@ -51,6 +51,25 @@ export class MatchController extends Controller {
     await this.service.deleteMatchById(id);
   }
 
+  /*
+   * Start the timer for the specified Kendo match.
+   */
+  @Patch("{id}/start-timer")
+  @Tags("Match")
+  public async startTimer(@Path() id: ObjectIdString): Promise<void> {
+    this.setStatus(204);
+    await this.service.startTimer(id);
+  }
+
+  /*
+   * Stop the timer for the specified Kendo match.
+   */
+  @Patch("{id}/stop-timer")
+  @Tags("Match")
+  public async stopTimer(@Path() id: ObjectIdString): Promise<void> {
+    this.setStatus(204);
+    await this.service.stopTimer(id);
+  }
 
   /*
    * Add a point to the specified Kendo match.

@@ -49,6 +49,73 @@ export class MatchService {
     }
   }
 
+  public async startTimer(id: string): Promise<void> {
+    const match = await MatchModel.findById(id).exec();
+
+    if (match === null) {
+      throw new NotFoundError({
+        message: `Match not found for ID: ${id}`
+      });
+    }
+
+    if (match.winner !== undefined) {
+      throw new BadRequestError({
+        message: "Finished matches cannot be edited"
+      });
+    }
+
+    if (match.timerStartedTimestamp !== null) {
+      throw new BadRequestError({
+        message: `Timer is already started for the match`
+      });
+    }
+
+    // Set the initial start timestamp if it's the first start
+    if (match.startTimestamp === undefined) {
+      match.startTimestamp = new Date();
+    }
+
+    // Mark the timer as started
+    match.timerStartedTimestamp = new Date();
+
+    await match.save();
+  }
+
+  public async stopTimer(id: string): Promise<void> {
+    const match = await MatchModel.findById(id).exec();
+
+    if (match === null) {
+      throw new NotFoundError({
+        message: `Match not found for ID: ${id}`
+      });
+    }
+
+    if (match.winner !== undefined) {
+      throw new BadRequestError({
+        message: "Finished matches cannot be edited"
+      });
+    }
+
+    // Check if the match has a start timestamp and the timer has been started
+    if (
+      match.startTimestamp === undefined ||
+      match.timerStartedTimestamp === null
+    ) {
+      throw new BadRequestError({
+        message: `Timer has not been started for the match`
+      });
+    }
+
+    // Calculate the time elapsed
+    const currentTime = new Date();
+    const elapsedMilliseconds =
+      currentTime.getTime() - match.timerStartedTimestamp.getTime();
+
+    // Reset the timer timestamp
+    match.elapsedTime += elapsedMilliseconds;
+    match.timerStartedTimestamp = null;
+    await match.save();
+  }
 
   public async addPointToMatchById(
     id: string,
