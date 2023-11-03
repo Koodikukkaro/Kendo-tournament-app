@@ -6,17 +6,13 @@ if (mongoUri === null || mongoUri === undefined) {
   throw new Error("MONGO_URL is not defined in environment variables.");
 }
 
-console.log("_---------------_");
-console.log(mongoUri);
-console.log("_---------------_");
-
-const connectDB = async (): Promise<void> => {
-  try {
-    await mongoose.connect(mongoUri);
-    console.log("MongoDB connection successful");
-  } catch (err) {
-    console.error(`MongoDB connection error: ${String(err)}`);
-  }
+const connectDB = (): void => {
+  mongoose
+    .connect(mongoUri)
+    .then((result) => console.log("MongoDB connection successful"))
+    .catch((error) => {
+      console.error(`MongoDB connection error: ${JSON.stringify(error)}`);
+    });
 };
 
 export default connectDB;
