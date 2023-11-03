@@ -1,3 +1,5 @@
+import type { MatchType, PlayerColor, PointType } from "./matchModel.js";
+
 /**
  * MongoDB Object ID.
  * Represents a 24-character hexadecimal string.
@@ -72,5 +74,11 @@ export interface CreateMatchRequest {
    */
   players: MatchPlayerPayload[];
   matchType: MatchType;
+  comment?: string;
+}
+
+export interface AddPointRequest {
+  pointType: PointType;
+  pointColor: PlayerColor;
   comment?: string;
 }
