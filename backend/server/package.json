@@ -5,9 +5,9 @@
   "description": "The backend server for koodikukkaro",
   "main": "index.ts",
   "scripts": {
-    "prestart": "npm install",
-    "start": "tsx src/index.ts",
-    "dev": "tsx watch src/index.ts",
+    "build": "tsoa spec-and-routes && tsc",
+    "start": "node build/src/index.js",
+    "dev": "concurrently \"nodemon\" \"nodemon -x tsoa spec-and-routes\"",
     "test": "ts-mocha test/*.ts",
     "lint": "eslint './src/**/*.ts' --cache --cache-strategy content ",
     "lint:fix": "eslint --fix './src/**/*.ts'"
@@ -25,7 +25,8 @@
     "mongoose": "^7.5.3",
     "tsx": "^3.14.0",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.0"
+    "swagger-ui-express": "^5.0.0",
+    "tsoa": "^5.1.1"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.5",
@@ -37,6 +38,7 @@
     "@types/swagger-ui-express": "^4.1.5",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "chai": "^4.3.10",
+    "concurrently": "^8.2.2",
     "eslint": "^8.50.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-config-standard-with-typescript": "^39.1.0",
@@ -45,6 +47,7 @@
     "eslint-plugin-prettier": "^5.0.0",
     "eslint-plugin-promise": "^6.1.1",
     "mocha": "^10.2.0",
+    "nodemon": "^3.0.1",
     "prettier": "^3.0.3",
     "ts-mocha": "^10.0.0",
     "typescript": "^5.2.2"
