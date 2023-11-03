@@ -9,7 +9,9 @@ if (mongoUri === null || mongoUri === undefined) {
 const connectDB = (): void => {
   mongoose
     .connect(mongoUri)
-    .then((result) => console.log("MongoDB connection successful"))
+    .then((_result) => {
+      console.log("MongoDB connection successful");
+    })
     .catch((error) => {
       console.error(`MongoDB connection error: ${JSON.stringify(error)}`);
     });

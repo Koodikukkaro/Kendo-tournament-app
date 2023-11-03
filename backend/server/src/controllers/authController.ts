@@ -15,7 +15,9 @@ export class AuthController extends Controller {
 
   @Post("register")
   @Tags("Auth")
-  public async registerUser(@Body() requestBody: RegisterRequest): Promise<User> {
+  public async registerUser(
+    @Body() requestBody: RegisterRequest
+  ): Promise<User> {
     this.setStatus(201);
     return await this.service.registerUser(requestBody);
   }
