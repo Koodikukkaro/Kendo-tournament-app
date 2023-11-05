@@ -4,6 +4,7 @@ import express, {
   type Application,
   type NextFunction
 } from "express";
+import cors from 'cors';
 import connectDB from "./utility/db.js";
 import cookieParser from "cookie-parser";
 import swaggerUi from "swagger-ui-express";
@@ -23,6 +24,9 @@ const port = process.env.PORT ?? 8080;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(cors({
+  origin: 'http://localhost:3000'
+}));
 
 /**
  * Serves swagger

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha",
     "start": "webpack serve --port 3000",
-    "dev": "DOTENV_CONFIG_PATH=.env.development NODE_ENV=development webpack serve --port 3000",
+    "dev": "webpack serve --mode development",
     "build": "NODE_ENV=production webpack",
     "lint": "eslint './src/**/*.{ts,tsx}' --cache --cache-strategy content ",
     "lint:fix": "eslint --fix './src/**/*.{ts,tsx}'"
@@ -55,6 +55,7 @@
     "webpack-dev-server": "^4.15.1"
   },
   "dependencies": {
+    "axios": "^1.6.0",
     "dotenv": "^16.3.1",
     "eslint-webpack-plugin": "^4.0.1",
     "react": "^18.2.0",

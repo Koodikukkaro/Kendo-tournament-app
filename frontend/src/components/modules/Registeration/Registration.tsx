@@ -1,7 +1,10 @@
-import React, { type SyntheticEvent, useState } from "react";
+import React, { useState } from "react";
 import "./registration.css";
+import { useNavigate } from "react-router-dom";
 
 const RegisterForm: React.FC = () => {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
@@ -17,6 +20,7 @@ const RegisterForm: React.FC = () => {
     guardianEmail: "",
     conditions: false
   });
+  const RegistrationAPI = "http://localhost:8080/api/user/register";
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -32,15 +36,49 @@ const RegisterForm: React.FC = () => {
     }));
   };
 
+  const onHandleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
+    event.preventDefault(); // Prevent the default form submit behavior
+    // mapping state variables to the expected payload keys
+    const payload = {
+      email: formData.email,
+      password: formData.password,
+      firstName: formData.firstname,
+      lastName: formData.lastname,
+      phoneNumber: formData.tel,
+      clubName: formData.club,
+      danRank: formData.rank,
+      underage: formData.underage,
+      guardiansEmail: formData.guardianEmail
+    };
+    // Perform the API call
+    try {
+      const response = await fetch(RegistrationAPI, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+      if (response.ok) {
+        const data = await response.json();
+        // TODO: display success message for 2 second maybe
+        console.log(data);
+        navigate("/login");
+      } else {
+        // TODO: display a message to the user
+        const errorData = await response.json();
+        console.error("Login failed:", errorData);
+      }
+    } catch (error) {
+      // TODO: display a message to the user
+      console.error("There was an error registering the user", error);
+    }
+  };
+
   return (
-    <form
-      id="registerForm"
-      className="form"
-      onSubmit={(event: SyntheticEvent) => {
-        event.preventDefault();
-        /** here how user is actually added somewhere */
-      }}
-    >
+    <form id="registerForm" className="form" onSubmit={onHandleSubmit}>
       <h1 className="header">Create a KendoApp account</h1>
       <p className="subtext">
         Already have an account? <a href="url">Log in</a>{" "}

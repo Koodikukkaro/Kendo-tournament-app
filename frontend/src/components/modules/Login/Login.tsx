@@ -19,16 +19,12 @@ const LoginForm: React.FC = () => {
   const { login } = useAuth();
   const location = useLocation() as unknown as LocationProps;
   const from = location.state?.from?.pathname ?? "/";
+  const loginAPI = "http://localhost:8080/api/user/login";
 
   const [formData, setFormData] = useState<FormData>({
     login: "",
     password: ""
   });
-
-  const onHandleSubmit = async (): Promise<void> => {
-    await login();
-    navigate(from, { replace: true });
-  };
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -42,6 +38,39 @@ const LoginForm: React.FC = () => {
       ...prevData,
       [fieldName]: value
     }));
+  };
+
+  const onHandleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
+    event.preventDefault(); // Prevent the default form submit behavior
+    try {
+      const response = await fetch(loginAPI, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: formData.login,
+          password: formData.password
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        // Store the token, and update auth state
+        await login();
+        navigate(from, { replace: true });
+      } else {
+        // TODO: display a message to the user
+        const errorData = await response.json();
+        console.error("Login failed:", errorData);
+      }
+    } catch (error) {
+      // TODO: display a message to the user
+      console.error("There was a problem with the login request: ", error);
+    }
   };
 
   return (
