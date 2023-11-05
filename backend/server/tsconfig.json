@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2016",
+    "target": "ESNext",
     "module": "NodeNext",
     "rootDir": "src",
     "allowJs": true,
@@ -10,8 +10,14 @@
     "strict": true,
     "noImplicitAny": true,
     "skipLibCheck": true,
+    "resolveJsonModule": true,
     "lib": [
       "esnext"
     ]
-  }
+  },
+  "exclude": [
+    "./test/",
+    "./node_modules/",
+    "./dist/"
+  ]
 }

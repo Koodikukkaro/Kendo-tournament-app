@@ -4,17 +4,11 @@ import express, {
   type Application,
   type NextFunction
 } from "express";
-import dotenv from "dotenv";
 import connectDB from "./utility/db.js";
-
 import cookieParser from "cookie-parser";
-
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger.json";
-
 import mainRouter from "./routes/index.js";
-
-dotenv.config();
 
 // initialize mongo connection.
 await connectDB();

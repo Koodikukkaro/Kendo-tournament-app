@@ -1,15 +1,14 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
+import "dotenv/config";
 
-dotenv.config();
-const mongoUri = process.env.MONGO_URL;
+const mongoUri = process.env.MONGODB_URL;
 if (mongoUri === null || mongoUri === undefined) {
   throw new Error("MONGO_URL is not defined in environment variables.");
 }
 
-console.log("_---------------_");
+console.log("---------------");
 console.log(mongoUri);
-console.log("_---------------_");
+console.log("---------------");
 
 const connectDB = async (): Promise<void> => {
   try {

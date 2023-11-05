@@ -19,7 +19,10 @@ RUN npm install
 EXPOSE 8080
 CMD ["npm", "run", "start"]
 
-HEALTHCHECK --start-period=15s \
+# Shorter start interval for (hopefully) faster startup:
+# https://github.com/docker/cli/issues/4486
+# --start-interval=3s
+HEALTHCHECK --start-period=30s \
 	CMD curl -f localhost:8080/ || exit 1
 
 

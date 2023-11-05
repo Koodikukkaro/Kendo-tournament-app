@@ -1,0 +1,78 @@
+
+button {
+  margin: 10px;
+  margin-top: 30px;
+  padding: 10px;
+  cursor: pointer;
+  position: relative;
+  left: 48%;
+  right: 48%;
+  width: 40%;
+  transform: translate(-50%);
+  border-radius: 50px;
+  border: 0px;
+}
+
+button:hover {
+  background-color: #595959;
+}
+
+.field input{
+  width: 96%;
+  border-radius: 5px;
+  border: 1px solid gray;
+  padding: 10px;
+}
+
+.field1 input{
+  display: inline-block;
+  width: 96%;
+  border-radius: 5px;
+  border: 1px solid gray;
+  padding: 10px;
+}
+
+@media only screen and (max-width: 300px) {
+  /* For mobile phones: */
+  form {
+    width: 100%;
+  }
+}
+
+form {
+  padding-top: 50px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.fa-eye{
+  cursor: pointer;
+  color: lightgray;
+  padding: 10px;
+  min-width: 40px;
+}
+
+.fa-eye-slash{
+  color: lightgrey
+}
+
+.field i{
+  position: absolute;
+  left: 90%;
+}
+
+.field-checkbox {
+  padding-top: 10px;
+}
+
+.field{
+  width: 100%;
+}
+
+#password{
+  position: relative;
+}
+
+h1 {
+  font-size: 24px;
+}
