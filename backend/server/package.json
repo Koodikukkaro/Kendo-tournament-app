@@ -7,7 +7,7 @@
   "scripts": {
     "prestart": "npm install",
     "start": "tsx src/index.ts",
-    "dev": "tsx watch src/index.ts",
+    "dev": "DOTENV_CONFIG_PATH=.env.development NODE_ENV=development tsx watch src/index.ts",
     "test": "ts-mocha test/*.ts",
     "lint": "eslint './src/**/*.ts' --cache --cache-strategy content ",
     "lint:fix": "eslint --fix './src/**/*.ts'"
