@@ -10,6 +10,7 @@ import swaggerUi from "swagger-ui-express";
 import { RegisterRoutes } from "../build/routes.js";
 import swaggerDocument from "../build/swagger.json";
 import { globalErrorHandlerMiddleware } from "./middlewares/globalErrorHandler.js";
+import cookieParser from "cookie-parser";
 import config from "./utility/config.js";
 
 // initialize mongo connection.
@@ -24,6 +25,7 @@ const port = config.PORT;
  */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 /**
  * Register the auto generated routes

@@ -13,6 +13,7 @@
     "basePath": "/api",
     "routesDir": "build",
     "esm": true,
-    "middleware": "express"
+    "middleware": "express",
+    "authenticationModule": "src/middlewares/authentication.ts"
   }
 }

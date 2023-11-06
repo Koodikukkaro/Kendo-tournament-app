@@ -7,6 +7,7 @@ import {
   Path,
   Post,
   Route,
+  Security,
   Tags
 } from "tsoa";
 import { type Match } from "../models/matchModel.js";
@@ -22,6 +23,7 @@ export class MatchController extends Controller {
   /*
    * Create a new Kendo match.
    */
+  @Security("jwt", ["official"])
   @Post()
   @Tags("Match")
   public async createMatch(
@@ -44,6 +46,7 @@ export class MatchController extends Controller {
   /*
    * Delete a Kendo match.
    */
+  @Security("jwt", ["official"])
   @Delete("{id}")
   @Tags("Match")
   public async deleteMatch(@Path() id: ObjectIdString): Promise<void> {
@@ -54,6 +57,7 @@ export class MatchController extends Controller {
   /*
    * Start the timer for the specified Kendo match.
    */
+  @Security("jwt", ["official"])
   @Patch("{id}/start-timer")
   @Tags("Match")
   public async startTimer(@Path() id: ObjectIdString): Promise<void> {
@@ -64,6 +68,7 @@ export class MatchController extends Controller {
   /*
    * Stop the timer for the specified Kendo match.
    */
+  @Security("jwt", ["official"])
   @Patch("{id}/stop-timer")
   @Tags("Match")
   public async stopTimer(@Path() id: ObjectIdString): Promise<void> {
@@ -74,6 +79,7 @@ export class MatchController extends Controller {
   /*
    * Add a point to the specified Kendo match.
    */
+  @Security("jwt", ["official"])
   @Patch("{id}/points")
   @Tags("Match")
   public async addPoint(

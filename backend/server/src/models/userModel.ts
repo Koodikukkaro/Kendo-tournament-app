@@ -1,7 +1,9 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, type Types } from "mongoose";
+import { type UserRole } from "./requestModel";
+import bcrypt from "bcryptjs";
 
 export interface User {
-  id: string;
+  id: Types.ObjectId;
   email: string;
   password: string;
   phoneNumber: string;
@@ -11,9 +13,18 @@ export interface User {
   danRank: string;
   underage: boolean;
   guardiansEmail?: string;
+  role: UserRole;
+  refreshToken?: string;
 }
 
-const userSchema = new Schema<User>(
+interface UserMethods {
+  setPassword: (password: string) => Promise<void>;
+  checkPassword: (password: string) => Promise<boolean>;
+}
+
+type UserModel = mongoose.Model<User, Record<string, unknown>, UserMethods>;
+
+const schema = new Schema<User, UserMethods>(
   {
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, select: false },
@@ -23,14 +34,21 @@ const userSchema = new Schema<User>(
     clubName: { type: String, required: true },
     danRank: { type: String, required: true },
     underage: { type: Boolean, default: false },
-    guardiansEmail: { type: String }
+    guardiansEmail: { type: String },
+    role: {
+      type: String,
+      enum: ["official", "admin", "player"],
+      required: true
+    },
+    refreshToken: { type: String, required: false, select: false }
   },
   {
     timestamps: true
   }
 );
 
-userSchema.set("toObject", {
+// Omit the password when returning a user
+schema.set("toObject", {
   virtuals: true,
   versionKey: false,
   transform: (doc, ret) => {
@@ -41,6 +59,25 @@ userSchema.set("toObject", {
   }
 });
 
-const UserModel = mongoose.model("User", userSchema);
+// Hash the password before saving
+schema.pre("save", async function (next) {
+  if (!this.isModified("password")) {
+    next();
+    return;
+  }
 
-export default UserModel;
+  try {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+    next();
+  } catch (error: any) {
+    next(error);
+  }
+});
+
+// Method to compare passwords
+schema.methods.checkPassword = async function (candidatePassword: string) {
+  return await bcrypt.compare(candidatePassword, this.password);
+};
+
+export default mongoose.model<User, UserModel>("User", schema);
