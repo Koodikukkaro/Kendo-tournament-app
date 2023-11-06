@@ -1,7 +1,4 @@
 import connectDB from "./utility/db.js";
-import mainRouter from "./routes/index.js";
-import swaggerDocument from "./swagger.json";
-
 import express, {
   type Application,
   type Request,
@@ -10,12 +7,16 @@ import express, {
 import mongoose from "mongoose";
 import "dotenv/config";
 import swaggerUi from "swagger-ui-express";
+import { RegisterRoutes } from "../build/routes.js";
+import swaggerDocument from "../build/swagger.json";
+import { globalErrorHandlerMiddleware } from "./middlewares/globalErrorHandler.js";
+import config from "./utility/config.js";
 
 // initialize mongo connection.
 await connectDB();
 
 const app: Application = express();
-const port = process.env.PORT ?? 8080;
+const port = config.PORT;
 
 /**
  * To use build-in JSON middleware from express
@@ -25,9 +26,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /**
+ * Register the auto generated routes
+ */
+RegisterRoutes(app);
+
+/**
  * Serves swagger
  */
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/docs", swaggerUi.serve, (_req: Request, res: Response) => {
+  return res.send(swaggerUi.generateHTML(swaggerDocument));
+});
 
 /**
  * Error handling middleware
@@ -41,12 +49,6 @@ app.use((req: Request, res: Response, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
   next();
 });
-
-/**
- * Main Router;
- * Provides routes beginning with /api
- */
-app.use("/api", mainRouter);
 
 app.get("/", (req: Request, res: Response) => {
   if (mongoose.connection.readyState === 0) {

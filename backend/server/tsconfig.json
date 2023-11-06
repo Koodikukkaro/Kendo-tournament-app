@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "NodeNext",
-    "rootDir": "src",
-    "allowJs": true,
+    "module": "ESNext",
+    "moduleResolution": "Node10",
+    "rootDir": ".",
     "outDir": "build",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -11,13 +11,15 @@
     "noImplicitAny": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "lib": [
       "esnext"
-    ]
+    ],
   },
   "exclude": [
     "./test/",
     "./node_modules/",
-    "./dist/"
+    "./build"
   ]
 }

@@ -1,5 +1,6 @@
 import { type NextFunction, type Request, type Response } from "express";
 import { CustomError } from "../errors/CustomError.js";
+import { ValidateError } from "tsoa";
 
 export const globalErrorHandlerMiddleware = (
   err: Error,
@@ -24,6 +25,14 @@ export const globalErrorHandlerMiddleware = (
     }
 
     return res.status(statusCode).send({ errors });
+  }
+
+  if (err instanceof ValidateError) {
+    const { fields } = err;
+    console.warn(`Caught Validation Error for ${req.path}:`, err.fields);
+    return res
+      .status(400)
+      .send({ errors: [{ message: "Validation error", context: fields }] });
   }
 
   // Unhandled errors
