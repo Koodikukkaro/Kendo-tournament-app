@@ -1,10 +1,11 @@
-import { Route, Controller, Get, Path, Tags } from "tsoa";
+import { Route, Controller, Get, Path, Tags, Security } from "tsoa";
 import { type User } from "../models/userModel.js";
 import { UserService } from "../services/userService.js";
 import { ObjectIdString } from "../models/requestModel.js";
 
 @Route("user")
 export class UserController extends Controller {
+  @Security("jwt")
   @Get("{id}")
   @Tags("User")
   public async getUser(@Path() id: ObjectIdString): Promise<User> {
