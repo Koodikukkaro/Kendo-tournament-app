@@ -3,16 +3,20 @@ import {
   type LoginRequest,
   type RegisterRequest
 } from "../models/requestModel.js";
-import bcrypt from "bcryptjs";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
-import userModel, { type User } from "../models/userModel.js";
+import userModel from "../models/userModel.js";
+import {
+  generateRefreshToken,
+  generateAccessToken,
+  verifyRefreshToken,
+  type TokenPayload
+} from "../utility/jwtHelper.js";
 
 export class AuthService {
-  public async loginUser(requestBody: LoginRequest): Promise<User> {
-    const user = await userModel
-      .findOne({ email: requestBody.email })
-      .select("+password")
-      .exec();
+  public async createTokens(requestBody: LoginRequest): Promise<string[]> {
+    const { email, password } = requestBody;
+
+    const user = await userModel.findOne({ email }).select("+password").exec();
 
     if (user === null || user === undefined) {
       throw new UnauthorizedError({
@@ -20,23 +24,31 @@ export class AuthService {
       });
     }
 
-    const validPassword = await bcrypt.compare(
-      requestBody.password,
-      user.password
-    );
+    const isValidPassword = await user.checkPassword(password);
 
-    if (!validPassword) {
+    if (!isValidPassword) {
       throw new UnauthorizedError({
         message: "Invalid email or password"
       });
     }
 
-    // TODO: return a token instead of a user.
-    return await user.toObject();
+    const tokenPayload: TokenPayload = {
+      id: user.id,
+      email: user.email,
+      scopes: [user.role]
+    };
+
+    const accessToken = generateAccessToken(tokenPayload);
+    const refreshToken = generateRefreshToken(tokenPayload);
+
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    return [accessToken, refreshToken];
   }
 
-  public async registerUser(requestBody: RegisterRequest): Promise<User> {
-    const { underage, guardiansEmail, email, password } = requestBody;
+  public async registerUser(requestBody: RegisterRequest): Promise<void> {
+    const { underage, guardiansEmail, email } = requestBody;
 
     if (underage && (guardiansEmail === null || guardiansEmail === "")) {
       throw new BadRequestError({
@@ -51,15 +63,35 @@ export class AuthService {
       });
     }
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    await userModel.create({
+      ...requestBody
+    });
+  }
 
-    const newUser = await userModel.create({
-      ...requestBody,
-      password: hashedPassword
+  public async refreshAccessToken(refreshToken: string): Promise<string[]> {
+    if (refreshToken === undefined) {
+      throw new BadRequestError({ message: "Refresh token not found" });
+    }
+
+    const decoded = await verifyRefreshToken(refreshToken);
+
+    const user = await userModel
+      .findById(decoded.id)
+      .select("+refreshToken")
+      .exec();
+
+    if (user?.refreshToken === undefined) {
+      throw new UnauthorizedError({
+        message: "Invalid refresh token"
+      });
+    }
+
+    const newAccessToken = generateAccessToken({
+      id: decoded.id,
+      email: decoded.email,
+      scopes: decoded.scopes
     });
 
-    // TODO: return a token instead of a user.
-    return await newUser.toObject();
+    return [newAccessToken, user.refreshToken];
   }
 }
