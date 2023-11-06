@@ -1,18 +1,18 @@
 {
   "entryFile": "src/index.ts",
   "noImplicitAdditionalProperties": "throw-on-extras",
-  "controllerPathGlobs": ["src/**/*.ts"],
+  "controllerPathGlobs": [
+    "src/controllers/**/*Controller.ts"
+  ],
   "spec": {
     "outputDirectory": "build",
     "specVersion": 3,
-    "tags": [
-      {
-        "name": "User",
-        "description": "Operations about users"
-      }
-    ]
+    "basePath": "/api"
   },
   "routes": {
-    "routesDir": "build"
+    "basePath": "/api",
+    "routesDir": "build",
+    "esm": true,
+    "middleware": "express"
   }
 }

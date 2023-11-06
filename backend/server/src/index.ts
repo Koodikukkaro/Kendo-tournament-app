@@ -10,15 +10,13 @@ import swaggerUi from "swagger-ui-express";
 import { RegisterRoutes } from "../build/routes.js";
 import swaggerDocument from "../build/swagger.json";
 import { globalErrorHandlerMiddleware } from "./middlewares/globalErrorHandler.js";
-import dotenv from "dotenv";
-
-dotenv.config();
+import config from "./utility/config.js";
 
 // initialize mongo connection.
-connectDB();
+await connectDB();
 
 const app: Application = express();
-const port = process.env.PORT ?? 8080;
+const port = config.PORT;
 
 /**
  * To use build-in JSON middleware from express
