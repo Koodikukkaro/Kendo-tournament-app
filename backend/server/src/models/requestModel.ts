@@ -9,6 +9,8 @@ import type { MatchType, PlayerColor, PointType } from "./matchModel.js";
  */
 export type ObjectIdString = string;
 
+export type UserRole = "admin" | "official" | "player";
+
 export interface RegisterRequest {
   /**
    * @example "john.doe@gmail.com"
@@ -47,6 +49,8 @@ export interface RegisterRequest {
    * @pattern ^$|^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ email format invalid
    */
   guardiansEmail?: string;
+
+  role: UserRole;
 }
 
 export interface LoginRequest {
