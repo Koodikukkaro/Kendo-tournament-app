@@ -1,5 +1,5 @@
 import { Controller, Route, Post, Tags, Body, Request } from "tsoa";
-import { LoginRequest, RegisterRequest } from "../models/requestModel.js";
+import { LoginRequest } from "../models/requestModel.js";
 import { AuthService } from "../services/authService.js";
 import * as express from "express";
 
@@ -31,16 +31,6 @@ export class AuthController extends Controller {
     ]);
   }
 
-  @Post("register")
-  @Tags("Auth")
-  public async registerUser(
-    @Body() requestBody: RegisterRequest
-  ): Promise<void> {
-    this.setStatus(204);
-
-    await this.service.registerUser(requestBody);
-  }
-
   @Post("refresh")
   @Tags("Auth")
   public async refreshToken(
@@ -48,8 +38,6 @@ export class AuthController extends Controller {
   ): Promise<void> {
     this.setStatus(204);
 
-    const x = this.getHeaders();
-    console.log(x);
     const [accessToken, refreshToken] = await this.service.refreshAccessToken(
       request.cookies.refreshToken
     );

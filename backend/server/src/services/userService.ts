@@ -1,4 +1,6 @@
+import BadRequestError from "../errors/BadRequestError.js";
 import NotFoundError from "../errors/NotFoundError.js";
+import { type RegisterRequest } from "../models/requestModel.js";
 import UserModel, { type User } from "../models/userModel.js";
 
 export class UserService {
@@ -12,5 +14,26 @@ export class UserService {
     }
 
     return await user.toObject();
+  }
+
+  public async registerUser(requestBody: RegisterRequest): Promise<void> {
+    const { underage, guardiansEmail, email } = requestBody;
+
+    if (underage && (guardiansEmail === null || guardiansEmail === "")) {
+      throw new BadRequestError({
+        message: "Guardian's email is required for underage users"
+      });
+    }
+
+    const existingUser = await UserModel.findOne({ email });
+    if (existingUser != null) {
+      throw new BadRequestError({
+        message: "Email for this user already exists"
+      });
+    }
+
+    await UserModel.create({
+      ...requestBody
+    });
   }
 }

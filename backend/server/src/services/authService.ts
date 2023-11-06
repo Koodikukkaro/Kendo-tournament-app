@@ -1,8 +1,5 @@
 import BadRequestError from "../errors/BadRequestError.js";
-import {
-  type LoginRequest,
-  type RegisterRequest
-} from "../models/requestModel.js";
+import { type LoginRequest } from "../models/requestModel.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 import userModel from "../models/userModel.js";
 import {
@@ -45,27 +42,6 @@ export class AuthService {
     await user.save();
 
     return [accessToken, refreshToken];
-  }
-
-  public async registerUser(requestBody: RegisterRequest): Promise<void> {
-    const { underage, guardiansEmail, email } = requestBody;
-
-    if (underage && (guardiansEmail === null || guardiansEmail === "")) {
-      throw new BadRequestError({
-        message: "Guardian's email is required for underage users"
-      });
-    }
-
-    const existingUser = await userModel.findOne({ email });
-    if (existingUser != null) {
-      throw new BadRequestError({
-        message: "Email for this user already exists"
-      });
-    }
-
-    await userModel.create({
-      ...requestBody
-    });
   }
 
   public async refreshAccessToken(refreshToken: string): Promise<string[]> {
