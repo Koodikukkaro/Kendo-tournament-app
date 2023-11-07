@@ -1,81 +1,37 @@
+#btn-login {
+  margin-top: 20px;
+}
 
-button {
-    margin: 10px;
-    margin-top: 30px;
-    padding: 10px;
-    cursor: pointer;
-    position: relative;
-    left: 48%;
-    right: 48%;
-    width: 40%;
-    transform: translate(-50%);
-    border-radius: 50px;
-    border: 0px;
-  }
-  
-  button:hover {
-    background-color: #595959;
-  }
-  
-  .field input{
-    width: 96%;
-    border-radius: 5px;
-    border: 1px solid gray;
-    padding: 10px;
-  }
-  
-  @media only screen and (max-width: 300px) {
-    /* For mobile phones: */
-    form {
-      width: 100%;
-    }
-  }
-  
-  form {
-    padding-top: 50px;
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-  
-  .fa-eye{
-    cursor: pointer;
-    color: lightgray;
-    padding: 10px;
-    min-width: 40px;
-  }
-  
-  .fa-eye-slash{
-    color: lightgrey
-  }
-  
-  .field i{
-    position: absolute;
-    left: 90%;
-  }
-  
-  
-  .field{
-    width: 100%;
-  }
-  
-  #password{
-    position: relative;
-  }
-  
-  h1 {
-    font-size: 24px;
-  }
-  
-  .register {
-    position: relative;
-    transform: translate(-50%);
-    left: 50%;
-    right: 50%;
-    text-align: center;
-  }
-  
-  .forgotPassword {
-    text-align: right;
-    width: 96%;
-    padding-left: 20px;
-  }
+.gridContainer {
+  min-height: 100vh;
+}
+
+.leftPanel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full height of the viewport */
+}
+
+.form {
+  width: 100%; /* Or a fixed width if you prefer */
+  max-width: 480px; /* Max width for the form */
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.rightPanel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full height of the viewport */
+  background-color: #00bfff;
+  background: linear-gradient(to right, #6dd5ed, #2193b0);
+}
+
+.sign-up-link {
+  text-transform: none;
+  color: whitesmoke;
+}
