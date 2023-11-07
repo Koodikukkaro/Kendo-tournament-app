@@ -1,0 +1,13 @@
+/* Footer sticks to the bottom */
+.footer {
+  padding: 20px 0;
+  background-color: #f7f7f7;
+  border-top: 1px solid #e7e7e7;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 10px;
+}

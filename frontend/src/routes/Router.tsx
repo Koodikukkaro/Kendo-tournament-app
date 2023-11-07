@@ -1,7 +1,8 @@
 import { AuthenticationGuard } from "components/common/AuthenticationGuard";
 import LoginForm from "components/modules/Login/Login";
 import RegisterForm from "components/modules/Registeration/Registration";
-import Layout from "layouts/Layout";
+import Landing from "components/modules/Landing/Landing";
+// import Layout from "layouts/Layout";
 import React from "react";
 import {
   createBrowserRouter,
@@ -9,16 +10,13 @@ import {
   Route
 } from "react-router-dom";
 
-const HomePage: React.FC = () => <div>Homepage component</div>;
-
 const routes = createRoutesFromElements(
-  <Route element={<Layout />}>
-    <Route index element={<HomePage />} />
+  // element={<Layout />}
+  <Route>
+    <Route index element={<Landing />} />
 
     {/* Protect all other routes based on authentication */}
-    <Route element={<AuthenticationGuard />}>
-      {/* other components that require authentication... */}
-    </Route>
+    <Route element={<AuthenticationGuard />}></Route>
 
     {/* Login page in case unauthenticated */}
     <Route

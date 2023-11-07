@@ -1,0 +1,11 @@
+/* Use flexbox to lay out the main structure */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Content grows to fit the space between header and footer */
+.main-content {
+  flex-grow: 1;
+}
