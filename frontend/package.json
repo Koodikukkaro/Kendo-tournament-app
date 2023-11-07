@@ -6,6 +6,7 @@
   "scripts": {
     "test": "env TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' mocha",
     "start": "webpack serve --port 3000",
+    "dev": "webpack serve --mode development",
     "build": "NODE_ENV=production webpack",
     "lint": "eslint './src/**/*.{ts,tsx}' --cache --cache-strategy content ",
     "lint:fix": "eslint --fix './src/**/*.{ts,tsx}'"
