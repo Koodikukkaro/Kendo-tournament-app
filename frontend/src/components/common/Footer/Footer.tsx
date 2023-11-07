@@ -10,6 +10,7 @@ const Footer: React.FC = () => {
     <Box component="footer" className="footer">
       <Container maxWidth="lg">
         <Box className="footer-links">
+          {/* TODO: URLs doesn't exist YET. */}
           <Link href="/about" color="inherit">
             About
           </Link>
