@@ -31,7 +31,7 @@ const LoginForm: React.FC = () => {
   const { login } = useAuth();
   const location = useLocation() as unknown as LocationProps;
   const from = location.state?.from?.pathname ?? "/";
-  const loginAPI = "http://localhost:8080/api/auth/logis"; // transfer the base URL into env file.
+  const loginAPI = "http://localhost:8080/api/auth/login"; // transfer the base URL into env file.
 
   const [formData, setFormData] = useState<FormData>({
     login: "",
