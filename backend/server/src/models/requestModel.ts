@@ -41,6 +41,11 @@ export interface RegisterRequest {
    */
   lastName: string;
   /**
+   * @example "FIN
+   */
+  nationality: string;
+  inNationalTeam: boolean;
+  /**
    * @example "Seinäjoki Kendo club"
    */
   clubName: string;

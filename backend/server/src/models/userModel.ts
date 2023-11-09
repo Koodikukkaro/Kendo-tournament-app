@@ -9,6 +9,8 @@ export interface User {
   phoneNumber: string;
   firstName: string;
   lastName: string;
+  nationality: string;
+  inNationalTeam: boolean;
   clubName: string;
   danRank: string;
   underage: boolean;
@@ -30,6 +32,8 @@ const schema = new Schema<User, UserMethods>(
     password: { type: String, required: true, select: false },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
+    nationality: { type: String, required: true },
+    inNationalTeam: { type: Boolean, default: false },
     phoneNumber: { type: String, required: true },
     clubName: { type: String, required: true },
     danRank: { type: String, required: true },
