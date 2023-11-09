@@ -6,6 +6,7 @@ export interface User {
   id: Types.ObjectId;
   email: string;
   password: string;
+  userName?: string;
   phoneNumber: string;
   firstName: string;
   lastName: string;
@@ -30,6 +31,7 @@ const schema = new Schema<User, UserMethods>(
   {
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, select: false },
+    userName: { type: String },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     nationality: { type: String, required: true },
