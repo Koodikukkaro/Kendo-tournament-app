@@ -14,6 +14,8 @@ Koodikukkaro is a RESTful backend API built with Node.js, Express, and MongoDB. 
 
 These instructions will help you set up the project locally for development and testing purposes.
 
+Swagger documentation at /doc
+
 ### Prerequisites
 
 - Node.js (v18.x or higher)
