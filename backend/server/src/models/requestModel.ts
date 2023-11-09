@@ -9,12 +9,17 @@ import type { MatchType, PlayerColor, PointType } from "./matchModel.js";
  */
 export type ObjectIdString = string;
 
-export type UserRole = "admin" | "official" | "player";
+export enum UserRole {
+  None,
+  Player,
+  Official,
+  Admin
+}
 
 export interface RegisterRequest {
   /**
    * @example "john.doe@gmail.com"
-   * @pattern ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ email format invalid
+   * @pattern ^[a-zA-Z0-9._%+-åäöÅÄÖ]+@[a-zA-Z0-9.-åäöÅÄÖ]+\.[a-zA-ZåäöÅÄÖ]{2,}$ email format invalid
    */
   email: string;
   /**
@@ -22,6 +27,17 @@ export interface RegisterRequest {
    * @pattern ^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]{8,30})$ password format invalid
    */
   password: string;
+  /**
+   * Usernames pattern:
+   *  - 4-20 characters long
+   *  - no _ or . at the beginning
+   *  - no __ or _. or ._ or .. inside
+   *  - allowed characters [a-zA-Z0-9._]
+   *  - no _ or . at the end
+   * @example "KendoMaster123"
+   * @pattern ^(?=.{4,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._åäöÅÄÖ]+(?<![_.])$
+   */
+  userName?: string;
   /**
    * @example "0401234567"
    * @pattern ^[0-9]{10,15}$ phone number format invalid
@@ -36,6 +52,11 @@ export interface RegisterRequest {
    */
   lastName: string;
   /**
+   * @example "FIN
+   */
+  nationality: string;
+  inNationalTeam: boolean;
+  /**
    * @example "Seinäjoki Kendo club"
    */
   clubName: string;
@@ -46,10 +67,14 @@ export interface RegisterRequest {
   underage: boolean;
   /**
    * @example "guardian@gmail.com"
-   * @pattern ^$|^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ email format invalid
+   * @pattern ^[a-zA-Z0-9._%+-åäöÅÄÖ]+@[a-zA-Z0-9.-åäöÅÄÖ]+\.[a-zA-ZåäöÅÄÖ]{2,}$ email format invalid
    */
   guardiansEmail?: string;
 
+  /**
+   * Admin role
+   * @example 3
+   */
   role: UserRole;
 }
 

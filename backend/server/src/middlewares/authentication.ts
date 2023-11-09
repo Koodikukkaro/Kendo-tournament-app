@@ -3,11 +3,12 @@ import jwt, { type JwtPayload, type VerifyErrors } from "jsonwebtoken";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 import ForbiddenError from "../errors/ForbiddenError.js";
 import config from "../utility/config.js";
+import { UserRole } from "../models/requestModel.js";
 
 // Redeclare the jsonwebtoken module with an extended Payload
 declare module "jsonwebtoken" {
   export interface JwtPayload {
-    scopes: string[];
+    role: UserRole;
   }
 }
 
@@ -15,22 +16,51 @@ declare module "jsonwebtoken" {
 const isJwtPayload = (decoded: any): decoded is JwtPayload => {
   return (
     typeof decoded === "object" &&
-    Array.isArray(decoded.scopes) &&
+    decoded.role !== undefined &&
     decoded.exp !== undefined &&
     decoded.iat !== undefined
   );
 };
 
+const getUserRoleFromString = (roleString: string): UserRole | undefined => {
+  switch (roleString.toLowerCase()) {
+    case "admin":
+      return UserRole.Admin;
+    case "official":
+      return UserRole.Official;
+    case "player":
+      return UserRole.Player;
+    default:
+      return undefined;
+  }
+};
+
 export async function expressAuthentication(
   request: express.Request,
   _securityName: string,
-  scopes?: string[]
+  roles: string[] = []
 ): Promise<unknown> {
   const accessToken: string = request.cookies.accessToken;
 
   return await new Promise((resolve, reject) => {
     if (accessToken === undefined) {
       reject(new UnauthorizedError({ message: "No access token provided." }));
+      return;
+    }
+
+    const validatedRoles = roles.map(getUserRoleFromString);
+
+    // Validate roles specified for the controller
+    if (validatedRoles.includes(undefined)) {
+      const userRoleKeys = Object.keys(UserRole)
+        .filter((v) => isNaN(Number(v)))
+        .join(", ");
+
+      reject(
+        new TypeError(
+          `Undefined roles declared for the '${request.method}: ${request.url}' controller. The defined roles are ${userRoleKeys}`
+        )
+      );
       return;
     }
 
@@ -47,20 +77,19 @@ export async function expressAuthentication(
           return;
         }
 
-        if (scopes !== undefined) {
-          // Check if JWT contains all required scopes
-          for (const scope of scopes) {
-            if (!decoded.scopes.includes(scope)) {
-              reject(
-                new ForbiddenError({
-                  message: "JWT does not contain the required scope."
-                })
-              );
-              return;
-            }
-          }
+        // Disable eslint error since we have already validated the roles and are confident about its structure
+        if (
+          validatedRoles.length === 0 ||
+          validatedRoles.some((role) => decoded.role >= role!) // eslint-disable-line @typescript-eslint/no-non-null-assertion
+        ) {
+          resolve(decoded);
+        } else {
+          reject(
+            new ForbiddenError({
+              message: "Insufficient permissions"
+            })
+          );
         }
-        resolve(decoded);
       }
     );
   });
