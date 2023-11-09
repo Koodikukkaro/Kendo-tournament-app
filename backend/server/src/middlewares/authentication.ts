@@ -35,7 +35,6 @@ const getUserRoleFromString = (roleString: string): UserRole | undefined => {
   }
 };
 
-// Validate roles specified for the controller
 export async function expressAuthentication(
   request: express.Request,
   _securityName: string,
@@ -50,7 +49,8 @@ export async function expressAuthentication(
     }
 
     const validatedRoles = roles.map(getUserRoleFromString);
-    // Mainly for development purposes
+
+    // Validate roles specified for the controller
     if (validatedRoles.includes(undefined)) {
       const userRoleKeys = Object.keys(UserRole)
         .filter((v) => isNaN(Number(v)))

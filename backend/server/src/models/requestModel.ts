@@ -19,7 +19,7 @@ export enum UserRole {
 export interface RegisterRequest {
   /**
    * @example "john.doe@gmail.com"
-   * @pattern ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ email format invalid
+   * @pattern ^[a-zA-Z0-9._%+-åäöÅÄÖ]+@[a-zA-Z0-9.-åäöÅÄÖ]+\.[a-zA-ZåäöÅÄÖ]{2,}$ email format invalid
    */
   email: string;
   /**
@@ -67,7 +67,7 @@ export interface RegisterRequest {
   underage: boolean;
   /**
    * @example "guardian@gmail.com"
-   * @pattern ^$|^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ email format invalid
+   * @pattern ^[a-zA-Z0-9._%+-åäöÅÄÖ]+@[a-zA-Z0-9.-åäöÅÄÖ]+\.[a-zA-ZåäöÅÄÖ]{2,}$ email format invalid
    */
   guardiansEmail?: string;
 
