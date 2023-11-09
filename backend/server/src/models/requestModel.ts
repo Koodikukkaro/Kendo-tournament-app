@@ -9,7 +9,12 @@ import type { MatchType, PlayerColor, PointType } from "./matchModel.js";
  */
 export type ObjectIdString = string;
 
-export type UserRole = "admin" | "official" | "player";
+export enum UserRole {
+  None,
+  Player,
+  Official,
+  Admin
+}
 
 export interface RegisterRequest {
   /**
@@ -50,6 +55,10 @@ export interface RegisterRequest {
    */
   guardiansEmail?: string;
 
+  /**
+   * Admin role
+   * @example 3
+   */
   role: UserRole;
 }
 
