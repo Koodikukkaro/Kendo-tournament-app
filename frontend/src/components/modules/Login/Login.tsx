@@ -172,7 +172,7 @@ const LoginForm: React.FC = () => {
 
         {/* Right Panel */}
         <Grid item xs={12} sm={5} className="rightPanel">
-          <div className="">
+          <div className="right-container">
             <Typography component="h3" variant="h3">
               Hello, Friend!
             </Typography>

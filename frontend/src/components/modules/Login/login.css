@@ -1,9 +1,6 @@
-#btn-login {
-  margin-top: 20px;
-  font-size: large;
-}
-
 .gridContainer {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
 }
 
@@ -12,9 +9,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Full height of the viewport */
 }
-
 .form {
   width: 100%; /* Or a fixed width if you prefer */
   max-width: 480px; /* Max width for the form */
@@ -27,9 +22,35 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh; /* Full height of the viewport */
   background-color: #00bfff;
   background: linear-gradient(to right, #6dd5ed, #2193b0);
+}
+
+/* Media query for mobile devices */
+@media (max-width: 600px) {
+  .rightPanel {
+    padding: 15px;
+    flex: 0 0 40%; /* takes the remaining 40% of the space */
+  }
+
+  .leftPanel {
+    flex: 0 0 60%; /* takes 60% of the space */
+  }
+
+  .rightPanel h3 {
+    font-size: 25px;
+  }
+}
+
+/* Styles for PC version */
+@media (min-width: 601px) {
+  .leftPanel {
+    height: 100vh;
+  }
+
+  .rightPanel {
+    height: 100vh;
+  }
 }
 
 .sign-up-link {
@@ -60,4 +81,9 @@
   top: 10px;
   right: 10px;
   color: white; /* Adjust icon color if needed */
+}
+
+#btn-login {
+  margin-top: 20px;
+  font-size: large;
 }
