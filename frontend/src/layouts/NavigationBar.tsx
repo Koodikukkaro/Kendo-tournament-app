@@ -1,48 +1,57 @@
-// TODO: Add desired links
+/*
+  Much of the code comes from the corresponding MUI examples that are MIT licensed.
+  https://github.com/mui/material-ui/blob/v5.14.18/docs/data/material/components/app-bar/DrawerAppBar.tsx
+*/
+
 import React, { type ReactElement } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 
-// import Typography from "@mui/material/Typography";
 import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import MenuIcon from "@mui/icons-material/Menu";
-import IconButton from "@mui/material/IconButton";
-import Drawer from "@mui/material/Drawer";
 import Divider from "@mui/material/Divider";
+import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
+import MenuIcon from "@mui/icons-material/Menu";
+import Toolbar from "@mui/material/Toolbar";
 
 interface Props {
   window?: () => Window;
 }
 
-const navItems = ["navigaatioitemi1", "navigaatioitemi2"];
-const NavigationBar = (props: Props /* { user: } */): ReactElement => {
-  const { window } = props;
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+// Text to display and the corresponding link
+const navItems = [
+  ["Login", "/login"],
+  ["Register", "/register"],
+  ["Landing", "/"]
+];
 
-  const handleDrawerToggle = (): void => {
-    setMobileOpen((prevState) => !prevState);
+const NavigationBar = (props: Props): ReactElement => {
+  const { window } = props;
+  const [openDrawer, setOpenDrawer] = React.useState(false);
+
+  const toggleDrawer = (): void => {
+    setOpenDrawer((previousState) => !previousState);
   };
 
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      MUI
+    <Box onClick={toggleDrawer} sx={{ textAlign: "center" }}>
+      KendoApp
       <Divider />
       <List>
         {navItems.map((item) => (
-          <ListItem key={item} disablePadding>
+          <ListItem key={item[0]} disablePadding>
             <ListItemButton
               sx={{ textAlign: "center" }}
               component={NavLink}
-              to=""
+              to={item[1]}
             >
-              <ListItemText primary={item} />
+              <ListItemText primary={item[0]} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -63,7 +72,7 @@ const NavigationBar = (props: Props /* { user: } */): ReactElement => {
               color="inherit"
               aria-label="open drawer"
               edge="start"
-              onClick={handleDrawerToggle}
+              onClick={toggleDrawer}
               sx={{ mr: 2, display: { sm: "none" } }}
             >
               <MenuIcon />
@@ -71,12 +80,12 @@ const NavigationBar = (props: Props /* { user: } */): ReactElement => {
             <Box sx={{ display: { xs: "none", sm: "block" } }}>
               {navItems.map((item) => (
                 <Button
-                  key={item}
+                  key={item[0]}
                   sx={{ color: "#fff" }}
                   component={NavLink}
-                  to=""
+                  to={item[1]}
                 >
-                  {item}
+                  {item[0]}
                 </Button>
               ))}
             </Box>
@@ -86,14 +95,18 @@ const NavigationBar = (props: Props /* { user: } */): ReactElement => {
           <Drawer
             container={container}
             variant="temporary"
-            open={mobileOpen}
-            onClose={handleDrawerToggle}
+            open={openDrawer}
+            onClose={toggleDrawer}
             ModalProps={{
-              keepMounted: true // Better open performance on mobile.
+              // Better open performance on mobile.
+              keepMounted: true
             }}
             sx={{
               display: { xs: "block", sm: "none" },
-              "& .MuiDrawer-paper": { boxSizing: "border-box", width: 240 }
+              "& .MuiDrawer-paper": {
+                boxSizing: "border-box",
+                width: 240
+              }
             }}
           >
             {drawer}
