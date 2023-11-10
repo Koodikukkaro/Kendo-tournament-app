@@ -2,15 +2,12 @@
 import React, { type ReactElement } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 
-// import Container from "@mui/material/Container";
 // import Typography from "@mui/material/Typography";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
-// import Container from "@mui/material/Container";
-// import Link from "@mui/material/Link";
 import MenuIcon from "@mui/icons-material/Menu";
 import IconButton from "@mui/material/IconButton";
 import Drawer from "@mui/material/Drawer";
@@ -40,7 +37,11 @@ const NavigationBar = (props: Props /* { user: } */): ReactElement => {
       <List>
         {navItems.map((item) => (
           <ListItem key={item} disablePadding>
-            <ListItemButton sx={{ textAlign: "center" }}>
+            <ListItemButton
+              sx={{ textAlign: "center" }}
+              component={NavLink}
+              to=""
+            >
               <ListItemText primary={item} />
             </ListItemButton>
           </ListItem>
@@ -79,18 +80,6 @@ const NavigationBar = (props: Props /* { user: } */): ReactElement => {
                 </Button>
               ))}
             </Box>
-            {/* <Box sx={{ display: { xs: "none", sm: "block" } }}>
-              <Button color="inherit" component={NavLink} to="">
-                home
-              </Button>
-              <Button color="inherit">notes</Button>
-              <Button color="inherit">users</Button>
-              {// user ? (
-                <em>{user} logged in</em>
-              ) : (
-                <Button color="inherit">login</Button>
-              ) //}
-            </Box> */}
           </Toolbar>
         </AppBar>
         <nav>
