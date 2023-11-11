@@ -1,78 +1,61 @@
-
-button {
-  margin: 10px;
-  margin-top: 30px;
-  padding: 10px;
-  cursor: pointer;
-  position: relative;
-  left: 48%;
-  right: 48%;
-  width: 40%;
-  transform: translate(-50%);
-  border-radius: 50px;
-  border: 0px;
+.container {
+  display: flex;
 }
 
-button:hover {
-  background-color: #595959;
+.formReg {
+  width: 100%;
+  max-width: 480px;
+  padding: 20px;
+  box-sizing: border-box;
 }
-
-.field input{
-  width: 96%;
-  border-radius: 5px;
-  border: 1px solid gray;
-  padding: 10px;
-}
-
-.field1 input{
-  display: inline-block;
-  width: 96%;
-  border-radius: 5px;
-  border: 1px solid gray;
-  padding: 10px;
-}
-
-@media only screen and (max-width: 300px) {
-  /* For mobile phones: */
-  form {
-    width: 100%;
+/* Media query for pc devices */
+@media (min-width: 601px) {
+  .leftRegPanel,
+  .rightRegPanel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
   }
 }
 
-form {
-  padding-top: 50px;
-  padding-left: 20px;
-  padding-right: 20px;
+.rightRegPanel {
+  background-color: #00bfff;
+  background: linear-gradient(to right, #6dd5ed, #2193b0);
 }
 
-.fa-eye{
-  cursor: pointer;
-  color: lightgray;
-  padding: 10px;
-  min-width: 40px;
-}
-
-.fa-eye-slash{
-  color: lightgrey
-}
-
-.field i{
-  position: absolute;
-  left: 90%;
-}
-
-.field-checkbox {
-  padding-top: 10px;
-}
-
-.field{
+.leftRegPanel button {
+  margin-top: 20px;
   width: 100%;
 }
 
-#password{
-  position: relative;
+.loginLink {
+  color: green;
+  font-size: larger;
+  margin-left: 5px;
 }
 
-h1 {
-  font-size: 24px;
+.login-btn {
+  color: azure;
+  font-size: medium;
+  text-decoration: none !important;
+  width: 150px;
+}
+
+/* Media query for mobile devices */
+@media (max-width: 600px) {
+  .rightRegPanel {
+    padding: 20px;
+  }
+  .rightRegPanel h3 {
+    font-size: larger;
+    font-weight: 500;
+  }
+  .rightRegPanel button {
+    width: 100%;
+  }
+  .login-btn {
+    font-size: medium;
+  }
 }

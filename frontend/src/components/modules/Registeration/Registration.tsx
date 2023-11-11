@@ -1,5 +1,13 @@
-import React, { type SyntheticEvent, useState } from "react";
+import React, { useState } from "react";
 import "./registration.css";
+import Grid from "@mui/material/Grid";
+import TextField from "@mui/material/TextField";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
+import Footer from "components/common/Footer/Footer";
+import { Link } from "react-router-dom";
 
 const RegisterForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -19,13 +27,11 @@ const RegisterForm: React.FC = () => {
   });
 
   const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     fieldName: string
   ): void => {
-    const value =
-      event.target.type === "checkbox"
-        ? event.target.checked
-        : event.target.value;
+    const target = event.target as HTMLInputElement; // Type assertion
+    const value = target.type === "checkbox" ? target.checked : target.value;
     setFormData((prevData) => ({
       ...prevData,
       [fieldName]: value
@@ -33,218 +39,187 @@ const RegisterForm: React.FC = () => {
   };
 
   return (
-    <form
-      id="registerForm"
-      className="form"
-      onSubmit={(event: SyntheticEvent) => {
-        event.preventDefault();
-        /** here how user is actually added somewhere */
-      }}
-    >
-      <h1 className="header">Create a KendoApp account</h1>
-      <p className="subtext">
-        Already have an account? <a href="url">Log in</a>{" "}
-      </p>
-      <p className="subtext">
-        {" "}
-        Fill in the fields below. Fields marked with * are required.
-      </p>
+    <div>
+      <Grid container className="container">
+        <Grid item xs={12} md={7} className="leftRegPanel">
+          <form id="registerForm" className="formReg">
+            <Typography variant="h2" gutterBottom>
+              Create an Account
+            </Typography>
+            <Typography variant="body1">
+              Already have an account?
+              <Link to="/login" className="loginLink">
+                Log in
+              </Link>
+            </Typography>
+            <Typography variant="body2">
+              Fill in the fields below. Fields marked with * are required.
+            </Typography>
 
-      <div className="field">
-        <label htmlFor="firstname"></label>
-        <input
-          type="text"
-          name="firstname"
-          id="firstname"
-          placeholder="First name *"
-          required
-          value={formData.firstname}
-          onChange={(e) => {
-            handleInputChange(e, "firstname");
-          }}
-        />
-      </div>
-      <div className="field">
-        <br />
-        <label htmlFor="lastname"></label>
-        <input
-          type="text"
-          name="lastname"
-          id="lastname"
-          placeholder="Last name *"
-          required
-          value={formData.lastname}
-          onChange={(e) => {
-            handleInputChange(e, "lastname");
-          }}
-        />
-      </div>
-      <div className="field">
-        <br />
-        <label htmlFor="username"></label>
-        <input
-          type="text"
-          name="username"
-          id="username"
-          placeholder="Username *"
-          required
-          value={formData.username}
-          onChange={(e) => {
-            handleInputChange(e, "username");
-          }}
-        />
-      </div>
-      <div className="field">
-        <br />
-        <label htmlFor="email"></label>
-        <input
-          type="email"
-          name="email"
-          id="email"
-          placeholder="Email *"
-          required
-          value={formData.email}
-          onChange={(e) => {
-            handleInputChange(e, "email");
-          }}
-        />
-      </div>
-      <div className="field">
-        <br />
-        <label htmlFor="tel"></label>
-        <input
-          type="tel"
-          name="tel"
-          id="tel"
-          placeholder="Phone number * (e.g. +358...)"
-          required
-          value={formData.tel}
-          onChange={(e) => {
-            handleInputChange(e, "tel");
-          }}
-        />
-      </div>
-      <div className="field">
-        <br />
-        <label htmlFor="password"></label>
-        <input
-          type="password"
-          name="password"
-          id="password"
-          placeholder="Password *"
-          required
-          value={formData.password}
-          onChange={(e) => {
-            handleInputChange(e, "password");
-          }}
-        />
-        <i className="fa-solid fa-eye" id="eye" />
-      </div>
-      <div className="field">
-        <br />
-        <label htmlFor="passwordConfirmation"></label>
-        <input
-          type="password"
-          name="passwordConfirmation"
-          id="passwordConfirmation"
-          placeholder="Password again *"
-          required
-          value={formData.passwordConfirmation}
-          onChange={(e) => {
-            handleInputChange(e, "passwordConfirmation");
-          }}
-        />
-        <i className="fa-solid fa-eye" id="eye" />
-      </div>
-      <div className="field">
-        <br />
-        <label htmlFor="rank"></label>
-        <input
-          type="text"
-          name="rank"
-          id="rank"
-          placeholder="Rank"
-          value={formData.rank}
-          onChange={(e) => {
-            handleInputChange(e, "rank");
-          }}
-        />
-      </div>
-      <div className="field">
-        <br />
-        <label htmlFor="club"></label>
-        <input
-          type="text"
-          name="club"
-          id="club"
-          placeholder="Club"
-          value={formData.club}
-          onChange={(e) => {
-            handleInputChange(e, "club");
-          }}
-        />
-      </div>
-      <div className="field">
-        <br />
-        <label htmlFor="suomisport"></label>
-        <input
-          type="text"
-          name="suomisport"
-          id="suomisport"
-          placeholder="Suomisport ID"
-          value={formData.suomisport}
-          onChange={(e) => {
-            handleInputChange(e, "suomisport");
-          }}
-        />
-      </div>
-      <div className="field-checkbox">
-        <input
-          type="checkbox"
-          name="underage"
-          id="underage"
-          checked={formData.underage}
-          onChange={(e) => {
-            handleInputChange(e, "underage");
-          }}
-        />
-        <label htmlFor="underage">I&apos;m underage</label>
-        {formData.underage && (
-          <div className="field">
-            <br />
-            <label htmlFor="guardianEmail"></label>
-            <input
-              type="text"
-              name="guardianEmail"
-              id="guardianEmail"
-              placeholder="Guardian's email"
+            <TextField
+              label="First Name"
+              variant="outlined"
               required
+              fullWidth
+              margin="normal"
+              value={formData.firstname}
+              onChange={(e) => {
+                handleInputChange(e, "firstname");
+              }}
             />
+
+            <TextField
+              label="Last Name"
+              variant="outlined"
+              required
+              fullWidth
+              margin="normal"
+              value={formData.lastname}
+              onChange={(e) => {
+                handleInputChange(e, "lastname");
+              }}
+            />
+
+            <TextField
+              label="Email Address"
+              variant="outlined"
+              required
+              fullWidth
+              margin="normal"
+              value={formData.email}
+              onChange={(e) => {
+                handleInputChange(e, "email");
+              }}
+            />
+
+            <TextField
+              label="Username"
+              variant="outlined"
+              required
+              fullWidth
+              margin="normal"
+              value={formData.username}
+              onChange={(e) => {
+                handleInputChange(e, "username");
+              }}
+            />
+
+            <TextField
+              label="Password"
+              variant="outlined"
+              required
+              fullWidth
+              margin="normal"
+              value={formData.password}
+              onChange={(e) => {
+                handleInputChange(e, "password");
+              }}
+            />
+
+            <TextField
+              label="Confirm Password"
+              variant="outlined"
+              required
+              fullWidth
+              margin="normal"
+              value={formData.passwordConfirmation}
+              onChange={(e) => {
+                handleInputChange(e, "passwordConfirmation");
+              }}
+            />
+
+            <TextField
+              label="Dan Rank"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={formData.rank}
+              onChange={(e) => {
+                handleInputChange(e, "rank");
+              }}
+            />
+
+            <TextField
+              label="Club"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={formData.club}
+              onChange={(e) => {
+                handleInputChange(e, "club");
+              }}
+            />
+
+            <TextField
+              label="SuomiSport ID"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              value={formData.suomisport}
+              onChange={(e) => {
+                handleInputChange(e, "suomisport");
+              }}
+            />
+
+            {/* For checkbox */}
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={formData.underage}
+                  onChange={(e) => {
+                    handleInputChange(e, "underage");
+                  }}
+                  name="underage"
+                />
+              }
+              label="I'm underage"
+            />
+            {formData.underage && (
+              <TextField
+                label="Guardian's Email"
+                variant="outlined"
+                required
+                fullWidth
+                margin="normal"
+                value={formData.guardianEmail}
+                onChange={(e) => {
+                  handleInputChange(e, "guardianEmail");
+                }}
+              />
+            )}
+
+            <br />
+
+            <Typography variant="caption">
+              By clicking the submit button, you agree to abide by the Terms and
+              Condition.
+            </Typography>
+            <br />
+            <Button type="submit" variant="contained" color="primary">
+              Register
+            </Button>
+          </form>
+        </Grid>
+
+        <Grid item xs={12} sm={5} className="rightRegPanel">
+          <div className="right-container">
+            <Typography component="h3" variant="h3">
+              Already a Friend?
+            </Typography>
+            <Typography variant="body2">
+              Login with your personal info!
+            </Typography>
+            <br />
+            <Button variant="contained" color="success">
+              <Link to="/login" className="login-btn">
+                Log in
+              </Link>
+            </Button>
           </div>
-        )}
-      </div>
-      <div className="field-checkbox">
-        <input
-          type="checkbox"
-          name="conditions"
-          id="conditions"
-          required
-          checked={formData.conditions}
-          onChange={(e) => {
-            handleInputChange(e, "conditions");
-          }}
-        />
-        <label htmlFor="conditions">
-          By checking this box I agree to the{" "}
-          <a href="url">terms and conditions</a> *
-        </label>
-      </div>
-      <div className="field">
-        <button type="submit" id="btnRegister">
-          Register
-        </button>
-      </div>
-    </form>
+        </Grid>
+      </Grid>
+      <Footer />
+    </div>
   );
 };
 

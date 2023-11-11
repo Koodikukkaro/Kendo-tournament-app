@@ -11,8 +11,8 @@
   align-items: center;
 }
 .form {
-  width: 100%; /* Or a fixed width if you prefer */
-  max-width: 480px; /* Max width for the form */
+  width: 100%;
+  max-width: 480px;
   padding: 20px;
   box-sizing: border-box;
 }
