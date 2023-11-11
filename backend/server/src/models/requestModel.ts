@@ -81,12 +81,10 @@ export interface RegisterRequest {
 export interface LoginRequest {
   /**
    * @example "john.doe@gmail.com"
-   * @pattern ^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$ email format invalid
    */
   email: string;
   /**
    * @example "Foobar123"
-   * @pattern ^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]{8,30})$ password format invalid
    */
   password: string;
 }
