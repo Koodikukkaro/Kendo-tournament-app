@@ -8,8 +8,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Footer from "components/common/Footer/Footer";
 import TextField from "@mui/material/TextField";
-import Paper from "@mui/material/Paper";
-import CloseIcon from "@mui/icons-material/Close";
+import ShowError from "components/common/ErrorMessage/Error";
 
 interface LocationProps {
   state: {
@@ -66,7 +65,6 @@ const LoginForm: React.FC = () => {
         await login();
         navigate(from, { replace: true });
       } else {
-        // TODO: display a message to the user
         const errorData = await response.json();
         const context = errorData.errors[0].context;
         for (let i = 0; i < errorContext.length; i++) {
@@ -80,18 +78,11 @@ const LoginForm: React.FC = () => {
         }
       }
     } catch (error) {
-      // TODO: display a message to the user
       console.log(error);
       setErrorMessage({
         message: "Unknown Error Occurred. Please try again later!"
       });
     }
-  };
-
-  const handleClose = (): void => {
-    setErrorMessage({
-      message: ""
-    });
   };
 
   const handleInputChange = (
@@ -117,12 +108,7 @@ const LoginForm: React.FC = () => {
                 Sign In!
               </Typography>
 
-              {errorMessage.message !== "" && (
-                <Paper className="error-message">
-                  <p>{errorMessage.message}</p>
-                  <CloseIcon className="cross-icon" onClick={handleClose} />
-                </Paper>
-              )}
+              <ShowError message={errorMessage.message}></ShowError>
               <TextField
                 label="Username/Email"
                 type="text"
