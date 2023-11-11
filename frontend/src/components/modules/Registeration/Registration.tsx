@@ -41,14 +41,14 @@ const RegisterForm: React.FC = () => {
   return (
     <div>
       <Grid container className="container">
-        <Grid item xs={12} md={7} className="leftRegPanel">
-          <form id="registerForm" className="formReg">
+        <Grid item xs={12} md={7} className="left-reg-panel">
+          <form id="registerForm" className="form-reg">
             <Typography variant="h2" gutterBottom>
               Create an Account
             </Typography>
             <Typography variant="body1">
               Already have an account?
-              <Link to="/login" className="loginLink">
+              <Link to="/login" className="login-link">
                 Log in
               </Link>
             </Typography>
@@ -201,7 +201,7 @@ const RegisterForm: React.FC = () => {
           </form>
         </Grid>
 
-        <Grid item xs={12} sm={5} className="rightRegPanel">
+        <Grid item xs={12} sm={5} className="right-reg-panel">
           <div className="right-container">
             <Typography component="h3" variant="h3">
               Already a Friend?
