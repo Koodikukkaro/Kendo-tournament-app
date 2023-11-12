@@ -1,0 +1,49 @@
+name: Lint
+
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the development branch
+  push:
+    branches:
+      - development
+  pull_request:
+    branches:
+      - development
+
+# Down scope as necessary via https://docs.github.com/en/actions/security-guides/automatic-token-authentication#modifying-the-permissions-for-the-github_token
+permissions:
+  checks: write
+  contents: write
+
+env:
+  NODE_VERSION: 20
+
+jobs:
+  run-linters:
+    name: Run linters
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Run frontend linters
+        run: npm run lint
+        working-directory: frontend
+
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: backend/server
+
+      - name: Run backend linters
+        run: npm run lint
+        working-directory: backend/server
