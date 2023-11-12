@@ -8,8 +8,11 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Footer from "components/common/Footer/Footer";
 import { Link } from "react-router-dom";
+import ShowError from "components/common/ErrorMessage/Error";
 
 const RegisterForm: React.FC = () => {
+  const [errorMessage, setErrorMessage] = useState<string>("Aye");
+
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
@@ -38,12 +41,24 @@ const RegisterForm: React.FC = () => {
     }));
   };
 
+  const onHandleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
+    event.preventDefault(); // Prevent the default form submit behavior
+    try {
+      setErrorMessage("Potato Chips");
+    } catch (error) {
+      console.log(error);
+      setErrorMessage("Unknown Error Occurred. Please try again later!");
+    }
+  };
+
   return (
     <div>
       <Grid container className="container">
         <Grid item xs={12} md={7} className="left-reg-panel">
-          <form id="registerForm" className="form-reg">
-            <Typography variant="h2" gutterBottom>
+          <Grid item xs={12} className="left-page-info">
+            <Typography variant="h1" gutterBottom>
               Create an Account
             </Typography>
             <Typography variant="body1">
@@ -55,7 +70,13 @@ const RegisterForm: React.FC = () => {
             <Typography variant="body2">
               Fill in the fields below. Fields marked with * are required.
             </Typography>
-
+          </Grid>
+          <form
+            id="registerForm"
+            className="form-reg"
+            onSubmit={onHandleSubmit}
+          >
+            <ShowError message={errorMessage}></ShowError>
             <TextField
               label="First Name"
               variant="outlined"

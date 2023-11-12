@@ -16,7 +16,18 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+  }
+
+  .left-page-info {
+    padding-top: 200px;
+    padding-left: 20px;
+  }
+  .right-reg-panel {
+    padding-top: 200px;
+  }
+
+  .left-page-info h1 {
+    font-size: 5em;
   }
 }
 
@@ -49,7 +60,7 @@
     padding: 20px;
   }
   .right-reg-panel h3 {
-    font-size: larger;
+    font-size: 2em;
     font-weight: 500;
   }
   .right-reg-panel button {
@@ -57,5 +68,16 @@
   }
   .login-btn {
     font-size: medium;
+  }
+
+  .left-page-info {
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 20px;
+    padding-bottom: 10px;
+  }
+
+  .left-page-info h1 {
+    font-size: 2.5em;
   }
 }

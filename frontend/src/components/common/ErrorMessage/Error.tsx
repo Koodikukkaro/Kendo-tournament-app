@@ -1,4 +1,3 @@
-// ErrorMessage.tsx
 import React, { useState, useEffect } from "react";
 import Paper from "@mui/material/Paper";
 import CloseIcon from "@mui/icons-material/Close";
@@ -8,7 +7,7 @@ interface ErrorMessageProps {
   message: string;
 }
 
-const ErrorMessage: React.FC<ErrorMessageProps> = (props) => {
+const ShowError: React.FC<ErrorMessageProps> = (props) => {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
   console.log("error", errorMessage);
@@ -35,4 +34,4 @@ const ErrorMessage: React.FC<ErrorMessageProps> = (props) => {
   );
 };
 
-export default ErrorMessage;
+export default ShowError;
