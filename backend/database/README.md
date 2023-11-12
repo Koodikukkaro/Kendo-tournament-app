@@ -1,4 +1,4 @@
-# Koodikukkaro (Kendo Database)
+# Kendo Tournament App (Database)
 
 This is a simple database for the Kendo App project.
 It can be used for development or as a template for
