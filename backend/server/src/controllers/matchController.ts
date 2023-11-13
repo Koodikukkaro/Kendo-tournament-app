@@ -17,6 +17,7 @@ import {
   CreateMatchRequest,
   ObjectIdString
 } from "../models/requestModel.js";
+import { io } from "../socket.js";
 
 @Route("match")
 export class MatchController extends Controller {
@@ -62,7 +63,10 @@ export class MatchController extends Controller {
   @Tags("Match")
   public async startTimer(@Path() id: ObjectIdString): Promise<void> {
     this.setStatus(204);
-    await this.service.startTimer(id);
+
+    const match = await this.service.startTimer(id);
+
+    io.to(match.id).emit("start-timer", match);
   }
 
   /*
@@ -73,7 +77,10 @@ export class MatchController extends Controller {
   @Tags("Match")
   public async stopTimer(@Path() id: ObjectIdString): Promise<void> {
     this.setStatus(204);
-    await this.service.stopTimer(id);
+
+    const match = await this.service.stopTimer(id);
+
+    io.to(match.id).emit("stop-timer", match);
   }
 
   /*
@@ -87,7 +94,13 @@ export class MatchController extends Controller {
     @Body() updateMatchRequest: AddPointRequest
   ): Promise<void> {
     this.setStatus(204);
-    await this.service.addPointToMatchById(id, updateMatchRequest);
+
+    const match = await this.service.addPointToMatchById(
+      id,
+      updateMatchRequest
+    );
+
+    io.to(match.id).emit("add-point", match);
   }
 
   private get service(): MatchService {
