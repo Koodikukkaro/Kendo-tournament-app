@@ -12,8 +12,7 @@ import swaggerDocument from "../build/swagger.json";
 import { globalErrorHandlerMiddleware } from "./middlewares/globalErrorHandler.js";
 import cookieParser from "cookie-parser";
 import config from "./utility/config.js";
-import cors from 'cors';
-
+import cors from "cors";
 
 // initialize mongo connection.
 await connectDB();
@@ -28,10 +27,11 @@ const port = config.PORT;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(cors({
-  origin: 'http://localhost:3000'
-}));
-
+app.use(
+  cors({
+    origin: "http://localhost:3000"
+  })
+);
 /**
  * Register the auto generated routes
  */
