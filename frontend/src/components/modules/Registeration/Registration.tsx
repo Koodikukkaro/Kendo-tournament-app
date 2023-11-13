@@ -67,7 +67,8 @@ const RegisterForm: React.FC = () => {
           clubName: formData.club,
           danRank: formData.rank,
           underage: formData.underage,
-          guardiansEmail: formData.guardianEmail
+          guardiansEmail: formData.guardianEmail,
+          role: "admin" // TODO: MUST REMOVE LATER.
         })
       });
 
