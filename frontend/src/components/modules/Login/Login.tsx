@@ -142,7 +142,7 @@ const LoginForm: React.FC = () => {
               <Typography variant="body2" className="forgotPassword">
                 <Link to="url">Forgot your password?</Link>
               </Typography>
-
+              <br />
               <Button
                 type="submit"
                 id="btn-login"
@@ -160,15 +160,12 @@ const LoginForm: React.FC = () => {
         <Grid item xs={12} sm={5} className="rightPanel">
           <div className="right-container">
             <Typography component="h3" variant="h3">
-              Hello, Friend!
-            </Typography>
-            <Typography variant="body1">
-              Enter your personal details and start your journey with us!
+              Don&apos;t have an account?
             </Typography>
             <br />
             <Button variant="contained" color="success" className="sign-up-btn">
               <Link to="/register" className="sign-up-link">
-                Sign Up
+                Register Here
               </Link>
             </Button>
           </div>

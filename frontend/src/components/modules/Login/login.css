@@ -4,24 +4,21 @@
   min-height: 100vh;
 }
 
-.leftPanel {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-.form {
-  width: 100%; /* Or a fixed width if you prefer */
-  max-width: 480px; /* Max width for the form */
-  padding: 20px;
-  box-sizing: border-box;
-}
-
+.leftPanel,
 .rightPanel {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+
+.form {
+  max-width: 480px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.rightPanel {
   background-color: #00bfff;
   background: linear-gradient(to right, #6dd5ed, #2193b0);
 }
@@ -30,40 +27,39 @@
 @media (max-width: 600px) {
   .rightPanel {
     padding: 15px;
-    flex: 0 0 40%; /* takes the remaining 40% of the space */
-  }
-
-  .leftPanel {
-    flex: 0 0 60%; /* takes 60% of the space */
   }
 
   .rightPanel h3 {
     font-size: 25px;
   }
+
+  .sign-up-btn {
+    width: 150px;
+  }
+
+  .login-button {
+    margin-top: 20px;
+  }
 }
 
 /* Styles for PC version */
 @media (min-width: 601px) {
-  .leftPanel {
+  .leftPanel,
+  .rightPanel {
     height: 100vh;
   }
 
-  .rightPanel {
-    height: 100vh;
+  .sign-up-link {
+    font-size: medium;
+  }
+
+  #btn-login {
+    margin-top: 20px;
+    font-size: medium;
   }
 }
 
 .sign-up-link {
-  text-transform: none !important;
+  text-decoration: none !important;
   color: whitesmoke;
-  font-size: large;
-}
-
-.sign-up-btn {
-  text-transform: none !important;
-}
-
-#btn-login {
-  margin-top: 20px;
-  font-size: large;
 }
