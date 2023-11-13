@@ -24,6 +24,7 @@
   }
   .right-reg-panel {
     padding-top: 200px;
+    padding-left: 50px;
   }
 
   .left-page-info h1 {
@@ -47,6 +48,10 @@
   margin-left: 5px;
 }
 
+.link_terms {
+  color: green;
+}
+
 .login-btn {
   color: azure;
   font-size: medium;
@@ -57,15 +62,9 @@
 /* Media query for mobile devices */
 @media (max-width: 600px) {
   .right-reg-panel {
-    padding: 20px;
+    display: none;
   }
-  .right-reg-panel h3 {
-    font-size: 2em;
-    font-weight: 500;
-  }
-  .right-reg-panel button {
-    width: 100%;
-  }
+
   .login-btn {
     font-size: medium;
   }

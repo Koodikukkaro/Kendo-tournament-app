@@ -10,7 +10,6 @@ interface ErrorMessageProps {
 const ShowError: React.FC<ErrorMessageProps> = (props) => {
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  console.log("error", errorMessage);
   // Effect hook to update state when new message prop is received
   useEffect(() => {
     if (props.message !== "" && props.message !== undefined) {
