@@ -1,4 +1,4 @@
-# FrontEnd
+# Kendo Tournament App (Frontend)
 
 ## Getting Started
 
@@ -23,5 +23,5 @@ These instructions will help you set up the project locally for development and 
 4. Start the dev server
 
     ```bash
-    npm run start
+    npm run dev
     ```

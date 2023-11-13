@@ -1,10 +1,10 @@
-# Kendo Tournament app
+# Kendo Tournament App
 
 This document provides instructions for setting up the app, our development workflow, and deployment guidelines.
 
 ## How to Start the App
 
-TODO: Add instructions on how to start the app.
+The project is divided into three main components: [Frontend](https://github.com/Koodikukkaro/Kendo-tournament-app/tree/development/frontend), [Backend](https://github.com/Koodikukkaro/Kendo-tournament-app/tree/development/backend/server), and [Database](https://github.com/Koodikukkaro/Kendo-tournament-app/tree/development/backend/database). Instructions for setting up each component are available in their respective README files.
 
 ## Development Workflow
 

@@ -1,11 +1,12 @@
 import jwt from "jsonwebtoken";
 import config from "./config";
 import UnauthorizedError from "../errors/UnauthorizedError";
+import { type UserRole } from "../models/requestModel";
 
 export interface TokenPayload {
   id: string;
   email: string;
-  scopes: string[];
+  role: UserRole;
 }
 
 export const generateAccessToken = (
