@@ -1,81 +1,65 @@
+.gridContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
 
-button {
-    margin: 10px;
-    margin-top: 30px;
-    padding: 10px;
-    cursor: pointer;
-    position: relative;
-    left: 48%;
-    right: 48%;
-    width: 40%;
-    transform: translate(-50%);
-    border-radius: 50px;
-    border: 0px;
+.leftPanel,
+.rightPanel {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.form {
+  max-width: 480px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.rightPanel {
+  background-color: #00bfff;
+  background: linear-gradient(to right, #6dd5ed, #2193b0);
+}
+
+/* Media query for mobile devices */
+@media (max-width: 600px) {
+  .rightPanel {
+    padding: 15px;
   }
-  
-  button:hover {
-    background-color: #595959;
+
+  .rightPanel h3 {
+    font-size: 25px;
   }
-  
-  .field input{
-    width: 96%;
-    border-radius: 5px;
-    border: 1px solid gray;
-    padding: 10px;
+
+  .sign-up-btn {
+    width: 150px;
   }
-  
-  @media only screen and (max-width: 300px) {
-    /* For mobile phones: */
-    form {
-      width: 100%;
-    }
+
+  .login-button {
+    margin-top: 20px;
   }
-  
-  form {
-    padding-top: 50px;
-    padding-left: 20px;
-    padding-right: 20px;
+}
+
+/* Styles for PC version */
+@media (min-width: 601px) {
+  .leftPanel,
+  .rightPanel {
+    height: 100vh;
   }
-  
-  .fa-eye{
-    cursor: pointer;
-    color: lightgray;
-    padding: 10px;
-    min-width: 40px;
+
+  .sign-up-link {
+    font-size: medium;
   }
-  
-  .fa-eye-slash{
-    color: lightgrey
+
+  #btn-login {
+    margin-top: 20px;
+    font-size: medium;
   }
-  
-  .field i{
-    position: absolute;
-    left: 90%;
-  }
-  
-  
-  .field{
-    width: 100%;
-  }
-  
-  #password{
-    position: relative;
-  }
-  
-  h1 {
-    font-size: 24px;
-  }
-  
-  .register {
-    position: relative;
-    transform: translate(-50%);
-    left: 50%;
-    right: 50%;
-    text-align: center;
-  }
-  
-  .forgotPassword {
-    text-align: right;
-    width: 96%;
-    padding-left: 20px;
-  }
+}
+
+.sign-up-link {
+  text-decoration: none !important;
+  color: whitesmoke;
+}
