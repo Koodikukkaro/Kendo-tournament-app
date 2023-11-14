@@ -1,8 +1,9 @@
 import { type Socket, Server } from "socket.io";
+import type http from "http";
 
 export const io = new Server();
 
-export function initSocket(server: any): Server {
+export function initSocket(server: http.Server): Server {
   io.attach(server, {
     cors: {
       origin: "http://localhost:3000",
