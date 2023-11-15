@@ -2,6 +2,7 @@ import { AuthenticationGuard } from "components/common/AuthenticationGuard";
 import LoginForm from "components/modules/Login/Login";
 import RegisterForm from "components/modules/Registeration/Registration";
 import Landing from "components/modules/Landing/Landing";
+// import Game from "components/modules/Game/OfficialGameInterface";
 // import Layout from "layouts/Layout";
 import React from "react";
 import {
