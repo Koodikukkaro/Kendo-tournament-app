@@ -49,10 +49,21 @@ const Profile: React.FC = () => {
   ): void => {
     const target = event.target as HTMLInputElement;
     const value = target.type === "checkbox" ? target.checked : target.value;
-    setUserProfile((prevData) => ({
-      ...prevData,
-      [fieldName]: value
-    }));
+    if (
+      value === "oldPassword" ||
+      value === "newPassword" ||
+      value === "newPasswordConfirmation"
+    ) {
+      setUserPassword((prevData) => ({
+        ...prevData,
+        [fieldName]: value
+      }));
+    } else {
+      setUserProfile((prevData) => ({
+        ...prevData,
+        [fieldName]: value
+      }));
+    }
   };
 
   const handlePasswordChange = (): void => {
@@ -177,16 +188,10 @@ const Profile: React.FC = () => {
         />
       </div>
       <div>
-        <Button
-          variant="contained"
-          onClick={handleGoBack}
-        >
+        <Button variant="contained" onClick={handleGoBack}>
           Back
         </Button>
-        <Button
-          variant="contained"
-          onClick={handleSavingProfile}
-        >
+        <Button variant="contained" onClick={handleSavingProfile}>
           Save changes
         </Button>
       </div>
