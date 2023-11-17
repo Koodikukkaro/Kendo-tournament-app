@@ -10,22 +10,18 @@ import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
 
 import AppBar from "@mui/material/AppBar";
-import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import IconButton from "@mui/material/IconButton";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
-import Tooltip from "@mui/material/Tooltip";
 
-import AccountCircle from "@mui/icons-material/AccountCircle";
 import MenuIcon from "@mui/icons-material/Menu";
 
 import NavigationDrawer from "./NavigationDrawer";
-// Text to display and the corresponding link
-import { navigationItems, settings } from "./navigationdata";
+import NavigationUserMenu from "./NavigationUserMenu";
+// Text to display in the hamburger menu and navbar and the corresponding link
+import { navigationItems } from "./navigationdata";
 
 interface Props {
   window?: () => Window;
@@ -37,20 +33,9 @@ const NavigationBar: React.FC<Props> = (props) => {
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
-
   const [openDrawer, setOpenDrawer] = React.useState<boolean>(false);
   const toggleDrawer = (): void => {
     setOpenDrawer((previousState) => !previousState);
-  };
-
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>): void => {
-    setAnchorElUser(event.currentTarget);
-  };
-  const handleCloseUserMenu = (): void => {
-    setAnchorElUser(null);
   };
 
   return (
@@ -88,52 +73,12 @@ const NavigationBar: React.FC<Props> = (props) => {
               {/*
                 TODO: Add the logo of the app.
               */}
-              {/* User profile settings icon */}
-              <Box sx={{ flexGrow: 0 }}>
-                <Tooltip title="Open settings">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar
-                      alt="user avatar" /* src="avatarimagefilepath" */
-                      sx={{ width: 30, height: 30 }}
-                    >
-                      <AccountCircle sx={{ width: 30, height: 30 }} />
-                    </Avatar>
-                  </IconButton>
-                </Tooltip>
-                {/* User profile settings menu */}
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right"
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right"
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
-                >
-                  {settings.map((setting) => (
-                    <MenuItem
-                      key={setting.text}
-                      onClick={handleCloseUserMenu}
-                      component={NavLink}
-                      to={setting.link}
-                    >
-                      {setting.text}
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </Box>
+              <NavigationUserMenu />
             </Toolbar>
           </Container>
         </AppBar>
-        {/* Actual hamburger menu */}
       </Box>
+      {/* Actual hamburger menu */}
       <NavigationDrawer
         container={container}
         toggleDrawer={toggleDrawer}
