@@ -32,7 +32,7 @@ export class AuthService {
     const tokenPayload: TokenPayload = {
       id: user.id,
       email: user.email,
-      scopes: [user.role]
+      role: user.role
     };
 
     const accessToken = generateAccessToken(tokenPayload);
@@ -65,7 +65,7 @@ export class AuthService {
     const newAccessToken = generateAccessToken({
       id: decoded.id,
       email: decoded.email,
-      scopes: decoded.scopes
+      role: decoded.role
     });
 
     return [newAccessToken, user.refreshToken];

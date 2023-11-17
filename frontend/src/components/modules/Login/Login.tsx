@@ -1,7 +1,14 @@
 import React, { useState } from "react";
-import "./login.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "context/AuthContext";
+import "../../common/Style/common.css";
+import "./login.css";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Footer from "components/common/Footer/Footer";
+import TextField from "@mui/material/TextField";
+import ShowError from "components/common/ErrorMessage/Error";
 
 interface LocationProps {
   state: {
@@ -14,30 +21,76 @@ interface FormData {
   password: string;
 }
 
+interface ErrorMessage {
+  message: string;
+}
+
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const location = useLocation() as unknown as LocationProps;
   const from = location.state?.from?.pathname ?? "/";
+  const loginAPI = "http://localhost:8080/api/auth/login"; // transfer the base URL into env file.
 
   const [formData, setFormData] = useState<FormData>({
     login: "",
     password: ""
   });
 
-  const onHandleSubmit = async (): Promise<void> => {
-    await login();
-    navigate(from, { replace: true });
+  const [errorMessage, setErrorMessage] = useState<ErrorMessage>({
+    message: ""
+  });
+
+  const onHandleSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> => {
+    event.preventDefault(); // Prevent the default form submit behavior
+    try {
+      const errorContext = ["requestBody.password", "requestBody.login"];
+      const response = await fetch(loginAPI, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: formData.login,
+          password: formData.password
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data);
+        // Store the token, and update auth state
+        await login();
+        navigate(from, { replace: true });
+      } else {
+        const errorData = await response.json();
+        const context = errorData.errors[0].context;
+        for (let i = 0; i < errorContext.length; i++) {
+          const key = errorContext[i];
+          if (context[key] !== undefined) {
+            setErrorMessage({
+              message: context[key].message
+            });
+            break; // found the error message
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      setErrorMessage({
+        message: "Unknown Error Occurred. Please try again later!"
+      });
+    }
   };
 
   const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     fieldName: string
   ): void => {
-    const value =
-      event.target.type === "checkbox"
-        ? event.target.checked
-        : event.target.value;
+    const target = event.target as HTMLInputElement; // Type assertion
+    const value = target.type === "checkbox" ? target.checked : target.value;
     setFormData((prevData) => ({
       ...prevData,
       [fieldName]: value
@@ -45,57 +98,81 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <form id="loginForm" className="form" onSubmit={onHandleSubmit}>
-      <h1 className="header">Login</h1>
+    <div className="gridContainer">
+      <Grid container className="">
+        {/* Left Panel */}
+        <Grid item xs={12} sm={7}>
+          <div className="leftPanel">
+            <form id="loginForm" className="form" onSubmit={onHandleSubmit}>
+              <Typography variant="h4" component="h4">
+                Sign In!
+              </Typography>
 
-      <div className="field">
-        <br />
-        <label htmlFor="login">Username or email</label>
-        <br />
-        <input
-          type="text"
-          name="login"
-          id="login"
-          placeholder="Type your username or email"
-          value={formData.login}
-          onChange={(e) => {
-            handleInputChange(e, "login");
-          }}
-          required
-        />
-      </div>
+              <ShowError message={errorMessage.message}></ShowError>
+              <TextField
+                label="Username/Email"
+                type="text"
+                name="login"
+                id="login"
+                placeholder="Type your username or email"
+                value={formData.login}
+                onChange={(e) => {
+                  handleInputChange(e, "login");
+                }}
+                margin="normal"
+                required
+                fullWidth
+              />
 
-      <div className="field">
-        <br />
-        <label htmlFor="password">Password</label>
-        <br />
-        <input
-          type="password"
-          name="password"
-          id="password"
-          placeholder="Type your password"
-          value={formData.password}
-          onChange={(e) => {
-            handleInputChange(e, "password");
-          }}
-          required
-        />
-        <i className="fa-solid fa-eye" id="eye" />
-      </div>
-      <p className="forgotPassword">
-        <a href="url">Forgot your password?</a>
-      </p>
-      <br />
-      <div className="field">
-        <button type="submit" id="btnRegister">
-          Log in
-        </button>
-      </div>
-      <br />
-      <p className="register">
-        Dont have an account? <Link to="/register">Register here</Link>
-      </p>
-    </form>
+              <TextField
+                label="Password"
+                type="password"
+                name="password"
+                id="password"
+                placeholder="Type your password"
+                value={formData.password}
+                onChange={(e) => {
+                  handleInputChange(e, "password");
+                }}
+                margin="normal"
+                required
+                fullWidth
+              />
+
+              <Typography variant="body2" className="forgotPassword">
+                <Link to="url">Forgot your password?</Link>
+              </Typography>
+              <br />
+              <Button
+                type="submit"
+                id="btn-login"
+                variant="contained"
+                color="primary"
+                className="login-button"
+              >
+                Log in
+              </Button>
+            </form>
+          </div>
+        </Grid>
+
+        {/* Right Panel */}
+        <Grid item xs={12} sm={5} className="rightPanel">
+          <div className="right-container">
+            <Typography component="h3" variant="h3">
+              Don&apos;t have an account?
+            </Typography>
+            <br />
+            <Button variant="contained" color="success" className="sign-up-btn">
+              <Link to="/register" className="sign-up-link">
+                Register Here
+              </Link>
+            </Button>
+          </div>
+        </Grid>
+      </Grid>
+      <Footer />
+    </div>
   );
 };
 
