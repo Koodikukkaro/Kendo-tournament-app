@@ -10,13 +10,9 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 
-export interface NavigationItem {
-  text: string;
-  link: string;
-}
-export type NavigationData = NavigationItem[];
+import { type NavigationItem, type NavigationData } from "./navigationdata";
 
-export interface Props {
+interface Props {
   container: (() => HTMLElement) | undefined;
   // Sets drawerIsOpen:
   toggleDrawer: () => void;

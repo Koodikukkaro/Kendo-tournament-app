@@ -1,7 +1,11 @@
 /*
   This data is used when displaying a text and a corresponding URL to move to
 */
-import { type NavigationData } from "./NavigationDrawer";
+export interface NavigationItem {
+  text: string;
+  link: string;
+}
+export type NavigationData = NavigationItem[];
 
 // Text to display and the corresponding link
 export const navigationItems: NavigationData = [

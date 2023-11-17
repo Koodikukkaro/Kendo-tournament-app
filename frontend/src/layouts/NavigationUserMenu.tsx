@@ -15,10 +15,13 @@ import Tooltip from "@mui/material/Tooltip";
 
 import AccountCircle from "@mui/icons-material/AccountCircle";
 
-// Text to display in the menu and the corresponding link
-import { settings } from "./navigationdata";
+import { type NavigationItem, type NavigationData } from "./navigationdata";
 
-const NavigationUserMenu: React.FC = (props) => {
+interface Props {
+  settings: NavigationData;
+}
+
+const NavigationUserMenu: React.FC<Props> = (props) => {
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
@@ -60,7 +63,7 @@ const NavigationUserMenu: React.FC = (props) => {
           open={Boolean(anchorElUser)}
           onClose={handleCloseUserMenu}
         >
-          {settings.map((setting) => (
+          {props.settings.map((setting: NavigationItem) => (
             <MenuItem
               key={setting.text}
               onClick={handleCloseUserMenu}

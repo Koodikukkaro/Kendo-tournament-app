@@ -3,15 +3,13 @@
   https://github.com/mui/material-ui/blob/v5.14.18/docs/data/material/components/app-bar/DrawerAppBar.tsx
   https://github.com/mui/material-ui/blob/v5.14.18/docs/data/material/components/app-bar/ResponsiveAppBar.tsx
 */
-
-import Container from "@mui/material/Container";
-
 import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
 
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
@@ -20,8 +18,9 @@ import MenuIcon from "@mui/icons-material/Menu";
 
 import NavigationDrawer from "./NavigationDrawer";
 import NavigationUserMenu from "./NavigationUserMenu";
-// Text to display in the hamburger menu and navbar and the corresponding link
-import { navigationItems } from "./navigationdata";
+// Text to display in the hamburger menu, navbar and the corresponding link
+// -,- in the menu and the corresponding link
+import { navigationItems, settings } from "./navigationdata";
 
 interface Props {
   window?: () => Window;
@@ -73,7 +72,7 @@ const NavigationBar: React.FC<Props> = (props) => {
               {/*
                 TODO: Add the logo of the app.
               */}
-              <NavigationUserMenu />
+              <NavigationUserMenu settings={settings} />
             </Toolbar>
           </Container>
         </AppBar>
