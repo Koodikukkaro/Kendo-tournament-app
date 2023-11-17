@@ -6,7 +6,7 @@
 
 import Container from "@mui/material/Container";
 
-import React, { type ReactElement } from "react";
+import React from "react";
 import { NavLink, Outlet } from "react-router-dom";
 
 import AppBar from "@mui/material/AppBar";
@@ -14,13 +14,7 @@ import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
-import Divider from "@mui/material/Divider";
-import Drawer from "@mui/material/Drawer";
 import IconButton from "@mui/material/IconButton";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Toolbar from "@mui/material/Toolbar";
@@ -29,31 +23,28 @@ import Tooltip from "@mui/material/Tooltip";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MenuIcon from "@mui/icons-material/Menu";
 
+import NavigationDrawer from "./NavigationDrawer";
+// Text to display and the corresponding link
+import { navigationItems, settings } from "./navigationdata";
+
 interface Props {
   window?: () => Window;
 }
 
-// Text to display and the corresponding link
-const navItems = [
-  ["Login", "/login"],
-  ["Register", "/register"],
-  ["Landing", "/"]
-];
-const settings = [
-  ["Profile", "/"],
-  ["Logout", "/"]
-];
-
-const NavigationBar = (props: Props): ReactElement => {
+const NavigationBar: React.FC<Props> = (props) => {
   const { window } = props;
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
 
-  const [openDrawer, setOpenDrawer] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
+
+  const [openDrawer, setOpenDrawer] = React.useState<boolean>(false);
+  const toggleDrawer = (): void => {
+    setOpenDrawer((previousState) => !previousState);
+  };
 
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorElUser(event.currentTarget);
@@ -61,30 +52,6 @@ const NavigationBar = (props: Props): ReactElement => {
   const handleCloseUserMenu = (): void => {
     setAnchorElUser(null);
   };
-
-  const toggleDrawer = (): void => {
-    setOpenDrawer((previousState) => !previousState);
-  };
-
-  const drawer = (
-    <Box onClick={toggleDrawer} sx={{ textAlign: "center" }}>
-      KendoApp
-      <Divider />
-      <List>
-        {navItems.map((item) => (
-          <ListItem key={item[0]} disablePadding>
-            <ListItemButton
-              sx={{ textAlign: "center" }}
-              component={NavLink}
-              to={item[1]}
-            >
-              <ListItemText primary={item[0]} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
 
   return (
     <>
@@ -107,14 +74,14 @@ const NavigationBar = (props: Props): ReactElement => {
               </Box>
               {/* Navigation bar links */}
               <Box sx={{ display: { xs: "none", sm: "block" } }}>
-                {navItems.map((item) => (
+                {navigationItems.map((item) => (
                   <Button
-                    key={item[0]}
+                    key={item.text}
                     sx={{ color: "#fff" }}
                     component={NavLink}
-                    to={item[1]}
+                    to={item.link}
                   >
-                    {item[0]}
+                    {item.text}
                   </Button>
                 ))}
               </Box>
@@ -152,12 +119,12 @@ const NavigationBar = (props: Props): ReactElement => {
                 >
                   {settings.map((setting) => (
                     <MenuItem
-                      key={setting[0]}
+                      key={setting.text}
                       onClick={handleCloseUserMenu}
                       component={NavLink}
-                      to={setting[1]}
+                      to={setting.link}
                     >
-                      {setting[0]}
+                      {setting.text}
                     </MenuItem>
                   ))}
                 </Menu>
@@ -166,28 +133,14 @@ const NavigationBar = (props: Props): ReactElement => {
           </Container>
         </AppBar>
         {/* Actual hamburger menu */}
-        <nav>
-          <Drawer
-            container={container}
-            variant="temporary"
-            open={openDrawer}
-            onClose={toggleDrawer}
-            ModalProps={{
-              // Better open performance on mobile.
-              keepMounted: true
-            }}
-            sx={{
-              display: { xs: "block", sm: "none" },
-              "& .MuiDrawer-paper": {
-                boxSizing: "border-box",
-                width: 240
-              }
-            }}
-          >
-            {drawer}
-          </Drawer>
-        </nav>
       </Box>
+      <NavigationDrawer
+        container={container}
+        toggleDrawer={toggleDrawer}
+        drawerIsOpen={openDrawer}
+        navigationItems={navigationItems}
+        drawerTitle={"KendoApp"}
+      />
       <Outlet />
     </>
   );
