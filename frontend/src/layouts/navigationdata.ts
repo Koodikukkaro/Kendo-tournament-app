@@ -16,10 +16,6 @@ export const navigationItems: NavigationData = [
   {
     text: "Register",
     link: "/register"
-  },
-  {
-    text: "Landing",
-    link: "/"
   }
 ];
 export const settings: NavigationData = [

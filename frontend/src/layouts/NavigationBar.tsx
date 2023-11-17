@@ -18,6 +18,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 
 import NavigationDrawer from "./NavigationDrawer";
 import NavigationUserMenu from "./NavigationUserMenu";
+import LogoButton from "./LogoButton";
 // Text to display in the hamburger menu, navbar and the corresponding link
 // -,- in the menu and the corresponding link
 import { navigationItems, settings } from "./navigationdata";
@@ -25,6 +26,8 @@ import { navigationItems, settings } from "./navigationdata";
 interface Props {
   window?: () => Window;
 }
+
+const businessName = "KendoApp";
 
 const NavigationBar: React.FC<Props> = (props) => {
   const { window } = props;
@@ -69,9 +72,7 @@ const NavigationBar: React.FC<Props> = (props) => {
                   </Button>
                 ))}
               </Box>
-              {/*
-                TODO: Add the logo of the app.
-              */}
+              <LogoButton logoName={businessName} />
               <NavigationUserMenu settings={settings} />
             </Toolbar>
           </Container>
@@ -83,7 +84,7 @@ const NavigationBar: React.FC<Props> = (props) => {
         toggleDrawer={toggleDrawer}
         drawerIsOpen={openDrawer}
         navigationItems={navigationItems}
-        drawerTitle={"KendoApp"}
+        drawerTitle={businessName}
       />
       <Outlet />
     </>
