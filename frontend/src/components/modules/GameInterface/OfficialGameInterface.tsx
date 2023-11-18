@@ -11,62 +11,52 @@ import {
   DialogTitle,
   Radio,
   RadioGroup,
-  FormControlLabel
+  FormControlLabel,
+  Box
 } from "@mui/material";
 import "../../common/Style/common.css";
+import "./OfficialGameInterface.css";
 
 interface Cells {
-  R1C1: string;
-  R1C2: string;
-  R2C1: string;
-  R2C2: string;
-  R3C1: string;
-  R3C2: string;
-  R4C1: string;
-  R4C2: string;
-  R5C1: string;
-  R5C2: string;
+  rows: string[][];
 }
 
 const OfficialGameInterface: React.FC = () => {
-  const [cells, setCell] = useState<Cells>({
-    R1C1: "",
-    R1C2: "",
-    R2C1: "K",
-    R2C2: "",
-    R3C1: "",
-    R3C2: "",
-    R4C1: "",
-    R4C2: "",
-    R5C1: "",
-    R5C2: ""
-  });
+  const initialCells: Cells = {
+    rows: [
+      ["", ""],
+      ["", ""],
+      ["", ""],
+      ["", ""],
+      ["", ""]
+    ]
+  };
 
+  const [cells, setCells] = useState<Cells>(initialCells);
   const [open, setOpen] = useState(false);
   const [selectedButton, setSelectedButton] = useState<string>("");
   const [timer, setTimer] = useState<number>(300);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
+  const [currentPlayer, setCurrentPlayer] = useState<number | null>(null);
+  const [pointCounter, setPointCounter] = useState<number>(0);
 
-  const updateCell = (cellKey: string, value: string): void => {
-    setCell((prevCells) => ({
-      ...prevCells,
-      [cellKey]: value
-    }));
+  const updateCell = (row: number, column: number, value: string): void => {
+    setCells((prevCells) => {
+      const newRows = [...prevCells.rows];
+      newRows[row][column] = value;
+      return { rows: newRows };
+    });
   };
 
   const handlePointShowing = (): void => {
-    /* TODO: Check player's color and set column based on that.
-        Check match point count to determine the row the point is marked to.
-        The row is match point count + 1.
-        Add a check for 2 hansokus to add the other player a point.
-        Add a check for player's point count and end game if 2 points.
-        */
-    const row = "3";
-    const column = "1";
-    const cell = "R" + row + "C" + column;
-    updateCell(cell, selectedButton);
-
-    setOpen(false);
+    if (currentPlayer !== null) {
+      const row = pointCounter;
+      const column = currentPlayer - 1;
+      updateCell(row, column, selectedButton);
+      setOpen(false);
+      setCurrentPlayer(null);
+      setPointCounter((prevCounter) => prevCounter + 1);
+    }
   };
 
   const handleRadioButtonClick = (
@@ -75,8 +65,9 @@ const OfficialGameInterface: React.FC = () => {
     setSelectedButton(event.target.value);
   };
 
-  const handleOpen = (): void => {
+  const handleOpen = (player: number): void => {
     setSelectedButton("");
+    setCurrentPlayer(player);
     setOpen(true);
   };
 
@@ -109,47 +100,51 @@ const OfficialGameInterface: React.FC = () => {
     <div className="app-container">
       <main className="main-content">
         <div>
-          <Typography variant="h1">
-            {/* get real names */}
-            Player 1 Player 2
-          </Typography>
+          <Box className="playerBox" bgcolor="white">
+            <Typography variant="h1">Player 1</Typography>
+          </Box>
+          <Box className="playerBox" bgcolor="red">
+            <Typography variant="h1">Player 2</Typography>
+          </Box>
         </div>
-        <div>
-          <Typography variant="h1">{formatTime(timer)}</Typography>
+        <div className="timerContainer">
+          <Typography className="timer" variant="h1">
+            {formatTime(timer)}
+          </Typography>
           <Button onClick={handleTimerChange}>
             {isTimerRunning ? "Stop" : "Start"}
           </Button>
         </div>
-        <div>
+        <div className="tableContainer">
           <Table>
             <TableBody>
-              {/* Get points here */}
-              <TableRow>
-                <TableCell>{cells.R1C1}</TableCell>
-                <TableCell>{cells.R1C2}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>{cells.R2C1}</TableCell>
-                <TableCell>{cells.R2C2}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>{cells.R3C1}</TableCell>
-                <TableCell>{cells.R3C2}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>{cells.R4C1}</TableCell>
-                <TableCell>{cells.R4C2}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>{cells.R5C1}</TableCell>
-                <TableCell>{cells.R5C2}</TableCell>
-              </TableRow>
+              {cells.rows.map((row, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  {row.map((cell, columnIndex) => (
+                    <TableCell key={columnIndex}>{cell}</TableCell>
+                  ))}
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </div>
-        <div>
-          <Button onClick={handleOpen}>Add point for player 1</Button>
-          <Button onClick={handleOpen}>Add point for player 2</Button>
+        <div className="addButtonContainer">
+          <Button
+            className="button1"
+            onClick={() => {
+              handleOpen(1);
+            }}
+          >
+            Add point for player 1
+          </Button>
+          <Button
+            className="button2"
+            onClick={() => {
+              handleOpen(2);
+            }}
+          >
+            Add point for player 2
+          </Button>
           <Dialog open={open}>
             <DialogTitle>Select a Point</DialogTitle>
             <DialogContent>
