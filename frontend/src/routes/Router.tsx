@@ -3,6 +3,7 @@ import Landing from "components/modules/Landing/Landing";
 import Layout from "layouts/Layout";
 import LoginForm from "components/modules/Login/Login";
 import RegisterForm from "components/modules/Registeration/Registration";
+// import RoundRobinTournamentView from "components/modules/OngoingTournament/RoundRobinTournamentView";
 
 import React from "react";
 import {
