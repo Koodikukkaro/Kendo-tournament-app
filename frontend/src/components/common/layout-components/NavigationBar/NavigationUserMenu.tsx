@@ -15,10 +15,7 @@ import Tooltip from "@mui/material/Tooltip";
 
 import AccountCircle from "@mui/icons-material/AccountCircle";
 
-import {
-  type NavigationItem,
-  type NavigationData
-} from "../../../../navigation-data";
+import type { NavigationItem, NavigationData } from "./navigation-bar.d.ts";
 
 interface Props {
   settings: NavigationData;

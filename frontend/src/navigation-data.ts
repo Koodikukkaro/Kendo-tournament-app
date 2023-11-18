@@ -2,11 +2,8 @@
   This data is used when displaying a text and a corresponding URL to move to.
   It's used in navbar, but it's probably of general importance.
 */
-export interface NavigationItem {
-  text: string;
-  link: string;
-}
-export type NavigationData = NavigationItem[];
+
+import type { NavigationData } from "components/common/layout-components/NavigationBar/navigation-bar.d.ts";
 
 // Text to display and the corresponding link
 export const navigationItems: NavigationData = [

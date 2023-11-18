@@ -22,7 +22,7 @@ import LogoButton from "./LogoButton";
 // Text to display in the hamburger menu, navbar and the corresponding link
 // -,- in the menu and the corresponding link
 
-import { type NavigationData } from "../../../../navigation-data";
+import type { NavigationData } from "./navigation-bar.d.ts";
 
 interface Props {
   window?: () => Window;
