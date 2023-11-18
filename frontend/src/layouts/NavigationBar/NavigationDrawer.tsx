@@ -10,7 +10,7 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemText from "@mui/material/ListItemText";
 
-import { type NavigationItem, type NavigationData } from "./navigationdata";
+import { type NavigationItem, type NavigationData } from "../navigationdata";
 
 interface Props {
   container: (() => HTMLElement) | undefined;

@@ -4,7 +4,7 @@
   https://github.com/mui/material-ui/blob/v5.14.18/docs/data/material/components/app-bar/ResponsiveAppBar.tsx
 */
 import React from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -21,7 +21,7 @@ import NavigationUserMenu from "./NavigationUserMenu";
 import LogoButton from "./LogoButton";
 // Text to display in the hamburger menu, navbar and the corresponding link
 // -,- in the menu and the corresponding link
-import { navigationItems, settings } from "./navigationdata";
+import { navigationItems, settings } from "../navigationdata";
 
 interface Props {
   window?: () => Window;
@@ -86,7 +86,6 @@ const NavigationBar: React.FC<Props> = (props) => {
         navigationItems={navigationItems}
         drawerTitle={businessName}
       />
-      <Outlet />
     </>
   );
 };

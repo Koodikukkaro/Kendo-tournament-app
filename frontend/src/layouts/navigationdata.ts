@@ -1,5 +1,6 @@
 /*
-  This data is used when displaying a text and a corresponding URL to move to
+  This data is used when displaying a text and a corresponding URL to move to.
+  It's used in navbar, but it's probably of general importance.
 */
 export interface NavigationItem {
   text: string;
