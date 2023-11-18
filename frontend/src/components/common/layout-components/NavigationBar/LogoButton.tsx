@@ -5,7 +5,7 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 // import SvgIcon from "@mui/material/SvgIcon";
 
-// import KendoIcon from "../icons/kendoicon.svg";
+// import KendoIcon from "TODO/icons/kendoicon.svg";
 
 interface Props {
   logoName: string;

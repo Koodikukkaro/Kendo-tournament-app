@@ -21,16 +21,19 @@ import NavigationUserMenu from "./NavigationUserMenu";
 import LogoButton from "./LogoButton";
 // Text to display in the hamburger menu, navbar and the corresponding link
 // -,- in the menu and the corresponding link
-import { navigationItems, settings } from "../navigationdata";
+
+import { type NavigationData } from "../../../../navigation-data";
 
 interface Props {
   window?: () => Window;
+  settings: NavigationData;
+  navigationItems: NavigationData;
 }
 
 const businessName = "KendoApp";
 
 const NavigationBar: React.FC<Props> = (props) => {
-  const { window } = props;
+  const { window, navigationItems } = props;
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
@@ -73,7 +76,7 @@ const NavigationBar: React.FC<Props> = (props) => {
                 ))}
               </Box>
               <LogoButton logoName={businessName} />
-              <NavigationUserMenu settings={settings} />
+              <NavigationUserMenu settings={props.settings} />
             </Toolbar>
           </Container>
         </AppBar>
