@@ -3,6 +3,8 @@ import Landing from "components/modules/Landing/Landing";
 import Layout from "layouts/Layout";
 import LoginForm from "components/modules/Login/Login";
 import RegisterForm from "components/modules/Registeration/Registration";
+import OfficialGameInterface from "components/modules/GameInterface/OfficialGameInterface";
+// import Layout from "layouts/Layout";
 
 import React from "react";
 import {
