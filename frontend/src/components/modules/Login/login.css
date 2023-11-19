@@ -23,6 +23,21 @@
   background: linear-gradient(to right, #6dd5ed, #2193b0);
 }
 
+.sign-up-link {
+  text-transform: none !important;
+  color: whitesmoke;
+  font-size: large;
+}
+
+.sign-up-btn {
+  width: 200px;
+}
+
+#btn-login {
+  margin-top: 20px;
+  font-size: large;
+}
+
 /* Media query for mobile devices */
 @media (max-width: 600px) {
   .rightPanel {
