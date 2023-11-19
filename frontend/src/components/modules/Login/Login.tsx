@@ -142,7 +142,7 @@ const LoginForm: React.FC = () => {
               />
 
               <Typography variant="body2" className="forgotPassword">
-                <Link to="url">Forgot your password?</Link>
+                <Link to="/404">Forgot your password?</Link>
               </Typography>
               <br />
               <Button

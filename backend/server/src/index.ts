@@ -32,7 +32,6 @@ app.use(
     origin: "http://localhost:3000"
   })
 );
-
 /**
  * Register the auto generated routes
  */
