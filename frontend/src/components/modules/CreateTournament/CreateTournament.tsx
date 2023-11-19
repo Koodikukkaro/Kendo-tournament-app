@@ -1,7 +1,22 @@
 import React, { type SyntheticEvent, useState } from "react";
 import DatePicker from "react-datepicker";
+import {
+  Typography,
+  Button,
+  FormControlLabel,
+  TextField,
+  Checkbox,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Container,
+  type SelectChangeEvent
+} from "@mui/material";
 import "react-datepicker/dist/react-datepicker.css";
 import "./createtournament.css";
+import "../../common/Style/common.css";
+import Footer from "components/common/Footer/Footer";
 
 export interface FormData {
   tournamentName: string;
@@ -10,6 +25,7 @@ export interface FormData {
   endDate: Date;
   description: string;
   tournamentType: string;
+  maxPlayers: number | null;
   organizer: boolean;
   organizerEmail: string;
   organizerTel: string;
@@ -23,200 +39,254 @@ const TournamentForm: React.FC = () => {
     endDate: new Date(),
     description: "",
     tournamentType: "",
+    maxPlayers: null,
     organizer: false,
     organizerEmail: "",
     organizerTel: ""
   });
 
-  const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
+  const handleFieldChange = (
+    event:
+      | SelectChangeEvent<string>
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     fieldName: string
   ): void => {
-    const value =
-      event.target.type === "checkbox"
-        ? event.target.checked
-        : event.target.value;
+    let value: string | boolean;
+
+    if ("target" in event && event.target instanceof HTMLInputElement) {
+      value =
+        event.target.type === "checkbox"
+          ? event.target.checked
+          : event.target.value;
+    } else if (
+      "target" in event &&
+      event.target instanceof HTMLTextAreaElement
+    ) {
+      value = event.target.value;
+    } else if ("target" in event) {
+      value = event.target.value;
+    } else {
+      console.error("Unsupported event type");
+      return;
+    }
+
     setFormData((prevData) => ({
       ...prevData,
       [fieldName]: value
     }));
   };
 
-  const handleSelectChange = (
-    event: React.ChangeEvent<HTMLSelectElement>,
-    fieldName: string
+  const handleDateChange = (
+    date: Date | null,
+    dateType: "startDate" | "endDate"
   ): void => {
-    const value = event.target.value;
-    setFormData((prevData) => ({
-      ...prevData,
-      [fieldName]: value
-    }));
-  };
+    setFormData((prevData) => {
+      let startDate = prevData.startDate;
+      let endDate = prevData.endDate;
 
-  const handleStartDateChange = (date: Date | null): void => {
-    setFormData((prevData) => ({
-      ...prevData,
-      startDate: date ?? new Date(),
-      endDate:
-        date !== null && prevData.endDate !== null && date > prevData.endDate
-          ? date
-          : prevData.endDate
-    }));
-  };
+      if (dateType === "startDate") {
+        startDate = date ?? new Date();
+        endDate =
+          date !== null && prevData.endDate !== null && date > prevData.endDate
+            ? date
+            : prevData.endDate;
+      } else if (dateType === "endDate") {
+        endDate = date ?? new Date();
+        startDate =
+          date !== null &&
+          prevData.startDate !== null &&
+          date < prevData.startDate
+            ? date
+            : prevData.startDate;
+      }
 
-  const handleEndDateChange = (date: Date | null): void => {
-    setFormData((prevData) => ({
-      ...prevData,
-      endDate: date ?? new Date(),
-      startDate:
-        date !== null &&
-        prevData.startDate !== null &&
-        date < prevData.startDate
-          ? date
-          : prevData.startDate
-    }));
+      return {
+        ...prevData,
+        startDate,
+        endDate
+      };
+    });
   };
 
   return (
-    <form
-      id="tournamentForm"
-      className="form"
-      onSubmit={(event: SyntheticEvent) => {
-        event.preventDefault();
-        /** here how tournament is actually created somewhere */
-      }}
-    >
-      <h1 className="header">Create a new tournament</h1>
-      <p className="subtext">Fill information below.</p>
-      <div className="field">
-        <label htmlFor="tournamentName"></label>
-        <input
-          type="text"
-          name="tournamentName"
+    <Container component="main" maxWidth="xs">
+      <form
+        id="tournamentForm"
+        className="form"
+        onSubmit={(event: SyntheticEvent) => {
+          event.preventDefault();
+          /** here how tournament is actually created somewhere */
+        }}
+      >
+        <Typography variant="h5" className="header" fontWeight="bold">
+          Create a new tournament
+        </Typography>
+        <Typography variant="subtitle1" className="subtext">
+          Fill information below.
+        </Typography>
+        <TextField
+          variant="outlined"
+          margin="normal"
+          fullWidth
           id="tournamentName"
-          placeholder="Tournament name"
+          label="Tournament name"
+          name="tournamentName"
           required
           value={formData.tournamentName}
           onChange={(e) => {
-            handleInputChange(e, "tournamentName");
+            handleFieldChange(e, "tournamentName");
           }}
         />
-      </div>
-      <div className="field">
-        <br />
-        <label htmlFor="location"></label>
-        <input
-          type="text"
-          name="location"
+        <TextField
+          variant="outlined"
+          margin="normal"
+          fullWidth
           id="location"
-          placeholder="Location"
+          label="Location"
+          name="location"
           required
           value={formData.location}
           onChange={(e) => {
-            handleInputChange(e, "location");
+            handleFieldChange(e, "location");
           }}
         />
-      </div>
-      <p className="subtext">Pick dates:</p>
-      <div className="field">
+        <Typography variant="subtitle1" className="subtext">
+          Pick dates:
+        </Typography>
         <div className="dates">
-          <label htmlFor="startDate"></label>
           <DatePicker
+            id="start"
             selectsStart
             selected={formData.startDate}
-            dateFormat="dd/MM/yyyy"
+            dateFormat="dd/MM/yyyy HH:mm"
             startDate={formData.startDate}
             endDate={formData.endDate}
-            onChange={handleStartDateChange}
+            onChange={(date) => {
+              handleDateChange(date, "startDate");
+            }}
+            showTimeSelect
+            timeFormat="HH:mm"
+            timeIntervals={30}
+            timeCaption="Time"
           />
-          <label htmlFor="endDate"></label>
           <DatePicker
+            id="end"
             selectsEnd
             selected={formData.endDate}
-            dateFormat="dd/MM/yyyy"
+            dateFormat="dd/MM/yyyy HH:mm"
             startDate={formData.startDate}
             endDate={formData.endDate}
             minDate={formData.startDate}
-            onChange={handleEndDateChange}
+            onChange={(date) => {
+              handleDateChange(date, "endDate");
+            }}
+            showTimeSelect
+            timeFormat="HH:mm"
+            timeIntervals={30}
+            timeCaption="Time"
           />
         </div>
-      </div>
-      <p className="subtext">Description:</p>
-      <div className="field">
-        <label htmlFor="description"></label>
-        <input
-          type="text"
-          name="description"
+        <br></br>
+        <TextField
+          multiline
+          fullWidth
+          minRows={3}
+          maxRows={10}
+          label="Information about tournament"
           id="description"
-          placeholder="Information about tournament"
+          name="description"
           required
           value={formData.description}
           onChange={(e) => {
-            handleInputChange(e, "description");
+            handleFieldChange(e, "description");
           }}
         />
-      </div>
-      <div className="field">
-        <br />
-        <label htmlFor="tournamentType">Select tournament type:</label>
-        <br />
-        <select
-          id="tournamentType"
-          onChange={(e) => {
-            handleSelectChange(e, "tournamentType");
-          }}
-          value={formData.tournamentType}
-        >
-          <option value="robin">Round Robin</option>
-          <option value="playoff">Playoff</option>
-          <option value="preAndPlayoff">Premilinary + playoff</option>
-        </select>
-      </div>
-      <br />
-      <div className="field-checkbox">
-        <input
-          type="checkbox"
-          name="organizer"
-          id="organizer"
-          checked={formData.organizer}
-          onChange={(e) => {
-            handleInputChange(e, "organizer");
-          }}
-        />
-        <label htmlFor="organizer">
-          Organizer has different information than me
-        </label>
-        {formData.organizer && (
-          <div className="field">
-            <br />
-            <label htmlFor="organizerEmail"></label>
-            <input
-              type="text"
-              name="organizerEmail"
-              id="organizerEmail"
-              placeholder="Organizer's email"
-              required
-            />
-            <br />
-            <br />
-            <label htmlFor="organizerTel"></label>
-            <input
-              type="tel"
-              name="organizerTel"
-              id="organizerTel"
-              placeholder="Organizer's phone number"
-              required
-            />
-          </div>
+        <FormControl fullWidth variant="outlined" margin="normal">
+          <InputLabel htmlFor="tournamentType">
+            Select tournament type *
+          </InputLabel>
+          <Select
+            label="Select tournament type"
+            id="tournamentType"
+            value={formData.tournamentType}
+            onChange={(e) => {
+              handleFieldChange(e, "tournamentType");
+            }}
+            required
+          >
+            <MenuItem value="robin">Round Robin</MenuItem>
+            <MenuItem value="playoff">Playoff</MenuItem>
+          </Select>
+        </FormControl>
+        {formData.tournamentType === "playoff" && (
+          <>
+            <Typography>
+              Playoff type works best if the number of players is 2, 4, 8, 16,
+              32 etc.
+            </Typography>
+          </>
         )}
-      </div>
-      <br />
-      <div className="field">
-        <button type="submit" id="btnCreate">
+        <TextField
+          variant="outlined"
+          margin="normal"
+          fullWidth
+          id="maxPlayers"
+          label="Maximum number of players"
+          name="maxPlayers"
+          required
+          value={formData.maxPlayers ?? ""}
+          onChange={(e) => {
+            handleFieldChange(e, "maxPlayers");
+          }}
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={formData.organizer}
+              onChange={(e) => {
+                handleFieldChange(e, "organizer");
+              }}
+              name="organizer"
+              color="primary"
+            />
+          }
+          label="Organizer has different information than me"
+        />
+        {formData.organizer && (
+          <>
+            <TextField
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              id="organizerEmail"
+              label="Organizer's email"
+              name="organizerEmail"
+              required
+              onChange={(e) => {
+                handleFieldChange(e, "organizerEmail");
+              }}
+            />
+            <TextField
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              id="organizerTel"
+              label="Organizer's phone number"
+              name="organizerTel"
+              required
+              onChange={(e) => {
+                handleFieldChange(e, "organizerTel");
+              }}
+            />
+          </>
+        )}
+        <Button type="submit" variant="contained" id="btnCreate">
           Create
-        </button>
-      </div>
-    </form>
+        </Button>
+      </form>
+      <br></br>
+      <Footer />
+    </Container>
   );
 };
 
