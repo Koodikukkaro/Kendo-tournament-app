@@ -27,9 +27,7 @@ export const SocketProvider = (props: Props): ReactElement => {
 
   useEffect(() => {
     socket.connect();
-    if (socket.connected) {
-      initSockets(setValue);
-    }
+    initSockets(setValue);
   }, []);
 
   return (
