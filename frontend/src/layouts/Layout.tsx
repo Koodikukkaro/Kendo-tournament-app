@@ -1,20 +1,14 @@
 import React, { type ReactElement } from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
+
+import NavigationBar from "../components/common/layout-components/NavigationBar/NavigationBar";
+import { navigationItems, settings } from "../navigation-data";
 
 // TODO: Implement proper layouts.
 const Layout = (): ReactElement => {
   return (
     <div>
-      <nav>
-        <ul>
-          <li>
-            <Link to="/">Home</Link>
-          </li>
-          <li>
-            <Link to="/login">Login</Link>
-          </li>
-        </ul>
-      </nav>
+      <NavigationBar navigationItems={navigationItems} settings={settings} />
       <Outlet />
     </div>
   );

@@ -108,7 +108,9 @@ const LoginForm: React.FC = () => {
                 Sign In!
               </Typography>
 
-              <ShowError message={errorMessage.message}></ShowError>
+              {errorMessage.message !== "" && (
+                <ShowError message={errorMessage.message}></ShowError>
+              )}
               <TextField
                 label="Username/Email"
                 type="text"
