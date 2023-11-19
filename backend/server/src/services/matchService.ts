@@ -20,7 +20,9 @@ export class MatchService {
     const newMatch = await MatchModel.create({
       type: requestBody.matchType,
       players: requestBody.players,
-      comment: requestBody.comment
+      admin: requestBody.admin,
+      comment: requestBody.comment,
+      officials: requestBody.officials
     });
 
     return await newMatch.toObject();

@@ -1,12 +1,11 @@
 import jwt from "jsonwebtoken";
 import config from "./config";
 import UnauthorizedError from "../errors/UnauthorizedError";
-import { type UserRole } from "../models/requestModel";
 
 export interface TokenPayload {
   id: string;
-  email: string;
-  role: UserRole;
+  adminTournaments: string[];
+  officialTournaments: string[];
 }
 
 export const generateAccessToken = (
@@ -36,7 +35,7 @@ export async function verifyRefreshToken(token: string): Promise<TokenPayload> {
         );
       } else {
         // Cast the decoded token to JwtPayload and then resolve it
-        resolve(decoded as TokenPayload);
+        resolve(decoded as unknown as TokenPayload);
       }
     });
   });

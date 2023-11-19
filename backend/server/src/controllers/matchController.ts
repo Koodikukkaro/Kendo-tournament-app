@@ -37,34 +37,34 @@ export class MatchController extends Controller {
   /*
    * Retrieve details of a specific Kendo match.
    */
-  @Get("{id}")
+  @Get("{matchId}")
   @Tags("Match")
-  public async getMatch(@Path() id: ObjectIdString): Promise<Match> {
+  public async getMatch(@Path() matchId: ObjectIdString): Promise<Match> {
     this.setStatus(200);
-    return await this.service.getMatchById(id);
+    return await this.service.getMatchById(matchId);
   }
 
   /*
    * Delete a Kendo match.
    */
   @Security("jwt", ["official"])
-  @Delete("{id}")
+  @Delete("{matchId}")
   @Tags("Match")
-  public async deleteMatch(@Path() id: ObjectIdString): Promise<void> {
+  public async deleteMatch(@Path() matchId: ObjectIdString): Promise<void> {
     this.setStatus(204);
-    await this.service.deleteMatchById(id);
+    await this.service.deleteMatchById(matchId);
   }
 
   /*
    * Start the timer for the specified Kendo match.
    */
   @Security("jwt", ["official"])
-  @Patch("{id}/start-timer")
+  @Patch("{matchId}/start-timer")
   @Tags("Match")
-  public async startTimer(@Path() id: ObjectIdString): Promise<void> {
+  public async startTimer(@Path() matchId: ObjectIdString): Promise<void> {
     this.setStatus(204);
 
-    const match = await this.service.startTimer(id);
+    const match = await this.service.startTimer(matchId);
 
     io.to(match.id).emit("start-timer", match);
   }
@@ -73,12 +73,12 @@ export class MatchController extends Controller {
    * Stop the timer for the specified Kendo match.
    */
   @Security("jwt", ["official"])
-  @Patch("{id}/stop-timer")
+  @Patch("{matchId}/stop-timer")
   @Tags("Match")
-  public async stopTimer(@Path() id: ObjectIdString): Promise<void> {
+  public async stopTimer(@Path() matchId: ObjectIdString): Promise<void> {
     this.setStatus(204);
 
-    const match = await this.service.stopTimer(id);
+    const match = await this.service.stopTimer(matchId);
 
     io.to(match.id).emit("stop-timer", match);
   }
@@ -87,16 +87,16 @@ export class MatchController extends Controller {
    * Add a point to the specified Kendo match.
    */
   @Security("jwt", ["official"])
-  @Patch("{id}/points")
+  @Patch("{matchId}/points")
   @Tags("Match")
   public async addPoint(
-    @Path() id: ObjectIdString,
+    @Path() matchId: ObjectIdString,
     @Body() updateMatchRequest: AddPointRequest
   ): Promise<void> {
     this.setStatus(204);
 
     const match = await this.service.addPointToMatchById(
-      id,
+      matchId,
       updateMatchRequest
     );
 

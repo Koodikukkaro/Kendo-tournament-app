@@ -25,6 +25,8 @@ export interface Match {
   players: MatchPlayer[];
   winner?: string;
   comment?: string;
+  admin: Types.ObjectId;
+  officials?: Types.ObjectId[];
 }
 
 const pointSchema = new Schema<MatchPoint>(
@@ -65,7 +67,15 @@ const matchSchema = new Schema<Match>({
     maxlength: 2,
     minlength: 2
   },
-  comment: { type: String, required: false }
+  comment: { type: String, required: false },
+  admin: {
+    type: Schema.Types.ObjectId,
+    required: true
+  },
+  officials: {
+    type: [Schema.Types.ObjectId],
+    default: []
+  }
 });
 
 matchSchema.set("toObject", {
