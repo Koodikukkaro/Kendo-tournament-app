@@ -1,4 +1,4 @@
-import mongoose, { Schema, type Types } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 export type PlayerColor = "red" | "white";
 export type PointType = "men" | "kote" | "do" | "tsuki" | "hansoku";
@@ -10,20 +10,20 @@ export interface MatchPoint {
 }
 
 export interface MatchPlayer {
-  id: Types.ObjectId;
+  id: string;
   points: MatchPoint[];
   color: PlayerColor;
 }
 
 export interface Match {
-  id: Types.ObjectId;
+  id: string;
   startTimestamp?: Date;
   timerStartedTimestamp: Date | null;
   elapsedTime: number;
   endTimestamp?: Date;
   type: MatchType;
   players: MatchPlayer[];
-  winner?: Types.ObjectId;
+  winner?: string;
   comment?: string;
 }
 

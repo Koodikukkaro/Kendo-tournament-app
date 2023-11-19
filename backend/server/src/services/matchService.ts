@@ -49,7 +49,7 @@ export class MatchService {
     }
   }
 
-  public async startTimer(id: string): Promise<void> {
+  public async startTimer(id: string): Promise<Match> {
     const match = await MatchModel.findById(id).exec();
 
     if (match === null) {
@@ -79,9 +79,11 @@ export class MatchService {
     match.timerStartedTimestamp = new Date();
 
     await match.save();
+
+    return await match.toObject();
   }
 
-  public async stopTimer(id: string): Promise<void> {
+  public async stopTimer(id: string): Promise<Match> {
     const match = await MatchModel.findById(id).exec();
 
     if (match === null) {
@@ -115,21 +117,23 @@ export class MatchService {
     match.elapsedTime += elapsedMilliseconds;
     match.timerStartedTimestamp = null;
     await match.save();
+
+    return await match.toObject();
   }
 
   public async addPointToMatchById(
     id: string,
     requestBody: AddPointRequest
-  ): Promise<void> {
-    const matchToUpdate = await MatchModel.findById(id);
+  ): Promise<Match> {
+    const match = await MatchModel.findById(id);
 
-    if (matchToUpdate === null) {
+    if (match === null) {
       throw new NotFoundError({
         message: `Match not found for ID: ${id}`
       });
     }
 
-    if (matchToUpdate.winner !== undefined) {
+    if (match.winner !== undefined) {
       throw new BadRequestError({
         message: "Finished matches cannot be edited"
       });
@@ -142,11 +146,13 @@ export class MatchService {
       timestamp: new Date()
     };
 
-    this.assignPoint(matchToUpdate, newPoint, pointColor);
+    this.assignPoint(match, newPoint, pointColor);
 
-    this.checkMatchOutcome(matchToUpdate);
+    this.checkMatchOutcome(match);
 
-    await matchToUpdate.save();
+    await match.save();
+
+    return await match.toObject();
   }
 
   private assignPoint(

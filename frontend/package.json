@@ -28,7 +28,6 @@
     "@types/mocha": "^10.0.2",
     "@types/react": "^18.2.23",
     "@types/react-dom": "^18.2.14",
-    "@types/react-router-dom": "^5.3.3",
     "@typescript-eslint/eslint-plugin": "^6.7.3",
     "@typescript-eslint/parser": "^6.7.3",
     "chai": "^4.3.10",
@@ -64,6 +63,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.17.0",
+    "socket.io-client": "^4.7.2",
     "react-tabs": "^6.0.2"
   }
 }
