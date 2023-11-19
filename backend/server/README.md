@@ -4,6 +4,11 @@
 
 These instructions will help you set up the project locally for development and testing purposes. To access a local database, follow the instructions [here](https://github.com/Koodikukkaro/Kendo-tournament-app/blob/development/backend/database/README.md).
 
+### Prerequisites
+
+- Node.js (v18.x or higher)
+- Access to MongoDB (../database with Docker, local or Atlas)
+
 ### Installation
 
 1. Use the node version defined in .nvmrc (or simply run `nvm use` if you have nvm installed)
@@ -44,7 +49,7 @@ The first time it will take time to build and run. Every other time, it will tak
 
 ## Usage 
 
-The API documentation can be accessed via the `\docs` endpoint. 
+The API documentation can be accessed via the `/docs` endpoint. 
 
 ### Authentication
 
