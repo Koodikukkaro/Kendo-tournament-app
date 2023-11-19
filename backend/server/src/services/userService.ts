@@ -32,8 +32,6 @@ export class UserService {
       });
     }
 
-    await UserModel.create({
-      ...requestBody
-    });
+    await UserModel.create(requestBody);
   }
 }

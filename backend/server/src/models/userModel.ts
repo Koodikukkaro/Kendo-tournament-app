@@ -1,9 +1,8 @@
-import mongoose, { Schema, type Types } from "mongoose";
-import { UserRole } from "./requestModel";
+import mongoose, { Schema } from "mongoose";
 import bcrypt from "bcryptjs";
 
 export interface User {
-  id: Types.ObjectId;
+  id: string;
   email: string;
   password: string;
   userName?: string;
@@ -12,11 +11,10 @@ export interface User {
   lastName: string;
   nationality: string;
   inNationalTeam: boolean;
-  clubName: string;
-  danRank: string;
+  clubName?: string;
+  danRank?: string;
   underage: boolean;
   guardiansEmail?: string;
-  role: UserRole;
   refreshToken?: string;
 }
 
@@ -37,15 +35,10 @@ const schema = new Schema<User, UserMethods>(
     nationality: { type: String, required: true },
     inNationalTeam: { type: Boolean, default: false },
     phoneNumber: { type: String, required: true },
-    clubName: { type: String, required: true },
-    danRank: { type: String, required: true },
+    clubName: { type: String },
+    danRank: { type: String },
     underage: { type: Boolean, default: false },
     guardiansEmail: { type: String },
-    role: {
-      type: Number,
-      enum: UserRole,
-      default: 0
-    },
     refreshToken: { type: String, required: false, select: false }
   },
   {
