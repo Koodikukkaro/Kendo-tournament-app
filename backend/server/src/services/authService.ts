@@ -1,19 +1,20 @@
 import BadRequestError from "../errors/BadRequestError.js";
 import { type LoginRequest } from "../models/requestModel.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
-import userModel from "../models/userModel.js";
+import UserModel from "../models/userModel.js";
 import {
   generateRefreshToken,
   generateAccessToken,
   verifyRefreshToken,
   type TokenPayload
 } from "../utility/jwtHelper.js";
+import MatchModel from "../models/matchModel.js";
 
 export class AuthService {
   public async createTokens(requestBody: LoginRequest): Promise<string[]> {
     const { email, password } = requestBody;
 
-    const user = await userModel.findOne({ email }).select("+password").exec();
+    const user = await UserModel.findOne({ email }).select("+password").exec();
 
     if (user === null || user === undefined) {
       throw new UnauthorizedError({
@@ -29,10 +30,24 @@ export class AuthService {
       });
     }
 
+    // Find tournaments where the user is an admin
+    const adminTournaments = await MatchModel.find({ admin: user.id })
+      .select("admin")
+      .exec();
+
+    // Find tournaments where the user is an official
+    const officialTournaments = await MatchModel.find({
+      officials: { $in: [user.id] }
+    })
+      .select("officials")
+      .exec();
+
     const tokenPayload: TokenPayload = {
       id: user.id,
-      email: user.email,
-      role: user.role
+      adminTournaments: adminTournaments.map((tournament) => tournament.id),
+      officialTournaments: officialTournaments.map(
+        (tournament) => tournament.id
+      )
     };
 
     const accessToken = generateAccessToken(tokenPayload);
@@ -51,8 +66,7 @@ export class AuthService {
 
     const decoded = await verifyRefreshToken(refreshToken);
 
-    const user = await userModel
-      .findById(decoded.id)
+    const user = await UserModel.findById(decoded.id)
       .select("+refreshToken")
       .exec();
 
@@ -64,8 +78,8 @@ export class AuthService {
 
     const newAccessToken = generateAccessToken({
       id: decoded.id,
-      email: decoded.email,
-      role: decoded.role
+      adminTournaments: decoded.adminTournaments,
+      officialTournaments: decoded.officialTournaments
     });
 
     return [newAccessToken, user.refreshToken];

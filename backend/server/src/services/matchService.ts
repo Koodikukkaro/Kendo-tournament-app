@@ -20,7 +20,9 @@ export class MatchService {
     const newMatch = await MatchModel.create({
       type: requestBody.matchType,
       players: requestBody.players,
-      comment: requestBody.comment
+      admin: requestBody.admin,
+      comment: requestBody.comment,
+      officials: requestBody.officials
     });
 
     return await newMatch.toObject();
@@ -125,7 +127,7 @@ export class MatchService {
     id: string,
     requestBody: AddPointRequest
   ): Promise<Match> {
-    const match = await MatchModel.findById(id);
+    const match = await MatchModel.findById(id).exec();
 
     if (match === null) {
       throw new NotFoundError({

@@ -9,13 +9,6 @@ import type { MatchType, PlayerColor, PointType } from "./matchModel.js";
  */
 export type ObjectIdString = string;
 
-export enum UserRole {
-  None,
-  Player,
-  Official,
-  Admin
-}
-
 export interface RegisterRequest {
   /**
    * @example "john.doe@gmail.com"
@@ -88,6 +81,8 @@ export interface CreateMatchRequest {
    * @maxItems 2 Two players are required
    */
   players: MatchPlayerPayload[];
+  admin: ObjectIdString;
+  officials: ObjectIdString[];
   matchType: MatchType;
   comment?: string;
 }
