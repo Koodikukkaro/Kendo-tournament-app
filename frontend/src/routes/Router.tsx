@@ -1,8 +1,8 @@
 import { AuthenticationGuard } from "components/common/AuthenticationGuard";
-import Landing from "components/modules/Landing/Landing";
-import Layout from "layouts/Layout";
 import LoginForm from "components/modules/Login/Login";
+import RoundRobinTournamentView from "components/modules/OngoingTournament/RoundRobinTournamentView";
 import RegisterForm from "components/modules/Registeration/Registration";
+import Layout from "layouts/Main/Layout";
 
 import React from "react";
 import {
@@ -16,7 +16,7 @@ const routes = createRoutesFromElements(
     {/* TODO: Different navbar/layout for the unauthenticated. */}
     {/* Unauthenticated stuff: */}
     <Route path="/" element={<Layout />}>
-      <Route index element={<Landing />} />
+      <Route index element={<RoundRobinTournamentView />} />
       <Route
         element={
           <AuthenticationGuard
