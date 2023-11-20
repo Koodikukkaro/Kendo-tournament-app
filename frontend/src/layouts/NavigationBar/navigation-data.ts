@@ -3,7 +3,7 @@
   It's used in navbar, but it's probably of general importance.
 */
 
-import type { NavigationData } from "components/common/layout-components/NavigationBar/navigation-bar";
+import { type NavigationData } from "./navigation-bar";
 
 // Text to display and the corresponding link
 export const navigationItems: NavigationData = [

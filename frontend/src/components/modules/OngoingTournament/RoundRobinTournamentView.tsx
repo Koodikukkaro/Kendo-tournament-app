@@ -12,7 +12,6 @@ import {
   Button
 } from "@mui/material";
 import "react-tabs/style/react-tabs.css";
-import "../../common/Style/common.css";
 
 interface NamesState {
   player1: string;
@@ -93,7 +92,7 @@ const RoundRobinTournamentView: React.FC = () => {
   };
 
   return (
-    <div className="app-container">
+    <>
       <Tabs
         selectedIndex={selectedTab}
         onSelect={(index) => {
@@ -128,7 +127,7 @@ const RoundRobinTournamentView: React.FC = () => {
           <div>{/* Add matches here */}</div>
         </TabPanel>
       </Tabs>
-    </div>
+    </>
   );
 };
 

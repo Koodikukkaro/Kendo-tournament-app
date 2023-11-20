@@ -1,0 +1,15 @@
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  /* This ensures that the layout takes at least the height of the viewport */
+  min-height: 100vh;
+}
+
+.app-container {
+  margin: 1em;
+  flex: 1;
+  align-self: center;
+  max-width: 1200px;
+  width: 80%;
+  /* border: 2px solid black; */
+}
