@@ -1,14 +1,12 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "context/AuthContext";
-import "../../common/Style/common.css";
-import "./login.css";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import Footer from "components/common/Footer/Footer";
 import TextField from "@mui/material/TextField";
 import ShowError from "components/common/ErrorMessage/Error";
+import Box from "@mui/material/Box";
 
 interface LocationProps {
   state: {
@@ -17,7 +15,7 @@ interface LocationProps {
 }
 
 interface FormData {
-  login: string;
+  email: string;
   password: string;
 }
 
@@ -33,7 +31,7 @@ const LoginForm: React.FC = () => {
   const loginAPI = "http://localhost:8080/api/auth/login"; // transfer the base URL into env file.
 
   const [formData, setFormData] = useState<FormData>({
-    login: "",
+    email: "",
     password: ""
   });
 
@@ -53,29 +51,16 @@ const LoginForm: React.FC = () => {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          email: formData.login,
+          email: formData.email,
           password: formData.password
         })
       });
 
       if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        // Store the token, and update auth state
         await login();
         navigate(from, { replace: true });
       } else {
-        const errorData = await response.json();
-        const context = errorData.errors[0].context;
-        for (let i = 0; i < errorContext.length; i++) {
-          const key = errorContext[i];
-          if (context[key] !== undefined) {
-            setErrorMessage({
-              message: context[key].message
-            });
-            break; // found the error message
-          }
-        }
+        setErrorMessage({ message: "This does not work yet! :)" });
       }
     } catch (error) {
       console.log(error);
@@ -98,83 +83,86 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="gridContainer">
-      <Grid container className="">
-        {/* Left Panel */}
-        <Grid item xs={12} sm={7}>
-          <div className="leftPanel">
-            <form id="loginForm" className="form" onSubmit={onHandleSubmit}>
-              <Typography variant="h4" component="h4">
-                Sign In!
-              </Typography>
+    <Grid container display="flex" justifyContent="center">
+      <Box
+        sx={{
+          marginTop: 8,
+          padding: "1em",
+          width: "500px"
+        }}
+      >
+        <Typography
+          component="h1"
+          variant="h5"
+          fontWeight="bold"
+          alignSelf="start"
+        >
+          {"Sign in"}
+        </Typography>
+        <Box
+          component="form"
+          onSubmit={onHandleSubmit}
+          noValidate
+          sx={{ mt: 2, display: "flex", flexDirection: "column" }}
+        >
+          <ShowError message={errorMessage.message}></ShowError>
+          <TextField
+            label="Email"
+            required
+            type="text"
+            name="email"
+            id="email"
+            placeholder="Type your email"
+            value={formData.email}
+            onChange={(e) => {
+              handleInputChange(e, "email");
+            }}
+            fullWidth
+          />
 
-              {errorMessage.message !== "" && (
-                <ShowError message={errorMessage.message}></ShowError>
-              )}
-              <TextField
-                label="Username/Email"
-                type="text"
-                name="login"
-                id="login"
-                placeholder="Type your username or email"
-                value={formData.login}
-                onChange={(e) => {
-                  handleInputChange(e, "login");
-                }}
-                margin="normal"
-                required
-                fullWidth
-              />
+          <TextField
+            label="Password"
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Type your password"
+            value={formData.password}
+            onChange={(e) => {
+              handleInputChange(e, "password");
+            }}
+            margin="normal"
+            required
+            fullWidth
+          />
 
-              <TextField
-                label="Password"
-                type="password"
-                name="password"
-                id="password"
-                placeholder="Type your password"
-                value={formData.password}
-                onChange={(e) => {
-                  handleInputChange(e, "password");
-                }}
-                margin="normal"
-                required
-                fullWidth
-              />
-
-              <Typography variant="body2" className="forgotPassword">
-                <Link to="/404">Forgot your password?</Link>
-              </Typography>
-              <br />
-              <Button
-                type="submit"
-                id="btn-login"
-                variant="contained"
-                color="primary"
-                className="login-button"
-              >
-                Log in
-              </Button>
-            </form>
-          </div>
-        </Grid>
-
-        {/* Right Panel */}
-        <Grid item xs={12} sm={5} className="rightPanel">
-          <div className="right-container">
-            <Typography component="h3" variant="h3">
-              Don&apos;t have an account?
-            </Typography>
-            <br />
-            <Button variant="contained" color="success" className="sign-up-btn">
-              <Link to="/register" className="sign-up-link">
-                Register Here
-              </Link>
+          <Box margin="auto" width="200px">
+            <Button
+              type="submit"
+              id="btn-login"
+              variant="contained"
+              color="primary"
+              className="login-button"
+              fullWidth
+              sx={{ mt: 3, mb: 2 }}
+            >
+              {"Log in"}
             </Button>
-          </div>
-        </Grid>
-      </Grid>
-      <Footer />
-    </div>
+          </Box>
+          <Grid container gap="10px">
+            <Grid item xs>
+              <Typography variant="body2">
+                <Link to="/404">{"Forgot password?"}</Link>
+              </Typography>
+            </Grid>
+            <Grid item>
+              <Typography variant="body2">
+                <Link to="/register">{"Don't have an account? Sign Up"}</Link>
+              </Typography>
+            </Grid>
+          </Grid>
+        </Box>
+      </Box>
+    </Grid>
   );
 };
 
