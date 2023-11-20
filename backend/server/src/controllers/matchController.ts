@@ -66,7 +66,7 @@ export class MatchController extends Controller {
 
     const match = await this.service.startTimer(matchId);
 
-    io.to(match.id).emit("start-timer", match);
+    io.to(matchId).emit("start-timer", match);
   }
 
   /*
@@ -80,7 +80,7 @@ export class MatchController extends Controller {
 
     const match = await this.service.stopTimer(matchId);
 
-    io.to(match.id).emit("stop-timer", match);
+    io.to(matchId).emit("stop-timer", match);
   }
 
   /*
@@ -100,7 +100,7 @@ export class MatchController extends Controller {
       updateMatchRequest
     );
 
-    io.to(match.id).emit("add-point", match);
+    io.to(matchId).emit("add-point", match);
   }
 
   private get service(): MatchService {

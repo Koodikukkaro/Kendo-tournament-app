@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, type Types } from "mongoose";
 
 export type PlayerColor = "red" | "white";
 export type PointType = "men" | "kote" | "do" | "tsuki" | "hansoku";
@@ -10,23 +10,23 @@ export interface MatchPoint {
 }
 
 export interface MatchPlayer {
-  id: string;
+  id: Types.ObjectId;
   points: MatchPoint[];
   color: PlayerColor;
 }
 
 export interface Match {
-  id: string;
+  id: Types.ObjectId;
   startTimestamp?: Date;
   timerStartedTimestamp: Date | null;
   elapsedTime: number;
   endTimestamp?: Date;
   type: MatchType;
   players: MatchPlayer[];
-  winner?: string;
+  winner?: Types.ObjectId;
   comment?: string;
   admin: Types.ObjectId;
-  officials?: Types.ObjectId[];
+  officials?: Types.ObjectId;
 }
 
 const pointSchema = new Schema<MatchPoint>(
@@ -37,54 +37,59 @@ const pointSchema = new Schema<MatchPoint>(
   { _id: false }
 );
 
-const playerSchema = new Schema<MatchPlayer>({
-  points: {
-    type: [pointSchema],
-    required: true,
-    default: []
+const playerSchema = new Schema<MatchPlayer>(
+  {
+    points: {
+      type: [pointSchema],
+      required: true,
+      default: []
+    },
+    color: { type: String, required: true }
   },
-  color: { type: String, required: true }
-});
-
-playerSchema.set("toObject", {
-  virtuals: true,
-  versionKey: false,
-  transform: (doc, ret) => {
-    delete ret._id;
+  {
+    toObject: {
+      virtuals: true,
+      versionKey: false,
+      transform(_doc, ret, _options) {
+        ret.id = ret._id;
+        delete ret._id;
+      }
+    }
   }
-});
+);
 
-const matchSchema = new Schema<Match>({
-  startTimestamp: { type: Date, required: false },
-  timerStartedTimestamp: { type: Date, required: false, default: null },
-  elapsedTime: { type: Number, required: true, default: 0 },
-  endTimestamp: { type: Date, required: false },
-  type: { type: String, required: true },
-  winner: { type: Schema.Types.ObjectId, required: false },
-  players: {
-    type: [playerSchema],
-    required: true,
-    maxlength: 2,
-    minlength: 2
+const matchSchema = new Schema<Match>(
+  {
+    startTimestamp: { type: Date, required: false },
+    timerStartedTimestamp: { type: Date, required: false, default: null },
+    elapsedTime: { type: Number, required: true, default: 0 },
+    endTimestamp: { type: Date, required: false },
+    type: { type: String, required: true },
+    winner: { type: Schema.Types.ObjectId, required: false },
+    players: {
+      type: [playerSchema],
+      required: true
+    },
+    comment: { type: String, required: false },
+    admin: {
+      type: Schema.Types.ObjectId
+    },
+    officials: {
+      type: [Schema.Types.ObjectId],
+      default: []
+    }
   },
-  comment: { type: String, required: false },
-  admin: {
-    type: Schema.Types.ObjectId,
-    required: true
-  },
-  officials: {
-    type: [Schema.Types.ObjectId],
-    default: []
+  {
+    toObject: {
+      virtuals: true,
+      versionKey: false,
+      transform(_doc, ret, _options) {
+        ret.id = ret._id;
+        delete ret._id;
+      }
+    }
   }
-});
-
-matchSchema.set("toObject", {
-  virtuals: true,
-  versionKey: false,
-  transform: (doc, ret) => {
-    delete ret._id;
-  }
-});
+);
 
 const MatchModel = mongoose.model("Match", matchSchema);
 

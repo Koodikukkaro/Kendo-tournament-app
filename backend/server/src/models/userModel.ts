@@ -1,8 +1,8 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, type Types } from "mongoose";
 import bcrypt from "bcryptjs";
 
 export interface User {
-  id: string;
+  id: Types.ObjectId;
   email: string;
   password: string;
   userName?: string;
@@ -23,7 +23,7 @@ interface UserMethods {
   checkPassword: (password: string) => Promise<boolean>;
 }
 
-type UserModel = mongoose.Model<User, Record<string, unknown>, UserMethods>;
+type UserModelType = mongoose.Model<User, Record<string, unknown>, UserMethods>;
 
 const schema = new Schema<User, UserMethods>(
   {
@@ -54,6 +54,7 @@ schema.set("toObject", {
     if (doc.isSelected("password")) {
       delete ret.password;
     }
+    ret.id = ret._id;
     delete ret._id;
   }
 });
@@ -79,4 +80,6 @@ schema.methods.checkPassword = async function (candidatePassword: string) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-export default mongoose.model<User, UserModel>("User", schema);
+const UserModel = mongoose.model<User, UserModelType>("User", schema);
+
+export default UserModel;

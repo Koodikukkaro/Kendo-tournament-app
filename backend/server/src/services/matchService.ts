@@ -127,7 +127,7 @@ export class MatchService {
     id: string,
     requestBody: AddPointRequest
   ): Promise<Match> {
-    const match = await MatchModel.findById(id);
+    const match = await MatchModel.findById(id).exec();
 
     if (match === null) {
       throw new NotFoundError({
