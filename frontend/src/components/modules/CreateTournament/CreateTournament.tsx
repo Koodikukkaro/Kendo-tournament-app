@@ -115,32 +115,23 @@ const TournamentForm: React.FC = () => {
     });
   };
 
-  const handleCreateButtonClick = () => {
+  const handleCreateButtonClick = (): void => {
     setConfirmationDialogOpen(true);
   };
 
-  const handleCreateConfirmed = () => {
-    /** here how tournament is actually created somewhere */  
-    console.log(formData);
-
+  const handleCreateConfirmed = (event: SyntheticEvent): void => {
+    /** here how tournament is actually created somewhere */
+    event.preventDefault();
     setConfirmationDialogOpen(false);
   };
 
-  const handleCreateCanceled = () => {
+  const handleCreateCanceled = (): void => {
     setConfirmationDialogOpen(false);
   };
 
   return (
     <Container component="main" maxWidth="xs">
-      <form
-        id="tournamentForm"
-        className="form"
-        onSubmit={(event: SyntheticEvent) => {
-          handleCreateButtonClick();
-          event.preventDefault();
-            
-        }}
-      >
+      <form id="tournamentForm" className="form">
         <Typography variant="h5" className="header" fontWeight="bold">
           Create a new tournament
         </Typography>
@@ -303,7 +294,11 @@ const TournamentForm: React.FC = () => {
             />
           </>
         )}
-        <Button type="submit" variant="contained" id="btnCreate">
+        <Button
+          variant="contained"
+          id="btnCreate"
+          onClick={handleCreateButtonClick}
+        >
           Create
         </Button>
       </form>
@@ -314,7 +309,7 @@ const TournamentForm: React.FC = () => {
         aria-describedby="confirmation-dialog-description"
       >
         <DialogTitle id="confirmation-dialog-title">
-          Confirm Tournament Creation
+          Confirm tournament creation
         </DialogTitle>
         <DialogContent>
           <Typography>
@@ -323,12 +318,8 @@ const TournamentForm: React.FC = () => {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCreateCanceled}>
-            Cancel
-          </Button>
-          <Button onClick={handleCreateConfirmed}>
-            Confirm
-          </Button>
+          <Button onClick={handleCreateCanceled}>Cancel</Button>
+          <Button onClick={handleCreateConfirmed}>Confirm</Button>
         </DialogActions>
       </Dialog>
       <br></br>
