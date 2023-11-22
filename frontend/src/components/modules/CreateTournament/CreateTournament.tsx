@@ -11,6 +11,10 @@ import {
   FormControl,
   InputLabel,
   Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   type SelectChangeEvent
 } from "@mui/material";
 import "react-datepicker/dist/react-datepicker.css";
@@ -44,6 +48,9 @@ const TournamentForm: React.FC = () => {
     organizerEmail: "",
     organizerTel: ""
   });
+
+  const [isConfirmationDialogOpen, setConfirmationDialogOpen] =
+    useState<boolean>(false);
 
   const handleFieldChange = (
     event:
@@ -108,14 +115,30 @@ const TournamentForm: React.FC = () => {
     });
   };
 
+  const handleCreateButtonClick = () => {
+    setConfirmationDialogOpen(true);
+  };
+
+  const handleCreateConfirmed = () => {
+    /** here how tournament is actually created somewhere */  
+    console.log(formData);
+
+    setConfirmationDialogOpen(false);
+  };
+
+  const handleCreateCanceled = () => {
+    setConfirmationDialogOpen(false);
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <form
         id="tournamentForm"
         className="form"
         onSubmit={(event: SyntheticEvent) => {
+          handleCreateButtonClick();
           event.preventDefault();
-          /** here how tournament is actually created somewhere */
+            
         }}
       >
         <Typography variant="h5" className="header" fontWeight="bold">
@@ -284,6 +307,30 @@ const TournamentForm: React.FC = () => {
           Create
         </Button>
       </form>
+      <Dialog
+        open={isConfirmationDialogOpen}
+        onClose={handleCreateCanceled}
+        aria-labelledby="confirmation-dialog-title"
+        aria-describedby="confirmation-dialog-description"
+      >
+        <DialogTitle id="confirmation-dialog-title">
+          Confirm Tournament Creation
+        </DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to create the tournament with the provided
+            information?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCreateCanceled}>
+            Cancel
+          </Button>
+          <Button onClick={handleCreateConfirmed}>
+            Confirm
+          </Button>
+        </DialogActions>
+      </Dialog>
       <br></br>
       <Footer />
     </Container>
