@@ -22,7 +22,7 @@ export interface RegisterRequest {
   password: string;
   /**
    * @example "KendoMaster123"
-   * @pattern ^(?=.{4,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._åäöÅÄÖ]+(?<![_.])$ Username invalid. Must be 4-20 characters long, start and end with a letter or number, and contain only letters, numbers, dots, or underscores with no consecutive dots or underscores.
+   * @pattern ^$|^(?=.{4,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._åäöÅÄÖ]+(?<![_.])$ Username invalid. Must be 4-20 characters long, start and end with a letter or number, and contain only letters, numbers, dots, or underscores with no consecutive dots or underscores.
    */
   userName?: string;
   /**
