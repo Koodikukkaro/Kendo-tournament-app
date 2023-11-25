@@ -2,18 +2,26 @@ import Button from "@mui/material/Button";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import ShowError from "components/common/ErrorMessage/Error";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
+import api from "api/axios";
+import { type RegisterRequest } from "types/requests";
+import useToast from "hooks/useToast";
+import {
+  doPasswordsMatch,
+  isEmptyTextField,
+  isValidEmail,
+  isValidGuardianEmail,
+  isValidPassword,
+  isValidPhone,
+  isValidUsername
+} from "./validationHelper";
+import TextField from "@mui/material/TextField";
+import { type ControlFieldConfig, type TextFieldConfig } from "types/forms";
 
-const isValidEmail = (email: string): boolean => {
-  return /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email);
-};
-
-interface RegisterFormData {
+export interface RegisterFormData {
   firstName: string;
   lastName: string;
   userName?: string;
@@ -21,14 +29,13 @@ interface RegisterFormData {
   phoneNumber: string;
   password: string;
   passwordConfirmation: string;
-  nationality: string;
+  nationality?: string;
   inNationalTeam: boolean;
   suomisportId?: string;
   clubName?: string;
   danRank?: string;
   underage: boolean;
   guardiansEmail?: string;
-  conditions: boolean;
 }
 const initialFormData: RegisterFormData = {
   firstName: "",
@@ -44,21 +51,123 @@ const initialFormData: RegisterFormData = {
   clubName: "",
   danRank: "",
   underage: false,
-  conditions: false
+  guardiansEmail: ""
 };
+
+const textFields: Array<TextFieldConfig<RegisterFormData>> = [
+  { label: "First Name", name: "firstName", type: "text", required: true },
+  { label: "Last Name", name: "lastName", type: "text", required: true },
+  {
+    label: "Email",
+    name: "email",
+    type: "email",
+    required: true,
+    validate: isValidEmail,
+    helperText: "Please enter a valid email."
+  },
+  {
+    label: "Phone Number",
+    name: "phoneNumber",
+    type: "text",
+    required: true,
+    validate: isValidPhone,
+    helperText: "Please enter a valid phone number."
+  },
+  {
+    label: "Password",
+    name: "password",
+    type: "password",
+    required: true,
+    validate: isValidPassword,
+    helperText:
+      "A valid password must contain at least one letter, one number, and be 8-30 characters long."
+  },
+  {
+    label: "Confirm Password",
+    name: "passwordConfirmation",
+    type: "password",
+    required: true,
+    validate: doPasswordsMatch,
+    helperText: "The passwords dont match."
+  },
+  {
+    label: "Username",
+    name: "userName",
+    type: "text",
+    required: false,
+    validate: isValidUsername,
+    helperText:
+      "Must be 4-20 characters long, start and end with a letter or number, and contain only letters, numbers, dots, or underscores with no consecutive dots or underscores."
+  },
+  {
+    label: "Nationality",
+    name: "nationality",
+    type: "text",
+    required: false
+  },
+  { label: "Dan Rank", name: "danRank", type: "text", required: false },
+  { label: "Club", name: "clubName", type: "text", required: false },
+  {
+    label: "SuomiSport ID",
+    name: "suomisportId",
+    type: "text",
+    required: false
+  }
+];
+
+const controlFields: Array<ControlFieldConfig<RegisterFormData>> = [
+  {
+    label: "I'm in the national team ring",
+    name: "inNationalTeam",
+    required: false
+  },
+  { label: "I'm underage", name: "underage", required: false }
+];
 
 const RegisterForm: React.FC = () => {
   const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const registerAPI = "http://localhost:8080/api/user/register";
-
+  const showToast = useToast();
   const [formData, setFormData] = useState<RegisterFormData>(initialFormData);
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  useEffect(() => {
+    const isTextFieldValid = (
+      field: TextFieldConfig<RegisterFormData>
+    ): boolean => {
+      const fieldValue = formData[field.name] as string;
+      return (
+        (!field.required || !isEmptyTextField(fieldValue)) &&
+        (field.validate === undefined || field.validate(formData))
+      );
+    };
+
+    const isControlFieldValid = (
+      field: ControlFieldConfig<RegisterFormData>
+    ): boolean => {
+      const isSelected = formData[field.name] as boolean;
+      if (
+        isSelected &&
+        field.name === "underage" &&
+        (isEmptyTextField(formData.guardiansEmail) ||
+          !isValidGuardianEmail(formData))
+      ) {
+        return false;
+      }
+
+      return !field.required || isSelected;
+    };
+
+    setIsFormValid(
+      textFields.every(isTextFieldValid) &&
+        controlFields.every(isControlFieldValid)
+    );
+  }, [formData]);
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     fieldName: keyof RegisterFormData
   ): void => {
-    const target = event.target as HTMLInputElement; // Type assertion
+    const target = event.target as HTMLInputElement;
     const value = target.type === "checkbox" ? target.checked : target.value;
     setFormData((prevData) => ({
       ...prevData,
@@ -69,27 +178,14 @@ const RegisterForm: React.FC = () => {
   const onHandleSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ): Promise<void> => {
-    event.preventDefault(); // Prevent the default form submit behavior
+    event.preventDefault();
     try {
-      const response = await fetch(registerAPI, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        // TODO: throw a message here to tell the user to login. or maybe a timed msg or soemthing.
-        navigate("/login", { replace: true });
-      } else {
-        setErrorMessage("This is not working yet! :)");
-      }
+      const { passwordConfirmation, ...requestBody } = formData;
+      await api.user.register(requestBody as RegisterRequest);
+      showToast("Registration successful!", "success");
+      navigate("/login", { replace: true });
     } catch (error) {
-      console.log(error);
-      setErrorMessage("Unknown Error Occurred. Please try again later!");
+      showToast(error, "error");
     }
   };
 
@@ -114,197 +210,90 @@ const RegisterForm: React.FC = () => {
             {"Fill in the fields below. Fields marked with * are required."}
           </Typography>
         </Box>
+
         <Box
           component="form"
           onSubmit={onHandleSubmit}
           noValidate
           sx={{ mt: 2, display: "flex", flexDirection: "column" }}
         >
-          <ShowError message={errorMessage}></ShowError>
-          <TextField
-            label="First Name"
-            required
-            fullWidth
-            value={formData.firstName}
-            onChange={(e) => {
-              handleInputChange(e, "firstName");
-            }}
-          />
-
-          <TextField
-            label="Last Name"
-            required
-            fullWidth
-            value={formData.lastName}
-            onChange={(e) => {
-              handleInputChange(e, "lastName");
-            }}
-            margin="normal"
-          />
-
-          <TextField
-            label="Email"
-            required
-            type="email"
-            name="email"
-            id="email"
-            error={formData.email !== "" && !isValidEmail(formData.email)}
-            helperText={
-              formData.email !== "" && !isValidEmail(formData.email)
-                ? "Please enter a valid email"
-                : ""
-            }
-            value={formData.email}
-            onChange={(e) => {
-              handleInputChange(e, "email");
-            }}
-            fullWidth
-            margin="normal"
-          />
-
-          <TextField
-            label="Phone Number"
-            required
-            fullWidth
-            margin="normal"
-            type="number"
-            value={formData.phoneNumber}
-            onChange={(e) => {
-              handleInputChange(e, "phoneNumber");
-            }}
-          />
-
-          <TextField
-            label="Password"
-            type="password"
-            required
-            fullWidth
-            margin="normal"
-            value={formData.password}
-            onChange={(e) => {
-              handleInputChange(e, "password");
-            }}
-          />
-
-          <TextField
-            label="Confirm Password"
-            type="password"
-            required
-            fullWidth
-            margin="normal"
-            value={formData.passwordConfirmation}
-            onChange={(e) => {
-              handleInputChange(e, "passwordConfirmation");
-            }}
-          />
-
-          <TextField
-            label="Username"
-            fullWidth
-            margin="normal"
-            value={formData.userName}
-            onChange={(e) => {
-              handleInputChange(e, "userName");
-            }}
-          />
-
-          <TextField
-            label="Nationality"
-            fullWidth
-            margin="normal"
-            value={formData.nationality}
-            onChange={(e) => {
-              handleInputChange(e, "nationality");
-            }}
-          />
-
-          <TextField
-            label="Dan Rank"
-            fullWidth
-            margin="normal"
-            value={formData.danRank}
-            onChange={(e) => {
-              handleInputChange(e, "danRank");
-            }}
-          />
-
-          <TextField
-            label="Club"
-            fullWidth
-            margin="normal"
-            value={formData.clubName}
-            onChange={(e) => {
-              handleInputChange(e, "clubName");
-            }}
-          />
-
-          <TextField
-            label="SuomiSport ID"
-            fullWidth
-            margin="normal"
-            value={formData.suomisportId}
-            onChange={(e) => {
-              handleInputChange(e, "suomisportId");
-            }}
-          />
-
-          {/* For checkbox */}
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={formData.underage}
-                onChange={(e) => {
-                  handleInputChange(e, "underage");
-                }}
-                name="underage"
-              />
-            }
-            label="I'm underage"
-          />
-          {formData.underage && (
+          {textFields.map((field) => (
             <TextField
-              label="Guardian's Email"
-              required
+              key={field.name}
+              id={field.name}
+              label={field.label}
               fullWidth
-              value={formData.guardiansEmail}
+              margin="normal"
+              type={field.type}
+              autoComplete="off"
+              required={field.required}
+              value={formData[field.name]}
+              onChange={(e) => {
+                handleInputChange(e, field.name);
+              }}
               error={
-                formData.guardiansEmail !== undefined &&
-                formData.guardiansEmail !== "" &&
-                !isValidEmail(formData.guardiansEmail)
+                !isEmptyTextField(formData[field.name] as string) &&
+                field.validate !== undefined &&
+                !field.validate(formData)
               }
               helperText={
-                formData.guardiansEmail !== undefined &&
-                  formData.guardiansEmail !== "" &&
-                  !isValidEmail(formData.guardiansEmail)
-                  ? "Please enter a valid email"
-                  : ""
+                !isEmptyTextField(formData[field.name] as string) &&
+                field.validate !== undefined &&
+                !field.validate(formData) &&
+                field.helperText
               }
-              onChange={(e) => {
-                handleInputChange(e, "guardiansEmail");
-              }}
             />
-          )}
-          <br />
-          <FormControlLabel
-            label="I agree to the Terms and Condition"
-            control={
-              <Checkbox
-                required
-                checked={formData.conditions}
-                onChange={(e) => {
-                  handleInputChange(e, "conditions");
-                }}
-                name="conditions"
+          ))}
+          {controlFields.map((field) => (
+            <React.Fragment key={field.name}>
+              <FormControlLabel
+                key={field.name}
+                name={field.name}
+                label={field.label}
+                required={field.required}
+                control={
+                  <Checkbox
+                    checked={formData[field.name] as boolean}
+                    onChange={(e) => {
+                      handleInputChange(e, field.name);
+                    }}
+                    name={field.name}
+                  />
+                }
               />
-            }
-          />
-
+              {field.name === "underage" && formData.underage && (
+                <TextField
+                  label="Guardian's Email"
+                  required
+                  fullWidth
+                  margin="normal"
+                  type={"email"}
+                  value={formData.guardiansEmail}
+                  onChange={(e) => {
+                    handleInputChange(e, "guardiansEmail");
+                  }}
+                  error={
+                    !isEmptyTextField(formData.guardiansEmail) &&
+                    !isValidGuardianEmail(formData)
+                  }
+                  helperText={
+                    !isEmptyTextField(formData.guardiansEmail) &&
+                    !isValidGuardianEmail(formData)
+                      ? "Please enter a valid email."
+                      : ""
+                  }
+                />
+              )}
+              <br />
+            </React.Fragment>
+          ))}
           <Box margin="auto" width="200px">
             <Button
               type="submit"
               variant="contained"
               color="primary"
               className="register-button"
+              disabled={!isFormValid}
               fullWidth
               sx={{ mt: 3, mb: 2 }}
             >
