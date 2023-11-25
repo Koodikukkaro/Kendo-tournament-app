@@ -33,7 +33,7 @@ const useToast = (): ShowToastHook => {
 
       errors.forEach((error) => {
         const messages =
-          error.context !== undefined && Object?.keys(error.context).length > 0
+          error.context !== undefined && Object.keys(error.context).length > 0
             ? Object.values(error.context).map(({ message }) => message)
             : [error.message];
 
