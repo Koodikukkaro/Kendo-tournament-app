@@ -14,7 +14,10 @@ export class AuthService {
   public async createTokens(requestBody: LoginRequest): Promise<string[]> {
     const { email, password } = requestBody;
 
-    const user = await UserModel.findOne({ email }).select("+password").exec();
+    const user = await UserModel.findOne({ email })
+      .select("+password")
+      .collation({ locale: "en", strength: 2 })
+      .exec();
 
     if (user === null || user === undefined) {
       throw new UnauthorizedError({
