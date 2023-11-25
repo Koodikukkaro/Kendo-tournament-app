@@ -24,6 +24,7 @@
   "devDependencies": {
     "@testing-library/react": "^14.0.0",
     "@types/chai": "^4.3.6",
+    "@types/dotenv-webpack": "^7.0.7",
     "@types/ignore-styles": "^5.0.1",
     "@types/mocha": "^10.0.2",
     "@types/react": "^18.2.23",
@@ -59,13 +60,16 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.16",
     "@mui/material": "^5.14.17",
+    "axios": "^1.6.2",
     "dotenv": "^16.3.1",
+    "dotenv-webpack": "^8.0.1",
     "eslint-webpack-plugin": "^4.0.1",
+    "notistack": "^3.0.1",
     "react": "^18.2.0",
     "react-datepicker": "^4.21.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.17.0",
-    "socket.io-client": "^4.7.2",
-    "react-tabs": "^6.0.2"
+    "react-tabs": "^6.0.2",
+    "socket.io-client": "^4.7.2"
   }
 }
