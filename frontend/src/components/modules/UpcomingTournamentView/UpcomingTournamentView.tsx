@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Button } from "@mui/material";
+import { Typography, Button, Container } from "@mui/material";
 
 interface TournamentData {
   name: string;
@@ -46,9 +46,9 @@ const UpcomingTournamentView: React.FC = () => {
   }, []);
 
   return (
-    <div>
+    <Container>
       <Typography variant="h4" className="header">
-        Upcoming {tournamentData.name}
+        Upcoming Tournament
       </Typography>
       <Typography variant="body1" className="subtext">
         {tournamentData.name}
@@ -80,7 +80,7 @@ const UpcomingTournamentView: React.FC = () => {
           {player}
         </Typography>
       ))}
-    </div>
+    </Container>
   );
 };
 

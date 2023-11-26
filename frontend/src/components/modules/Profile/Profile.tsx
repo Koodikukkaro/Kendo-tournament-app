@@ -7,10 +7,7 @@ import {
   Container,
   Typography
 } from "@mui/material";
-import "../../common/Style/common.css";
 import "./profile.css";
-import Footer from "components/common/Footer/Footer";
-// import {UserService} from "../../../../../backend/server/src/controllers/userController";
 
 interface UserProfile {
   firstname: string;
@@ -311,8 +308,6 @@ const Profile: React.FC = () => {
           Change password
         </Button>
       </form>
-      <br />
-      <Footer />
     </Container>
   );
 };
