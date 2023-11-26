@@ -41,3 +41,18 @@ export interface Match {
   winner?: string;
   comment?: string;
 }
+
+export interface Tournament {
+  id: string;
+  tournamentName: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+  tournamentType: TournamentType;
+  differentOrganizer: boolean;
+  organizerEmail?: string;
+  organizerPhone?: string;
+}
+
+export type TournamentType = "Round Robin" | "Playoff" | "Preliminary Playoff";

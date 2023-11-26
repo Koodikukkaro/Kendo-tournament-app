@@ -1,331 +1,264 @@
-import React, { type SyntheticEvent, useState } from "react";
-import DatePicker from "react-datepicker";
+import React, { useState } from "react";
 import {
   Typography,
   Button,
-  FormControlLabel,
-  TextField,
-  Checkbox,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   Container,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  type SelectChangeEvent
+  Stack,
+  Box
 } from "@mui/material";
-import "react-datepicker/dist/react-datepicker.css";
-import "./createtournament.css";
-import "../../common/Style/common.css";
-import Footer from "components/common/Footer/Footer";
 
-export interface FormData {
+import {
+  CheckboxElement,
+  DateTimePickerElement,
+  FormContainer,
+  SelectElement,
+  TextFieldElement,
+  useForm,
+  useWatch
+} from "react-hook-form-mui";
+import type { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+import { isValidPhone } from "../Registeration/registerationValidators";
+import api from "api/axios";
+import useToast from "hooks/useToast";
+import { useNavigate } from "react-router-dom";
+import { type TournamentType } from "types/models";
+
+const MAX_PLAYER_AMOUNT = 4;
+const now = dayjs();
+
+export interface CreateTournamentFormData {
   tournamentName: string;
   location: string;
-  startDate: Date;
-  endDate: Date;
+  startDate: Dayjs;
+  endDate: Dayjs;
   description: string;
-  tournamentType: string;
-  maxPlayers: number | null;
-  organizer: boolean;
-  organizerEmail: string;
-  organizerTel: string;
+  tournamentType: TournamentType;
+  maxPlayers: number;
+  differentOrganizer: boolean;
+  organizerEmail?: string;
+  organizerTel?: string;
 }
 
-const TournamentForm: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({
-    tournamentName: "",
-    location: "",
-    startDate: new Date(),
-    endDate: new Date(),
-    description: "",
-    tournamentType: "",
-    maxPlayers: null,
-    organizer: false,
-    organizerEmail: "",
-    organizerTel: ""
+const defaultValues: CreateTournamentFormData = {
+  tournamentName: "",
+  location: "",
+  startDate: now,
+  endDate: now.add(1, "week"),
+  description: "",
+  tournamentType: "Round Robin",
+  maxPlayers: MAX_PLAYER_AMOUNT,
+  differentOrganizer: false
+};
+
+const CreateTournamentForm: React.FC = () => {
+  const showToast = useToast();
+  const navigate = useNavigate();
+  const formContext = useForm<CreateTournamentFormData>({
+    defaultValues,
+    mode: "onBlur"
   });
+  const { differentOrganizer, startDate } =
+    useWatch<CreateTournamentFormData>(formContext);
+  const [isConfirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
 
-  const [isConfirmationDialogOpen, setConfirmationDialogOpen] =
-    useState<boolean>(false);
-
-  const handleFieldChange = (
-    event:
-      | SelectChangeEvent<string>
-      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    fieldName: string
-  ): void => {
-    let value: string | boolean;
-
-    if ("target" in event && event.target instanceof HTMLInputElement) {
-      value =
-        event.target.type === "checkbox"
-          ? event.target.checked
-          : event.target.value;
-    } else if (
-      "target" in event &&
-      event.target instanceof HTMLTextAreaElement
-    ) {
-      value = event.target.value;
-    } else if ("target" in event) {
-      value = event.target.value;
-    } else {
-      console.error("Unsupported event type");
-      return;
+  const onSubmit = async (data: CreateTournamentFormData): Promise<void> => {
+    try {
+      await api.tournaments.createNew({
+        ...data,
+        startDate: data.startDate.toString(),
+        endDate: data.endDate.toString()
+      });
+      showToast("Registration successful!", "success");
+      navigate("/", { replace: true });
+    } catch (error) {
+      showToast(error, "error");
     }
-
-    setFormData((prevData) => ({
-      ...prevData,
-      [fieldName]: value
-    }));
   };
 
-  const handleDateChange = (
-    date: Date | null,
-    dateType: "startDate" | "endDate"
-  ): void => {
-    setFormData((prevData) => {
-      let startDate = prevData.startDate;
-      let endDate = prevData.endDate;
-
-      if (dateType === "startDate") {
-        startDate = date ?? new Date();
-        endDate =
-          date !== null && prevData.endDate !== null && date > prevData.endDate
-            ? date
-            : prevData.endDate;
-      } else if (dateType === "endDate") {
-        endDate = date ?? new Date();
-        startDate =
-          date !== null &&
-          prevData.startDate !== null &&
-          date < prevData.startDate
-            ? date
-            : prevData.startDate;
-      }
-
-      return {
-        ...prevData,
-        startDate,
-        endDate
-      };
-    });
-  };
-
-  const handleCreateButtonClick = (): void => {
-    setConfirmationDialogOpen(true);
-  };
-
-  const handleCreateConfirmed = (event: SyntheticEvent): void => {
-    /** here how tournament is actually created somewhere */
-    event.preventDefault();
+  const handleConfirm = async (): Promise<void> => {
     setConfirmationDialogOpen(false);
-  };
-
-  const handleCreateCanceled = (): void => {
-    setConfirmationDialogOpen(false);
+    await formContext.handleSubmit(onSubmit)();
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <form id="tournamentForm" className="form">
+    <Container component="main" maxWidth="xs" sx={{ marginTop: "64px" }}>
+      <Box display="flex" flexDirection="column" gap="5px" width="100%">
         <Typography variant="h5" className="header" fontWeight="bold">
           Create a new tournament
         </Typography>
         <Typography variant="subtitle1" className="subtext">
           Fill information below.
         </Typography>
-        <TextField
-          variant="outlined"
-          margin="normal"
-          fullWidth
-          id="tournamentName"
-          label="Tournament name"
+      </Box>
+      <FormContainer defaultValues={defaultValues} formContext={formContext}>
+        <TextFieldElement
+          required
           name="tournamentName"
-          required
-          value={formData.tournamentName}
-          onChange={(e) => {
-            handleFieldChange(e, "tournamentName");
-          }}
-        />
-        <TextField
-          variant="outlined"
-          margin="normal"
+          label="Tournament Name"
           fullWidth
-          id="location"
-          label="Location"
+          margin="normal"
+        />
+
+        <TextFieldElement
+          required
           name="location"
-          required
-          value={formData.location}
-          onChange={(e) => {
-            handleFieldChange(e, "location");
-          }}
-        />
-        <Typography variant="subtitle1" className="subtext">
-          Pick dates:
-        </Typography>
-        <div className="dates">
-          <DatePicker
-            id="start"
-            selectsStart
-            selected={formData.startDate}
-            dateFormat="dd/MM/yyyy HH:mm"
-            startDate={formData.startDate}
-            endDate={formData.endDate}
-            onChange={(date) => {
-              handleDateChange(date, "startDate");
-            }}
-            showTimeSelect
-            timeFormat="HH:mm"
-            timeIntervals={30}
-            timeCaption="Time"
-          />
-          <DatePicker
-            id="end"
-            selectsEnd
-            selected={formData.endDate}
-            dateFormat="dd/MM/yyyy HH:mm"
-            startDate={formData.startDate}
-            endDate={formData.endDate}
-            minDate={formData.startDate}
-            onChange={(date) => {
-              handleDateChange(date, "endDate");
-            }}
-            showTimeSelect
-            timeFormat="HH:mm"
-            timeIntervals={30}
-            timeCaption="Time"
-          />
-        </div>
-        <br></br>
-        <TextField
-          multiline
+          label="Location"
           fullWidth
-          minRows={3}
-          maxRows={10}
-          label="Information about tournament"
-          id="description"
-          name="description"
-          required
-          value={formData.description}
-          onChange={(e) => {
-            handleFieldChange(e, "description");
-          }}
-        />
-        <FormControl fullWidth variant="outlined" margin="normal">
-          <InputLabel htmlFor="tournamentType">
-            Select tournament type *
-          </InputLabel>
-          <Select
-            label="Select tournament type"
-            id="tournamentType"
-            value={formData.tournamentType}
-            onChange={(e) => {
-              handleFieldChange(e, "tournamentType");
-            }}
-            required
-          >
-            <MenuItem value="robin">Round Robin</MenuItem>
-            <MenuItem value="playoff">Playoff</MenuItem>
-          </Select>
-        </FormControl>
-        {formData.tournamentType === "playoff" && (
-          <>
-            <Typography>
-              Playoff type works best if the number of players is 2, 4, 8, 16,
-              32 etc.
-            </Typography>
-          </>
-        )}
-        <TextField
-          variant="outlined"
           margin="normal"
-          fullWidth
-          id="maxPlayers"
-          label="Maximum number of players"
-          name="maxPlayers"
+        />
+
+        <Stack spacing={2} marginY={2}>
+          <DateTimePickerElement
+            required
+            name="startDate"
+            label="Start date time"
+            minDateTime={now}
+            format="DD/MM/YYYY HH:mm"
+          />
+          <DateTimePickerElement
+            required
+            name="endDate"
+            label="End date time"
+            minDateTime={startDate}
+            format="DD/MM/YYYY HH:mm"
+          />
+        </Stack>
+
+        <TextFieldElement
           required
-          value={formData.maxPlayers ?? ""}
-          onChange={(e) => {
-            handleFieldChange(e, "maxPlayers");
+          multiline
+          name="description"
+          label="Description"
+          fullWidth
+          margin="normal"
+        />
+
+        <SelectElement
+          required
+          label="Select tournament type"
+          name="tournamentType"
+          options={[
+            { id: "Round Robin", label: "Round Robin" },
+            { id: "Playoff", label: "Playoff" }
+          ]}
+          fullWidth
+          margin="normal"
+        />
+
+        <TextFieldElement
+          required
+          name="maxPlayers"
+          type="number"
+          label="Maximum number of players"
+          fullWidth
+          margin="normal"
+          validation={{
+            validate: (value: number) => {
+              return (
+                value >= MAX_PLAYER_AMOUNT || "Minimum amount of players is 4"
+              );
+            }
           }}
         />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={formData.organizer}
-              onChange={(e) => {
-                handleFieldChange(e, "organizer");
-              }}
-              name="organizer"
-              color="primary"
-            />
-          }
+
+        <CheckboxElement
+          name="differentOrganizer"
           label="Organizer has different information than me"
+          onChange={(e) => {
+            formContext.resetField("organizerEmail");
+            formContext.resetField("organizerTel");
+            formContext.setValue("differentOrganizer", e.target.checked);
+          }}
         />
-        {formData.organizer && (
-          <>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              fullWidth
-              id="organizerEmail"
-              label="Organizer's email"
+
+        {differentOrganizer !== undefined && differentOrganizer && (
+          <React.Fragment>
+            <TextFieldElement
+              required
               name="organizerEmail"
-              required
-              onChange={(e) => {
-                handleFieldChange(e, "organizerEmail");
-              }}
-            />
-            <TextField
-              variant="outlined"
-              margin="normal"
+              type="email"
+              label="Organizer's email"
               fullWidth
-              id="organizerTel"
-              label="Organizer's phone number"
-              name="organizerTel"
+              margin="normal"
+            />
+
+            <TextFieldElement
               required
-              onChange={(e) => {
-                handleFieldChange(e, "organizerTel");
+              name="organizerTel"
+              type="tel"
+              label="Organizer's phone number"
+              fullWidth
+              margin="normal"
+              validation={{
+                validate: (value: string) => {
+                  return (
+                    isValidPhone(value) || "Please enter a valid phone number"
+                  );
+                }
               }}
             />
-          </>
+          </React.Fragment>
         )}
-        <Button
-          variant="contained"
-          id="btnCreate"
-          onClick={handleCreateButtonClick}
+        <Box textAlign="center">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => {
+              setConfirmationDialogOpen(true);
+            }}
+            disabled={!formContext.formState.isValid}
+            fullWidth
+            sx={{ mt: 3, mb: 2 }}
+          >
+            Create
+          </Button>
+        </Box>
+
+        <Dialog
+          open={isConfirmationDialogOpen}
+          onClose={() => {
+            setConfirmationDialogOpen(false);
+          }}
+          aria-labelledby="confirmation-dialog-title"
+          aria-describedby="confirmation-dialog-description"
         >
-          Create
-        </Button>
-      </form>
-      <Dialog
-        open={isConfirmationDialogOpen}
-        onClose={handleCreateCanceled}
-        aria-labelledby="confirmation-dialog-title"
-        aria-describedby="confirmation-dialog-description"
-      >
-        <DialogTitle id="confirmation-dialog-title">
-          Confirm tournament creation
-        </DialogTitle>
-        <DialogContent>
-          <Typography>
-            Are you sure you want to create the tournament with the provided
-            information?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCreateCanceled}>Cancel</Button>
-          <Button onClick={handleCreateConfirmed}>Confirm</Button>
-        </DialogActions>
-      </Dialog>
-      <br></br>
-      <Footer />
+          <DialogTitle id="confirmation-dialog-title">
+            Confirm tournament creation
+          </DialogTitle>
+          <DialogContent>
+            <Typography>
+              Are you sure you want to create the tournament with the provided
+              information?
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => {
+                setConfirmationDialogOpen(false);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              onClick={handleConfirm}
+              variant="contained"
+              color="success"
+            >
+              Confirm
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </FormContainer>
     </Container>
   );
 };
 
-export default TournamentForm;
+export default CreateTournamentForm;

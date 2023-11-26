@@ -1,74 +1,50 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
-import { type TextFieldConfig } from "types/forms";
 import { type LoginRequest } from "types/requests";
 import useToast from "hooks/useToast";
 import { useAuth } from "context/AuthContext";
 import { type LocationState } from "types/global";
+import {
+  FormContainer,
+  PasswordElement,
+  TextFieldElement,
+  useForm
+} from "react-hook-form-mui";
 
 interface LoginFormData {
   email: string;
   password: string;
 }
 
-const initialFormData: LoginFormData = {
+const defaultValues: LoginFormData = {
   email: "",
   password: ""
 };
-
-const textFields: Array<TextFieldConfig<LoginFormData>> = [
-  {
-    label: "Email",
-    name: "email",
-    type: "email",
-    required: true
-  },
-  {
-    label: "Password",
-    name: "password",
-    type: "password",
-    required: true
-  }
-];
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation() as LocationState;
   const showToast = useToast();
-
-  console.log(location);
   const { login } = useAuth();
   const from = location.state?.from?.pathname ?? "/";
-  const [formData, setFormData] = useState<LoginFormData>(initialFormData);
 
-  const onHandleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
-  ): Promise<void> => {
-    event.preventDefault();
+  const formContext = useForm<LoginFormData>({
+    defaultValues,
+    mode: "onBlur"
+  });
+
+  const onSubmit = async (data: LoginFormData): Promise<void> => {
     try {
-      await login(formData as LoginRequest);
+      await login(data as LoginRequest);
       showToast("Login successful!", "success");
       navigate(from, { replace: true });
     } catch (error) {
       showToast(error, "error");
     }
-  };
-
-  const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    fieldName: string
-  ): void => {
-    const target = event.target as HTMLInputElement;
-    const value = target.type === "checkbox" ? target.checked : target.value;
-    setFormData((prevData) => ({
-      ...prevData,
-      [fieldName]: value
-    }));
   };
 
   return (
@@ -88,29 +64,28 @@ const LoginForm: React.FC = () => {
         >
           {"Sign in"}
         </Typography>
-        <Box
-          component="form"
-          onSubmit={onHandleSubmit}
-          noValidate
-          sx={{ mt: 2, display: "flex", flexDirection: "column" }}
+
+        <FormContainer
+          defaultValues={defaultValues}
+          formContext={formContext}
+          onSuccess={onSubmit}
         >
-          {textFields.map((field) => (
-            <TextField
-              key={field.name}
-              label={field.label}
-              type={field.type}
-              name={field.name}
-              id={field.name}
-              required
-              fullWidth
-              margin="normal"
-              autoComplete="off"
-              value={formData[field.name]}
-              onChange={(e) => {
-                handleInputChange(e, field.name);
-              }}
-            />
-          ))}
+          <TextFieldElement
+            required
+            name="email"
+            label="Email Address"
+            type="text"
+            fullWidth
+            margin="normal"
+          />
+
+          <PasswordElement
+            required
+            name="password"
+            label="Password"
+            fullWidth
+            margin="normal"
+          />
 
           <Box margin="auto" width="200px">
             <Button
@@ -125,19 +100,20 @@ const LoginForm: React.FC = () => {
               {"Log in"}
             </Button>
           </Box>
-          <Grid container gap="10px">
-            <Grid item xs>
-              <Typography variant="body2">
-                <Link to="/404">{"Forgot password?"}</Link>
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Typography variant="body2">
-                <Link to="/register">{"Don't have an account? Sign Up"}</Link>
-              </Typography>
-            </Grid>
+        </FormContainer>
+
+        <Grid container gap="10px">
+          <Grid item xs>
+            <Typography variant="body2">
+              <Link to="/404">{"Forgot password?"}</Link>
+            </Typography>
           </Grid>
-        </Box>
+          <Grid item>
+            <Typography variant="body2">
+              <Link to="/register">{"Don't have an account? Sign Up"}</Link>
+            </Typography>
+          </Grid>
+        </Grid>
       </Box>
     </Grid>
   );
