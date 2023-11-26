@@ -1,6 +1,8 @@
-import axios, { type AxiosError, type AxiosResponse } from "axios";
-import { type User } from "types/models";
-import { type LoginRequest, type RegisterRequest } from "types/requests";
+import axios, {
+  type AxiosRequestConfig,
+  type AxiosError,
+  type AxiosResponse
+} from "axios";
 
 const AUTH_API = "/api/auth";
 const USER_API = "/api/user";
@@ -67,7 +69,7 @@ const user = {
  */
 const auth = {
   login: async (body: LoginRequest) => {
-    await request.post(`${AUTH_API}/login`, body);
+    return await request.post<User>(`${AUTH_API}/login`, body);
   },
   logout: async () => {
     await request.post(`${AUTH_API}/logout`, {});
@@ -76,7 +78,9 @@ const auth = {
     await request.post(`${AUTH_API}/refresh`, {});
   },
   checkAuth: async () => {
-    await request.get(`${AUTH_API}/check-auth`);
+    return await request.get<{ userId: string }>(`${AUTH_API}/check-auth`);
+  }
+};
   }
 };
 

@@ -9,9 +9,10 @@ import {
   type TokenPayload
 } from "../utility/jwtHelper.js";
 import MatchModel from "../models/matchModel.js";
+import type { LoginResponse } from "../models/responseModel.js";
 
 export class AuthService {
-  public async createTokens(requestBody: LoginRequest): Promise<string[]> {
+  public async loginUser(requestBody: LoginRequest): Promise<LoginResponse> {
     const { email, password } = requestBody;
 
     const user = await UserModel.findOne({ email })
@@ -59,10 +60,12 @@ export class AuthService {
     user.refreshToken = refreshToken;
     await user.save();
 
-    return [accessToken, refreshToken];
+    return { user, accessToken, refreshToken };
   }
 
-  public async refreshAccessToken(refreshToken: string): Promise<string[]> {
+  public async refreshAccessToken(
+    refreshToken: string | undefined
+  ): Promise<string[]> {
     if (refreshToken === undefined) {
       throw new BadRequestError({ message: "Refresh token not found" });
     }
