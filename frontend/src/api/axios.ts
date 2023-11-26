@@ -3,9 +3,16 @@ import axios, {
   type AxiosError,
   type AxiosResponse
 } from "axios";
+import { type Tournament, type User } from "types/models";
+import {
+  type CreateTournamentRequest,
+  type LoginRequest,
+  type RegisterRequest
+} from "types/requests";
 
 const AUTH_API = "/api/auth";
 const USER_API = "/api/user";
+const TOURNAMENTS_API = "/api/tournaments";
 // const MATCH_API = "/api/auth"
 
 const axiosInstance = axios.create({
@@ -45,8 +52,8 @@ axiosInstance.interceptors.response.use(
 const responseBody = <T>(response: AxiosResponse<T>): T => response.data;
 
 const request = {
-  get: async <T>(url: string) => {
-    const response = await axiosInstance.get<T>(url);
+  get: async <T>(url: string, requestConfig?: AxiosRequestConfig) => {
+    const response = await axiosInstance.get<T>(url, requestConfig);
     return responseBody(response);
   },
   post: async <T>(url: string, body: unknown) => {
@@ -81,12 +88,22 @@ const auth = {
     return await request.get<{ userId: string }>(`${AUTH_API}/check-auth`);
   }
 };
+
+const tournaments = {
+  getAll: async (limit?: number) => {
+    return await request.get<Tournament[]>(`${TOURNAMENTS_API}`, {
+      params: limit
+    });
+  },
+  createNew: async (body: CreateTournamentRequest) => {
+    return await request.post<Tournament>(`${TOURNAMENTS_API}/create`, body);
   }
 };
 
 const api = {
   auth,
-  user
+  user,
+  tournaments
 };
 
 export default api;

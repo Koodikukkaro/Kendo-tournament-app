@@ -44,12 +44,14 @@ export interface Match {
 
 export interface Tournament {
   id: string;
-  tournamentName: string;
+  name: string;
   location: string;
   startDate: string;
   endDate: string;
   description: string;
-  tournamentType: TournamentType;
+  type: TournamentType;
+  maxPlayers: number;
+  creator: string;
   differentOrganizer: boolean;
   organizerEmail?: string;
   organizerPhone?: string;

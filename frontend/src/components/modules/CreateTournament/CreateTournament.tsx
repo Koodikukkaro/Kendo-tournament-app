@@ -1,4 +1,11 @@
 import React, { useState } from "react";
+import type { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+import { isValidPhone } from "../Registeration/registerationValidators";
+import api from "api/axios";
+import useToast from "hooks/useToast";
+import { useNavigate } from "react-router-dom";
+import { type TournamentType } from "types/models";
 import {
   Typography,
   Button,
@@ -11,6 +18,7 @@ import {
   Box
 } from "@mui/material";
 
+// Readily defined components from the react-hook-form-mui library.
 import {
   CheckboxElement,
   DateTimePickerElement,
@@ -20,24 +28,17 @@ import {
   useForm,
   useWatch
 } from "react-hook-form-mui";
-import type { Dayjs } from "dayjs";
-import dayjs from "dayjs";
-import { isValidPhone } from "../Registeration/registerationValidators";
-import api from "api/axios";
-import useToast from "hooks/useToast";
-import { useNavigate } from "react-router-dom";
-import { type TournamentType } from "types/models";
 
 const MAX_PLAYER_AMOUNT = 4;
 const now = dayjs();
 
 export interface CreateTournamentFormData {
-  tournamentName: string;
+  name: string;
   location: string;
   startDate: Dayjs;
   endDate: Dayjs;
   description: string;
-  tournamentType: TournamentType;
+  type: TournamentType;
   maxPlayers: number;
   differentOrganizer: boolean;
   organizerEmail?: string;
@@ -45,12 +46,12 @@ export interface CreateTournamentFormData {
 }
 
 const defaultValues: CreateTournamentFormData = {
-  tournamentName: "",
+  name: "",
   location: "",
   startDate: now,
   endDate: now.add(1, "week"),
   description: "",
-  tournamentType: "Round Robin",
+  type: "Round Robin",
   maxPlayers: MAX_PLAYER_AMOUNT,
   differentOrganizer: false
 };
@@ -98,7 +99,7 @@ const CreateTournamentForm: React.FC = () => {
       <FormContainer defaultValues={defaultValues} formContext={formContext}>
         <TextFieldElement
           required
-          name="tournamentName"
+          name="name"
           label="Tournament Name"
           fullWidth
           margin="normal"
@@ -141,7 +142,7 @@ const CreateTournamentForm: React.FC = () => {
         <SelectElement
           required
           label="Select tournament type"
-          name="tournamentType"
+          name="type"
           options={[
             { id: "Round Robin", label: "Round Robin" },
             { id: "Playoff", label: "Playoff" }

@@ -1,4 +1,5 @@
 import type { MatchType, PlayerColor, PointType } from "./matchModel.js";
+import type { Tournament } from "./tournamentModel.js";
 
 /**
  * MongoDB Object ID.
@@ -96,3 +97,5 @@ export interface AddPointRequest {
   pointColor: PlayerColor;
   comment?: string;
 }
+
+export type CreateTournamentRequest = Omit<Tournament, "id" | "creator">;

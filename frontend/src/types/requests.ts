@@ -1,3 +1,5 @@
+import type { Tournament } from "./models";
+
 export interface LoginRequest {
   email: string;
   password: string;
@@ -18,3 +20,5 @@ export interface RegisterRequest {
   underage: boolean;
   guardiansEmail?: string;
 }
+
+export type CreateTournamentRequest = Omit<Tournament, "id" | "creator">;
