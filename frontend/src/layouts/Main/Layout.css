@@ -10,6 +10,13 @@
   flex: 1;
   align-self: center;
   max-width: 1200px;
+  min-height: 900px;
   width: 80%;
   /* border: 2px solid black; */
+}
+@media (max-width: 600px) {
+  .app-container {
+    min-height: 400px;
+    max-width: 100%;
+  }
 }

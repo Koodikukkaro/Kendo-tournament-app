@@ -10,14 +10,14 @@ const Footer: React.FC = () => {
     <Box component="footer" className="footer">
       <Container maxWidth="lg">
         <Box className="footer-links">
-          {/* TODO: URLs doesn't exist YET. */}
-          <Link href="/about" color="inherit">
+          <Link
+            href="https://www.kendoseinajoki.fi/"
+            target="_blank"
+            color="inherit"
+          >
             About
           </Link>
-          <Link href="/terms" color="inherit">
-            Terms & Conditions
-          </Link>
-          <Link href="/privacy" color="inherit">
+          <Link href="/privacy" target="_blank" color="inherit">
             Privacy Policy
           </Link>
         </Box>
