@@ -1,10 +1,19 @@
-import { Route, Controller, Get, Path, Tags, Security, Body, Post, Put, Response } from "tsoa";
+import {
+  Route,
+  Controller,
+  Get,
+  Path,
+  Tags,
+  Security,
+  Body,
+  Post,
+  Put,
+  Response
+} from "tsoa";
 import { TournamentService } from "../services/tournamentService.js";
-import { Tournament } from "../models/tournamentModel.js";
+import { Tournament, AddPlayerRequest } from "../models/tournamentModel.js";
 import { ObjectIdString } from "../models/requestModel.js";
-import { AddPlayerRequest } from "../models/tournamentModel.js";
 import NotFoundError from "../errors/NotFoundError.js";
-
 
 @Route("tournament")
 export class TournamentController extends Controller {
@@ -38,7 +47,10 @@ export class TournamentController extends Controller {
     @Body() requestBody: AddPlayerRequest
   ): Promise<Tournament | { message: string }> {
     try {
-      const result = await this.service.addPlayerToTournament(tournamentId, requestBody.playerId);
+      const result = await this.service.addPlayerToTournament(
+        tournamentId,
+        requestBody.playerId
+      );
       this.setStatus(200); // OK status
       return result;
     } catch (error) {
@@ -46,8 +58,7 @@ export class TournamentController extends Controller {
         this.setStatus(404); // Not Found
       } else if (error instanceof Error) {
         this.setStatus(400); // Bad Request or other appropriate status
-      }
-      else {
+      } else {
         this.setStatus(500);
       }
       const errObj = error as Error;

@@ -26,7 +26,10 @@ export class TournamentService {
   }
 
   // update - add players
-  public async addPlayerToTournament(tournamentId: string, playerId: string): Promise<Tournament> {
+  public async addPlayerToTournament(
+    tournamentId: string,
+    playerId: string
+  ): Promise<Tournament> {
     const tournament = await TournamentModel.findById(tournamentId).exec();
 
     if (tournament === null || tournament === undefined) {
@@ -56,7 +59,6 @@ export class TournamentService {
     tournament.players.push(playerId);
     await tournament.save();
 
-    return tournament.toObject();
+    return await tournament.toObject();
   }
-
 }

@@ -13,7 +13,7 @@ export interface Match {
 
 const matchSchema = new Schema<Match>({
   player1: { type: String, required: true },
-  player2: { type: String, required: true },
+  player2: { type: String, required: true }
 });
 
 export interface Tournament {
@@ -26,14 +26,13 @@ export interface Tournament {
   organizerEmail?: string;
   organizerPhone?: string;
   maxPlayers: number;
-  players: string[];  // Array of player identifiers (userID from user objects)
+  players: string[]; // Array of player identifiers (userID from user objects)
   matchSchedule: Match[];
 }
 
 export interface AddPlayerRequest {
   playerId: string;
 }
-
 
 const tournamentSchema = new Schema<Tournament & Document>(
   {
