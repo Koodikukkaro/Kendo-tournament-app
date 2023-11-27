@@ -34,14 +34,8 @@ export class TournamentService {
     tournamentData: CreateTournamentRequest,
     creator: string
   ): Promise<Tournament> {
-    // Is the organizer of the tournament someone else than the creator
-    if (tournamentData.differentOrganizer) {
-      const organizer = await UserModel.findOne({
-        email: tournamentData.organizerEmail
-      })
-        .select("+password")
-        .collation({ locale: "en", strength: 2 })
-        .exec();
+    if (!tournamentData.differentOrganizer) {
+      const organizer = await UserModel.findById(creator).exec();
 
       if (organizer === null) {
         // This should never throw due to the endpoint requiring authentication.
