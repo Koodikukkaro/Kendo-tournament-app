@@ -6,6 +6,16 @@ export enum TournamentType {
   PreliminiaryPlayoff = "Preliminary Playoff"
 }
 
+export interface Match {
+  player1: string;
+  player2: string;
+}
+
+const matchSchema = new Schema<Match>({
+  player1: { type: String, required: true },
+  player2: { type: String, required: true },
+});
+
 export interface Tournament {
   tournamentName: string;
   location: string;
@@ -15,7 +25,15 @@ export interface Tournament {
   tournamentType: TournamentType;
   organizerEmail?: string;
   organizerPhone?: string;
+  maxPlayers: number;
+  players: string[];  // Array of player identifiers (userID from user objects)
+  matchSchedule: Match[];
 }
+
+export interface AddPlayerRequest {
+  playerId: string;
+}
+
 
 const tournamentSchema = new Schema<Tournament & Document>(
   {
@@ -29,6 +47,9 @@ const tournamentSchema = new Schema<Tournament & Document>(
       enum: Object.values(TournamentType),
       required: true
     },
+    maxPlayers: { type: Number, required: true },
+    players: [{ type: String }],
+    matchSchedule: [matchSchema],
     organizerEmail: { type: String },
     organizerPhone: { type: String }
   },
