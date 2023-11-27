@@ -20,7 +20,6 @@ import type * as express from "express";
 
 @Route("tournaments")
 export class TournamentController extends Controller {
-  @Security("jwt")
   @Get("{id}")
   @Tags("Tournaments")
   public async getTournament(@Path() id: ObjectIdString): Promise<Tournament> {
@@ -28,7 +27,6 @@ export class TournamentController extends Controller {
     return await this.service.getTournamentById(id);
   }
 
-  @Security("jwt")
   @Get()
   @Tags("Tournaments")
   public async getTournaments(
