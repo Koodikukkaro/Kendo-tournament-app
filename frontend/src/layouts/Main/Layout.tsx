@@ -9,20 +9,25 @@ import React, { type ReactElement } from "react";
 import { Outlet } from "react-router-dom";
 import "./Layout.css";
 import { useAuth } from "context/AuthContext";
+import InterceptorSetup from "api/axiosInterceptor";
+import Container from "@mui/material/Container";
 
 const Layout = (): ReactElement => {
   const { isAuthenticated } = useAuth();
   return (
     <div className="app-wrapper">
+      {/* Initialize axios interceptors here (dont know where else to put it...) */}
+      <InterceptorSetup />
+
       <NavigationBar
         navigationItems={
           isAuthenticated ? authenticatedNavItems : unAuthenticatedNavItems
         }
         settings={settings}
       />
-      <div className="app-container">
+      <Container className="app-container">
         <Outlet />
-      </div>
+      </Container>
       <Footer />
     </div>
   );

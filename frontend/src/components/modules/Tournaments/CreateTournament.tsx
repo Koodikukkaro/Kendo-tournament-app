@@ -74,7 +74,7 @@ const CreateTournamentForm: React.FC = () => {
         startDate: data.startDate.toString(),
         endDate: data.endDate.toString()
       });
-      showToast("Registration successful!", "success");
+      showToast(`Tournament '${data.name}' created successfully!`, "success");
       navigate("/", { replace: true });
     } catch (error) {
       showToast(error, "error");
@@ -87,7 +87,7 @@ const CreateTournamentForm: React.FC = () => {
   };
 
   return (
-    <Container component="main" maxWidth="xs" sx={{ marginTop: "64px" }}>
+    <Container component="main" maxWidth="xs">
       <Box display="flex" flexDirection="column" gap="5px" width="100%">
         <Typography variant="h5" className="header" fontWeight="bold">
           Create a new tournament

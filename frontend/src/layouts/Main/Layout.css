@@ -12,7 +12,7 @@
   max-width: 1200px;
   min-height: 900px;
   width: 80%;
-  /* border: 2px solid black; */
+  margin-top: 64px;
 }
 @media (max-width: 600px) {
   .app-container {

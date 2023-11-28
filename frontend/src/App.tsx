@@ -11,7 +11,10 @@ import { SnackbarProvider } from "notistack";
 const App = (): ReactElement => (
   <LocalizationProvider dateAdapter={AdapterDayjs}>
     <ThemeProvider theme={theme}>
-      <SnackbarProvider>
+      <SnackbarProvider
+        dense
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+      >
         <AuthProvider>
           <RouterProvider router={router} />
         </AuthProvider>

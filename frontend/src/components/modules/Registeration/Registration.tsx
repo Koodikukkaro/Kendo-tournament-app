@@ -79,7 +79,6 @@ const RegisterForm: React.FC = () => {
     <Grid container display="flex" justifyContent="center">
       <Box
         sx={{
-          marginTop: 8,
           padding: "1em",
           width: "500px"
         }}

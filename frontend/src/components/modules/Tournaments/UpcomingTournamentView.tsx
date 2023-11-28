@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Typography, Button, Container } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 interface TournamentData {
   name: string;
@@ -11,6 +12,7 @@ interface TournamentData {
 }
 
 const UpcomingTournamentView: React.FC = () => {
+  const navigate = useNavigate();
   const [tournamentData, setTournamentData] = useState<TournamentData>({
     name: "",
     startDate: "",
@@ -21,7 +23,7 @@ const UpcomingTournamentView: React.FC = () => {
   });
 
   const handleClick = (): void => {
-    console.log("Button clicked");
+    navigate("sign-up");
   };
 
   useEffect(() => {
