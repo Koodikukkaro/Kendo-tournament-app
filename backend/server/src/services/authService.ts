@@ -9,10 +9,12 @@ import {
   type TokenPayload
 } from "../utility/jwtHelper.js";
 import MatchModel from "../models/matchModel.js";
-import type { LoginResponse } from "../models/responseModel.js";
+import type { LoginResponseInternal } from "../models/responseModel.js";
 
 export class AuthService {
-  public async loginUser(requestBody: LoginRequest): Promise<LoginResponse> {
+  public async loginUser(
+    requestBody: LoginRequest
+  ): Promise<LoginResponseInternal> {
     const { email, password } = requestBody;
 
     const user = await UserModel.findOne({ email })
@@ -60,7 +62,7 @@ export class AuthService {
     user.refreshToken = refreshToken;
     await user.save();
 
-    return { user, accessToken, refreshToken };
+    return { user: user.toObject(), accessToken, refreshToken };
   }
 
   public async refreshAccessToken(

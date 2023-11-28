@@ -28,7 +28,7 @@ const AuthContext = createContext<IAuthContext>({
 });
 
 export const AuthProvider = ({ children }: Props): ReactElement => {
-  const [userId, setUserId] = useState<string | undefined>(undefined);
+  const [userId, setUserId] = useState<string | undefined>();
 
   useEffect(() => {
     const checkAuth = async (): Promise<void> => {
@@ -46,8 +46,8 @@ export const AuthProvider = ({ children }: Props): ReactElement => {
   }, []);
 
   const login = async (payload: LoginRequest): Promise<void> => {
-    const { id } = await api.auth.login(payload);
-    setUserId(id);
+    const { userId } = await api.auth.login(payload);
+    setUserId(userId);
   };
 
   const logout = async (): Promise<void> => {

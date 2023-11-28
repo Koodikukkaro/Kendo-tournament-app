@@ -1,53 +1,31 @@
-import axios, {
-  type AxiosRequestConfig,
-  type AxiosError,
-  type AxiosResponse
-} from "axios";
-import { type Tournament, type User } from "types/models";
+import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
+import type { Tournament, User } from "types/models";
 import {
   type CreateTournamentRequest,
   type LoginRequest,
   type RegisterRequest
 } from "types/requests";
 
-const AUTH_API = "/api/auth";
-const USER_API = "/api/user";
-const TOURNAMENTS_API = "/api/tournaments";
-// const MATCH_API = "/api/auth"
+export const API_BASE_URL = process.env.REACT_APP_API_URL;
+export const AUTH_API = "/api/auth";
+export const USER_API = "/api/user";
+export const TOURNAMENTS_API = "/api/tournaments";
 
-const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+export const axiosInstance = axios.create({
+  baseURL: API_BASE_URL,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
-  timeout: 5000
+  timeout: 10000
 });
 
-axiosInstance.interceptors.response.use(
-  (res: AxiosResponse) => res,
-  async (error: AxiosError) => {
-    if (error.response !== undefined) {
-      const { data, status } = error.response;
-      switch (status) {
-        case 400:
-          console.error(data);
-          break;
-
-        case 401:
-          console.error("unauthorised");
-          break;
-
-        case 404:
-          console.error("/not-found");
-          break;
-
-        case 500:
-          console.error("/server-error");
-          break;
-      }
-    }
-    return await Promise.reject(error);
-  }
-);
+// Create a separate instance for authentication requests to avoid
+// infinite retry loop inside the axios instance interceptor.
+export const axiosAuthInstance = axios.create({
+  baseURL: API_BASE_URL,
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true,
+  timeout: 10000
+});
 
 const responseBody = <T>(response: AxiosResponse<T>): T => response.data;
 
@@ -56,33 +34,31 @@ const request = {
     const response = await axiosInstance.get<T>(url, requestConfig);
     return responseBody(response);
   },
-  post: async <T>(url: string, body: unknown) => {
-    const response = await axiosInstance.post<T>(url, body);
+  post: async <T>(
+    url: string,
+    body: unknown,
+    requestConfig?: AxiosRequestConfig
+  ) => {
+    const response = await axiosInstance.post<T>(url, body, requestConfig);
     return responseBody(response);
   }
 };
 
-/*
- * User endpoints
- */
 const user = {
   details: async (id: string) => await request.get<User>(`${USER_API}/${id}`),
   register: async (body: RegisterRequest) =>
     await request.post(`${USER_API}/register`, body)
 };
 
-/*
- * Auth endpoints
- */
 const auth = {
   login: async (body: LoginRequest) => {
-    return await request.post<User>(`${AUTH_API}/login`, body);
+    return await request.post<{ userId: string }>(`${AUTH_API}/login`, body);
   },
   logout: async () => {
     await request.post(`${AUTH_API}/logout`, {});
   },
   refresh: async () => {
-    await request.post(`${AUTH_API}/refresh`, {});
+    await request.get(`${AUTH_API}/refresh`);
   },
   checkAuth: async () => {
     return await request.get<{ userId: string }>(`${AUTH_API}/check-auth`);
@@ -97,6 +73,11 @@ const tournaments = {
   },
   createNew: async (body: CreateTournamentRequest) => {
     return await request.post<Tournament>(`${TOURNAMENTS_API}/create`, body);
+  },
+  signup: async (tournamentId: string) => {
+    return await request.post(`${TOURNAMENTS_API}`, undefined, {
+      params: tournamentId
+    });
   }
 };
 
