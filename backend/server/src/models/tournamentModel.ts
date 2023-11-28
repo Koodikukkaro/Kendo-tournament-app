@@ -21,7 +21,7 @@ export interface Tournament {
   organizerPhone?: string;
   maxPlayers: number;
   players: Types.ObjectId[]; // Array of player identifiers (userID from user objects)
-  matchSchedule: Match[];
+  matchSchedule?: Match[];
 }
 
 export interface AddPlayerRequest {
@@ -40,7 +40,7 @@ const tournamentSchema = new Schema<Tournament & Document>(
       enum: Object.values(TournamentType),
       required: true
     },
-    players: [{ type: String }],
+    players: { type: [String], default: [] },
     matchSchedule: [{ type: Schema.Types.ObjectId, ref: "Match" }], // Reference to Match documents
     maxPlayers: { type: Number, required: true },
     creator: {

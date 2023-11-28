@@ -98,6 +98,9 @@ export interface AddPointRequest {
   comment?: string;
 }
 
-export type CreateTournamentRequest = Omit<Tournament, "id" | "creator"> & {
+export type CreateTournamentRequest = Omit<
+  Tournament,
+  "id" | "creator" | "players"
+> & {
   differentOrganizer: boolean;
 };
