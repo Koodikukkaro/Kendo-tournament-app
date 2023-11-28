@@ -9,6 +9,14 @@ export enum TournamentType {
   PreliminiaryPlayoff = "Preliminary Playoff"
 }
 
+export interface UnsavedMatch {
+  players: MatchPlayer[];
+  type: string;
+  admin: Types.ObjectId | null;
+  elapsedTime: number;
+  timerStartedTimestamp: Date | null;
+}
+
 export interface Tournament {
   id: Types.ObjectId;
   name: string;

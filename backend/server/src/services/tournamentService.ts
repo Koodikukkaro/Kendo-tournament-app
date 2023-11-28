@@ -1,8 +1,15 @@
 import NotFoundError from "../errors/NotFoundError.js";
-import { type CreateTournamentRequest } from "../models/requestModel.js";
-import { TournamentModel, type Tournament } from "../models/tournamentModel.js";
+import {
+  TournamentModel,
+  type Tournament,
+  type UnsavedMatch,
+  TournamentType
+} from "../models/tournamentModel.js";
 import UserModel from "../models/userModel.js";
 import BadRequestError from "../errors/BadRequestError.js";
+import { type Types } from "mongoose";
+import MatchModel from "../models/matchModel.js";
+import { CreateTournamentRequest } from "../models/requestModel.js";
 
 export class TournamentService {
   public async getTournamentById(id: string): Promise<Tournament> {
@@ -47,6 +54,17 @@ export class TournamentService {
       tournamentData.organizerPhone = organizer.phoneNumber;
     }
 
+    if (
+      tournamentData.type === TournamentType.Playoff &&
+      !this.isPowerOfTwo(tournamentData.maxPlayers)
+    ) {
+      throw new BadRequestError({
+        message:
+          "Invalid number of players for a playoff tournament. The total number of players must be a power of 2."
+      });
+    } else if (tournamentData.type === TournamentType.RoundRobin) {
+      this.calculateRoundRobinMatches(tournamentData.maxPlayers); // this will throw error if players < 2
+    }
     const newTournament = await TournamentModel.create({
       ...tournamentData,
       creator
@@ -91,5 +109,140 @@ export class TournamentService {
 
     tournament.players.push(player.id);
     await tournament.save();
+  }
+
+
+  public async generateTournamentSchedule(
+    tournamentId: string
+  ): Promise<Tournament> {
+    const tournament = await TournamentModel.findById(tournamentId).exec();
+
+    if (tournament === null || tournament === undefined) {
+      throw new NotFoundError({
+        message: "Tournament not found"
+      });
+    }
+
+    if (tournament.players.length !== tournament.maxPlayers) {
+      throw new BadRequestError({
+        message: "Tournament player count has not reached the maximum capacity"
+      });
+    }
+
+    let matches: UnsavedMatch[] = [];
+
+    switch (tournament.tournamentType) {
+      case TournamentType.RoundRobin:
+        if (
+          this.calculateRoundRobinMatches(tournament.maxPlayers) ===
+          tournament.matchSchedule.length
+        ) {
+          throw new BadRequestError({
+            message:
+              "We have already created the match schedule for this tournament."
+          });
+        }
+        matches = this.generateRoundRobinSchedule(tournament.players);
+        break;
+      case TournamentType.Playoff:
+        matches = await this.generatePlayoffSchedule(
+          tournament.players,
+          tournament.matchSchedule
+        );
+        break;
+    }
+
+    // Create Match documents for each match
+    for (const match of matches) {
+      const matchDocument = await MatchModel.create(match);
+      tournament.matchSchedule.push(matchDocument._id);
+    }
+
+    await tournament.save();
+    return await tournament.toObject();
+  }
+
+  private generateRoundRobinSchedule(
+    playerIds: Types.ObjectId[]
+  ): UnsavedMatch[] {
+    const matches: UnsavedMatch[] = [];
+    for (let i = 0; i < playerIds.length; i++) {
+      for (let j = i + 1; j < playerIds.length; j++) {
+        matches.push({
+          players: [
+            { id: playerIds[i], points: [], color: "red" },
+            { id: playerIds[j], points: [], color: "white" }
+          ],
+          type: "group", // decide what this is going to be.
+          admin: null, // this has to be an ID.
+          elapsedTime: 0,
+          timerStartedTimestamp: null
+          // Set other Match fields as necessary
+        });
+      }
+    }
+    return matches;
+  }
+
+  private async generatePlayoffSchedule(
+    playerIds: Types.ObjectId[],
+    previousMatches: Types.ObjectId[]
+  ): Promise<UnsavedMatch[]> {
+    const matches: UnsavedMatch[] = [];
+    let currentRoundPlayers = [];
+    // check if there's any previous matches.
+    if (previousMatches.length === 0) {
+      // work with original list
+      currentRoundPlayers = [...playerIds];
+    } else {
+      const matchPromises = previousMatches.map(
+        async (matchId) => await MatchModel.findById(matchId).exec()
+      );
+      const matchDatas = await Promise.all(matchPromises);
+
+      for (const matchData of matchDatas) {
+        const winnerId = matchData?.winner;
+        if (winnerId === null || winnerId === undefined) {
+          throw new BadRequestError({
+            message:
+              "Cannot create a new round because the last round of the playoffs is not yet complete."
+          });
+        }
+        currentRoundPlayers.push(winnerId);
+      }
+    }
+
+    for (let i = 0; i < playerIds.length; i += 2) {
+      // only works in power of 2.
+      matches.push({
+        players: [
+          { id: playerIds[i], points: [], color: "red" },
+          { id: playerIds[i + 1], points: [], color: "white" }
+        ],
+        type: "playoff", // decide what this is going to be.
+        admin: null, // this has to be an ID.
+        elapsedTime: 0,
+        timerStartedTimestamp: null
+        // Set other Match fields as necessary
+      });
+    }
+    return matches;
+  }
+
+  private isPowerOfTwo(n: number): boolean {
+    if (n <= 0) {
+      return false;
+    }
+    return (n & (n - 1)) === 0;
+  }
+
+  private calculateRoundRobinMatches(playerCount: number): number {
+    if (playerCount < 2) {
+      throw new BadRequestError({
+        message:
+          "At least two players are required for a round robin tournament."
+      });
+    }
+    return (playerCount * (playerCount - 1)) / 2;
   }
 }
