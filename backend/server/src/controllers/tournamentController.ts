@@ -7,10 +7,15 @@ import {
   Security,
   Body,
   Post,
-  Put
+  Put,
+  Request,
+  Query
 } from "tsoa";
 import { TournamentService } from "../services/tournamentService.js";
-import { type Tournament, AddPlayerRequest } from "../models/tournamentModel.js";
+import {
+  type Tournament,
+  AddPlayerRequest
+} from "../models/tournamentModel.js";
 import {
   CreateTournamentRequest,
   ObjectIdString
@@ -52,7 +57,7 @@ export class TournamentController extends Controller {
 
   @Security("jwt")
   @Put("{tournamentId}/addPlayer")
-  @Tags("Tournament")
+  @Tags("Tournaments")
   public async addPlayerToTournament(
     @Path() tournamentId: ObjectIdString,
     @Body() requestBody: AddPlayerRequest
