@@ -2,6 +2,7 @@ import NotFoundError from "../errors/NotFoundError.js";
 import { TournamentModel, type Tournament } from "../models/tournamentModel.js";
 import UserModel from "../models/userModel.js";
 import BadRequestError from "../errors/BadRequestError.js";
+import { type Types } from "mongoose";
 
 export class TournamentService {
   // read
@@ -29,7 +30,7 @@ export class TournamentService {
   // update - add players
   public async addPlayerToTournament(
     tournamentId: string,
-    playerId: string
+    playerId: Types.ObjectId
   ): Promise<Tournament> {
     const tournament = await TournamentModel.findById(tournamentId).exec();
 
