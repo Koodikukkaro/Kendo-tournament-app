@@ -1,10 +1,18 @@
 import mongoose, { Schema, type Document, type Types } from "mongoose";
-import { type Match } from "./matchModel";
+import { type MatchPlayer } from "./matchModel";
 
 export enum TournamentType {
   RoundRobin = "Round Robin",
   Playoff = "Playoff",
   PreliminiaryPlayoff = "Preliminary Playoff"
+}
+
+export interface UnsavedMatch {
+  players: MatchPlayer[];
+  type: string;
+  admin: Types.ObjectId | null;
+  elapsedTime: number;
+  timerStartedTimestamp: Date | null;
 }
 
 export interface Tournament {
@@ -18,7 +26,7 @@ export interface Tournament {
   organizerPhone?: string;
   maxPlayers: number;
   players: Types.ObjectId[]; // Array of player identifiers (userID from user objects)
-  matchSchedule: Match[];
+  matchSchedule: Types.ObjectId[]; // Array of MatchModel (matches created in srevice)
 }
 
 export interface AddPlayerRequest {
@@ -39,7 +47,7 @@ const tournamentSchema = new Schema<Tournament & Document>(
     },
     maxPlayers: { type: Number, required: true },
     players: [{ type: String }],
-    matchSchedule: [{ type: Schema.Types.ObjectId, ref: "Match" }], // Reference to Match documents
+    matchSchedule: [{ type: String }], // Reference to Match documents
     organizerEmail: { type: String },
     organizerPhone: { type: String }
   },

@@ -49,6 +49,17 @@ export class TournamentController extends Controller {
     return result;
   }
 
+  @Security("jwt")
+  @Put("{tournamentId}/autoSchedule")
+  @Tags("Tournament")
+  public async autoSchedule(
+    @Path() tournamentId: ObjectIdString
+  ): Promise<Tournament> {
+    const result = await this.service.generateTournamentSchedule(tournamentId);
+    this.setStatus(201); // Created status
+    return result;
+  }
+
   private get service(): TournamentService {
     return new TournamentService();
   }
