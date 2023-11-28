@@ -1,5 +1,8 @@
 import NotFoundError from "../errors/NotFoundError.js";
 import { TournamentModel, type Tournament } from "../models/tournamentModel.js";
+import UserModel from "../models/userModel.js";
+import BadRequestError from "../errors/BadRequestError.js";
+import { type Types } from "mongoose";
 
 export class TournamentService {
   // read
@@ -24,28 +27,44 @@ export class TournamentService {
     return await newTournament.toObject();
   }
 
-  // listing
-  // public async getAllTournaments(): Promise<Tournament[]> {
-  //     console.log("I am in get all tournament service")
-  //     return await TournamentModel.find().exec();
-  // }
+  // update - add players
+  public async addPlayerToTournament(
+    tournamentId: string,
+    playerId: Types.ObjectId
+  ): Promise<Tournament> {
+    const tournament = await TournamentModel.findById(tournamentId).exec();
 
-  // // all running
-  // public async getRunningTournaments(): Promise<Tournament[]> {
-  //     const currentDate = new Date();
+    if (tournament === null || tournament === undefined) {
+      throw new NotFoundError({
+        message: "Tournament not found"
+      });
+    }
 
-  //     return await TournamentModel.find({
-  //         startDate: { $lte: currentDate },
-  //         endDate: { $gte: currentDate }
-  //     }).exec();
-  // }
+    // Check if player exists in the UserModel
+    const player = await UserModel.findById(playerId).exec();
+    if (player === null || player === undefined) {
+      throw new NotFoundError({
+        message: "Player not found"
+      });
+    }
 
-  // // all future tournaments
-  // public async getUpcomingTournaments(): Promise<Tournament[]> {
-  //     const currentDate = new Date();
+    // Check if the player is already in the tournament
+    if (tournament.players.includes(playerId)) {
+      throw new BadRequestError({
+        message: "Player already registered in the tournament"
+      });
+    }
 
-  //     return await TournamentModel.find({
-  //         startDate: { $gt: currentDate }
-  //     }).exec();
-  // }
+    // Check if the tournament has reached its maximum number of players
+    if (tournament.players.length >= tournament.maxPlayers) {
+      throw new BadRequestError({
+        message: "Tournament has reached its maximum number of players"
+      });
+    }
+
+    tournament.players.push(playerId);
+    await tournament.save();
+
+    return await tournament.toObject();
+  }
 }

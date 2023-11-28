@@ -1,6 +1,16 @@
-import { Route, Controller, Get, Path, Tags, Security, Body, Post } from "tsoa";
+import {
+  Route,
+  Controller,
+  Get,
+  Path,
+  Tags,
+  Security,
+  Body,
+  Post,
+  Put
+} from "tsoa";
 import { TournamentService } from "../services/tournamentService.js";
-import { Tournament } from "../models/tournamentModel.js";
+import { Tournament, AddPlayerRequest } from "../models/tournamentModel.js";
 import { ObjectIdString } from "../models/requestModel.js";
 
 @Route("tournament")
@@ -24,27 +34,20 @@ export class TournamentController extends Controller {
     return await this.service.createTournament(tournamentData);
   }
 
-  // // @Security("jwt")
-  // @Get("all")
-  // @Tags("Tournament")
-  // public async getAllTournaments(): Promise<Tournament[]> {
-  //     console.log("getAllTournaments TOURNAMENT");
-  //     return await this.service.getAllTournaments();
-  // }
-
-  // // @Security("jwt")
-  // @Get("running")
-  // @Tags("Tournament")
-  // public async getRunningTournaments(): Promise<Tournament[]> {
-  //     return await this.service.getRunningTournaments();
-  // }
-
-  // // @Security("jwt")
-  // @Get("upcoming")
-  // @Tags("Tournament")
-  // public async getUpcomingTournaments(): Promise<Tournament[]> {
-  //     return await this.service.getUpcomingTournaments();
-  // }
+  @Security("jwt")
+  @Put("{tournamentId}/addPlayer")
+  @Tags("Tournament")
+  public async addPlayerToTournament(
+    @Path() tournamentId: ObjectIdString,
+    @Body() requestBody: AddPlayerRequest
+  ): Promise<Tournament> {
+    const result = await this.service.addPlayerToTournament(
+      tournamentId,
+      requestBody.playerId
+    );
+    this.setStatus(200); // OK status
+    return result;
+  }
 
   private get service(): TournamentService {
     return new TournamentService();
