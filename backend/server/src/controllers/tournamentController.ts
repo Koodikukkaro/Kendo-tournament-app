@@ -10,7 +10,11 @@ import {
   Put
 } from "tsoa";
 import { TournamentService } from "../services/tournamentService.js";
-import { Tournament, AddPlayerRequest } from "../models/tournamentModel.js";
+import {
+  Tournament,
+  AddPlayerRequest,
+  UnsavedMatch
+} from "../models/tournamentModel.js";
 import { ObjectIdString } from "../models/requestModel.js";
 
 @Route("tournament")
@@ -56,6 +60,21 @@ export class TournamentController extends Controller {
     @Path() tournamentId: ObjectIdString
   ): Promise<Tournament> {
     const result = await this.service.generateTournamentSchedule(tournamentId);
+    this.setStatus(201); // Created status
+    return result;
+  }
+
+  @Security("jwt")
+  @Put("{tournamentId}/manualSchedule")
+  @Tags("Tournament")
+  public async manualSchedule(
+    @Path() tournamentId: ObjectIdString,
+    @Body() requestBody: UnsavedMatch
+  ): Promise<Tournament> {
+    const result = await this.service.addMatchToTournament(
+      tournamentId,
+      requestBody
+    );
     this.setStatus(201); // Created status
     return result;
   }
