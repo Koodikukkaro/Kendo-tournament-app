@@ -14,7 +14,8 @@ import {
 import { TournamentService } from "../services/tournamentService.js";
 import {
   type Tournament,
-  SignupForTournamentRequest
+  SignupForTournamentRequest,
+  UnsavedMatch
 } from "../models/tournamentModel.js";
 import {
   CreateTournamentRequest,
@@ -76,6 +77,21 @@ export class TournamentController extends Controller {
     @Path() tournamentId: ObjectIdString
   ): Promise<Tournament> {
     const result = await this.service.generateTournamentSchedule(tournamentId);
+    this.setStatus(201); // Created status
+    return result;
+  }
+
+  @Security("jwt")
+  @Put("{tournamentId}/manualSchedule")
+  @Tags("Tournament")
+  public async manualSchedule(
+    @Path() tournamentId: ObjectIdString,
+    @Body() requestBody: UnsavedMatch
+  ): Promise<Tournament> {
+    const result = await this.service.addMatchToTournament(
+      tournamentId,
+      requestBody
+    );
     this.setStatus(201); // Created status
     return result;
   }

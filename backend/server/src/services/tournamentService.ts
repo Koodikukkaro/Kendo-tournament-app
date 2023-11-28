@@ -112,6 +112,44 @@ export class TournamentService {
   }
 
 
+  // update - add custom match
+  public async addMatchToTournament(
+    tournamentId: string,
+    unsavedMatch: UnsavedMatch
+  ): Promise<Tournament> {
+    // custom add match to tournament
+    const tournament = await TournamentModel.findById(tournamentId).exec();
+    if (tournament === null || tournament === undefined) {
+      throw new NotFoundError({
+        message: "Tournament not found"
+      });
+    }
+
+    // validation
+    for (let i = 0; i < unsavedMatch.players.length; i += 1) {
+      if (!tournament.players.includes(unsavedMatch.players[i].id)) {
+        const user = await UserModel.findById(
+          unsavedMatch.players[i].id
+        ).exec();
+
+        if (user === null || user === undefined) {
+          throw new NotFoundError({
+            message: "Player not found!"
+          });
+        }
+        throw new BadRequestError({
+          message: `Cannot create the match: ${user.firstName} ${user.lastName} is not registered for this tournament.`
+        });
+      }
+    }
+
+    const newMatch = await MatchModel.create(unsavedMatch);
+    tournament.matchSchedule.push(newMatch._id);
+    await tournament.save();
+    return await tournament.toObject();
+  }
+
+
   public async generateTournamentSchedule(
     tournamentId: string
   ): Promise<Tournament> {
@@ -131,7 +169,7 @@ export class TournamentService {
 
     let matches: UnsavedMatch[] = [];
 
-    switch (tournament.tournamentType) {
+    switch (tournament.type) {
       case TournamentType.RoundRobin:
         if (
           this.calculateRoundRobinMatches(tournament.maxPlayers) ===
@@ -162,6 +200,7 @@ export class TournamentService {
     return await tournament.toObject();
   }
 
+  // private function
   private generateRoundRobinSchedule(
     playerIds: Types.ObjectId[]
   ): UnsavedMatch[] {
@@ -184,6 +223,7 @@ export class TournamentService {
     return matches;
   }
 
+  // private function
   private async generatePlayoffSchedule(
     playerIds: Types.ObjectId[],
     previousMatches: Types.ObjectId[]
@@ -229,6 +269,7 @@ export class TournamentService {
     return matches;
   }
 
+  // private utility function
   private isPowerOfTwo(n: number): boolean {
     if (n <= 0) {
       return false;
@@ -236,6 +277,7 @@ export class TournamentService {
     return (n & (n - 1)) === 0;
   }
 
+  // private utility function
   private calculateRoundRobinMatches(playerCount: number): number {
     if (playerCount < 2) {
       throw new BadRequestError({
