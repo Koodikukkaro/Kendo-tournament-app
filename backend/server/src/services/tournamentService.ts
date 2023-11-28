@@ -1,6 +1,7 @@
 import NotFoundError from "../errors/NotFoundError.js";
 import { TournamentModel, type Tournament } from "../models/tournamentModel.js";
 import UserModel from "../models/userModel.js";
+import BadRequestError from "../errors/BadRequestError.js";
 
 export class TournamentService {
   // read
@@ -48,12 +49,16 @@ export class TournamentService {
 
     // Check if the player is already in the tournament
     if (tournament.players.includes(playerId)) {
-      throw new Error("Player already registered in the tournament");
+      throw new BadRequestError({
+        message: "Player already registered in the tournament"
+      });
     }
 
     // Check if the tournament has reached its maximum number of players
     if (tournament.players.length >= tournament.maxPlayers) {
-      throw new Error("Tournament has reached its maximum number of players");
+      throw new BadRequestError({
+        message: "Tournament has reached its maximum number of players"
+      });
     }
 
     tournament.players.push(playerId);
