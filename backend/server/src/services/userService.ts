@@ -44,6 +44,6 @@ export class UserService {
         { firstName: { $regex: searchQuery } },
         { lastName: { $regex: searchQuery } }
       ]
-    });
+    }).select('firstName lastName _id email userName');
   }
 }
