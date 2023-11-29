@@ -3,11 +3,12 @@ import {
   TournamentModel,
   type Tournament,
   type UnsavedMatch,
-  TournamentType
+  TournamentType,
+  type ExtendedMatch
 } from "../models/tournamentModel.js";
 import UserModel from "../models/userModel.js";
 import BadRequestError from "../errors/BadRequestError.js";
-import { type Types } from "mongoose";
+import { type Types, type Document } from "mongoose";
 import MatchModel from "../models/matchModel.js";
 import { CreateTournamentRequest } from "../models/requestModel.js";
 
@@ -286,5 +287,87 @@ export class TournamentService {
       });
     }
     return (playerCount * (playerCount - 1)) / 2;
+  }
+
+  private async tournamentToObject(
+    tournamentObject: Tournament & Document
+  ): Promise<Tournament & Document> {
+    const playerPromises = tournamentObject.players.map(
+      async (playerId) =>
+        await UserModel.findById(playerId)
+          .select("firstName lastName _id")
+          .exec()
+    );
+
+    const players = await Promise.all(playerPromises);
+    tournamentObject.playerDetails = players.map((player) =>
+      player !== null && player !== undefined
+        ? {
+            firstName: player.firstName,
+            lastName: player.lastName,
+            id: player._id.toString()
+          }
+        : {
+            firstName: "",
+            lastName: "",
+            id: null
+          }
+    );
+
+    const matchPromises = tournamentObject.matchSchedule.map(
+      async (matchId) => await MatchModel.findById(matchId).exec()
+    );
+
+    const matches = await Promise.all(matchPromises);
+    const extendedMatches: ExtendedMatch[] = [];
+
+    for (const match of matches) {
+      if (match !== null && match !== undefined) {
+        const playerDetailsPromises = match.players.map(
+          async (player) =>
+            await UserModel.findById(player.id)
+              .select("firstName lastName _id")
+              .exec()
+        );
+
+        const playersDetails = await Promise.all(playerDetailsPromises);
+        const extendedPlayers = playersDetails.map((player) => ({
+          id:
+            player !== null && player !== undefined
+              ? player._id.toString()
+              : null,
+          firstName:
+            player !== null && player !== undefined ? player.firstName : null,
+          lastName:
+            player !== null && player !== undefined ? player.lastName : null
+        }));
+
+        let winnerDetails = null;
+        if (match.winner !== null && match.winner !== undefined) {
+          const winner = await UserModel.findById(match.winner)
+            .select("firstName lastName _id")
+            .exec();
+          winnerDetails = {
+            id:
+              winner !== null && winner !== undefined
+                ? winner._id.toString()
+                : null,
+            firstName:
+              winner !== null && winner !== undefined ? winner.firstName : null,
+            lastName:
+              winner !== null && winner !== undefined ? winner.lastName : null
+          };
+        }
+
+        extendedMatches.push({
+          ...match.toObject(),
+          playersDetails: extendedPlayers,
+          winnerDetails
+        });
+      }
+    }
+
+    tournamentObject.matchScheduleDetails = extendedMatches;
+    return tournamentObject;
   }
 }

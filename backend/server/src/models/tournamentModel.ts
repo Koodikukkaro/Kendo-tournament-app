@@ -1,5 +1,5 @@
 import mongoose, { Schema, type Document, type Types } from "mongoose";
-import { type Match } from "./matchModel";
+import { MatchPlayer, type Match } from "./matchModel";
 import { type User } from "./userModel";
 import type { ObjectIdString } from "./requestModel";
 
@@ -15,6 +15,25 @@ export interface UnsavedMatch {
   admin: Types.ObjectId | null;
   elapsedTime: number;
   timerStartedTimestamp: Date | null;
+}
+
+interface PlayerDetails {
+  firstName: string | null;
+  lastName: string | null;
+  id: string | null;
+}
+
+export interface ExtendedMatch extends Match {
+  playersDetails: Array<{
+    id: string | null;
+    firstName: string | null;
+    lastName: string | null;
+  }>;
+  winnerDetails?: {
+    id: string | null;
+    firstName: string | null;
+    lastName: string | null;
+  } | null;
 }
 
 export interface Tournament {
