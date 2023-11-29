@@ -23,4 +23,11 @@ export const socketEvents = (
       return { ...state, matchInfo };
     });
   });
+
+  socket.on("timer-state", ({ isTimerRunning, currentTime }: { isTimerRunning: boolean, currentTime: string }) => {
+    console.log("Received timer-state event:", { isTimerRunning, currentTime });
+    setValue((state) => {
+      return { ...state, isTimerRunning, currentTime };
+    });
+  });
 };

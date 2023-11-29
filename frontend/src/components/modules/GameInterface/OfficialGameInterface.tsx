@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import "../../common/Style/common.css";
 import "./OfficialGameInterface.css";
+import { toggleTimer } from "../../../sockets/emit";
 
 interface Cells {
   rows: string[][];
@@ -74,6 +75,8 @@ const OfficialGameInterface: React.FC = () => {
   const handleTimerChange = (): void => {
     /* TODO: Somehow manage the match API's elapsedTime when timer stops */
     setIsTimerRunning((prevIsTimerRunning) => !prevIsTimerRunning);
+
+    toggleTimer();
   };
 
   useEffect(() => {
