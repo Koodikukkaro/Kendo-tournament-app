@@ -36,7 +36,7 @@ export class UserService {
   }
 
   public async searchUser(query: string): Promise<User[]> {
-    const searchQuery = new RegExp(query, 'i');
+    const searchQuery = new RegExp(query, "i");
     return await UserModel.find({
       $or: [
         { userName: { $regex: searchQuery } },
@@ -44,6 +44,6 @@ export class UserService {
         { firstName: { $regex: searchQuery } },
         { lastName: { $regex: searchQuery } }
       ]
-    }).select('firstName lastName _id email userName');
+    }).select("firstName lastName _id email userName");
   }
 }
