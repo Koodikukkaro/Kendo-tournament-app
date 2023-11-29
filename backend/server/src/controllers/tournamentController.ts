@@ -28,6 +28,16 @@ export class TournamentController extends Controller {
   }
 
   @Security("jwt")
+  @Get("{id}/details")
+  @Tags("Tournament")
+  public async getTournamentDetails(
+    @Path() id: ObjectIdString
+  ): Promise<Tournament> {
+    this.setStatus(200);
+    return await this.service.getTournamentDetails(id);
+  }
+
+  @Security("jwt")
   @Post("create")
   @Tags("Tournament")
   public async createTournament(

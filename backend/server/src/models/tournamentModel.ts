@@ -1,5 +1,5 @@
 import mongoose, { Schema, type Document, type Types } from "mongoose";
-import { type MatchPlayer } from "./matchModel";
+import { type MatchPlayer, type Match } from "./matchModel";
 
 export enum TournamentType {
   RoundRobin = "Round Robin",
@@ -15,6 +15,25 @@ export interface UnsavedMatch {
   timerStartedTimestamp: Date | null;
 }
 
+interface PlayerDetails {
+  firstName: string | null;
+  lastName: string | null;
+  id: string | null;
+}
+
+export interface ExtendedMatch extends Match {
+  playersDetails: Array<{
+    id: string | null;
+    firstName: string | null;
+    lastName: string | null;
+  }>;
+  winnerDetails?: {
+    id: string | null;
+    firstName: string | null;
+    lastName: string | null;
+  } | null;
+}
+
 export interface Tournament {
   tournamentName: string;
   location: string;
@@ -26,7 +45,9 @@ export interface Tournament {
   organizerPhone?: string;
   maxPlayers: number;
   players: Types.ObjectId[]; // Array of player identifiers (userID from user objects)
+  playerDetails?: PlayerDetails[];
   matchSchedule: Types.ObjectId[]; // Array of MatchModel (matches created in srevice)
+  matchScheduleDetails?: ExtendedMatch[];
 }
 
 export interface AddPlayerRequest {
@@ -52,7 +73,9 @@ const tournamentSchema = new Schema<Tournament & Document>(
     organizerPhone: { type: String }
   },
   {
-    timestamps: true
+    timestamps: true,
+    toJSON: { virtuals: true }, // Enable virtuals in toJSON
+    toObject: { virtuals: true } // Enable virtuals in toObject
   }
 );
 
