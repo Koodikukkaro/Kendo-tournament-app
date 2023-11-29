@@ -34,4 +34,16 @@ export class UserService {
 
     await UserModel.create(requestBody);
   }
+
+  public async searchUser(query: string): Promise<User[]> {
+    const searchQuery = new RegExp(query, 'i');
+    return await UserModel.find({
+      $or: [
+        { userName: { $regex: searchQuery } },
+        { email: { $regex: searchQuery } },
+        { firstName: { $regex: searchQuery } },
+        { lastName: { $regex: searchQuery } }
+      ]
+    });
+  }
 }

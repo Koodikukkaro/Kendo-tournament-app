@@ -18,6 +18,11 @@ export interface User {
   refreshToken?: string;
 }
 
+export interface UserSearchQuery {
+  query: string;
+}
+
+
 interface UserMethods {
   setPassword: (password: string) => Promise<void>;
   checkPassword: (password: string) => Promise<boolean>;
