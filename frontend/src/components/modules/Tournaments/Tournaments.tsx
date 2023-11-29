@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Outlet, useOutletContext } from "react-router-dom";
 import { type Tournament } from "types/models";
 import useToast from "hooks/useToast";
@@ -34,23 +34,30 @@ interface TournamentContextType {
   upcoming: Tournament[];
 }
 
-export const useTournament = (): TournamentContextType => {
+export const useTournaments = (): TournamentContextType => {
   return useOutletContext<TournamentContextType>();
 };
 
 const Tournaments: React.FC = () => {
   const showToast = useToast();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [ongoing, setOngoing] = useState<Tournament[]>([]);
-  const [upcoming, setUpcoming] = useState<Tournament[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [tournamentsTuple, setTournamentsTuple] = useState<Tournament[][]>([
+    [],
+    []
+  ]);
+
+  const memoizedTournaments = useMemo(() => {
+    return {
+      ongoing: tournamentsTuple[0],
+      upcoming: tournamentsTuple[1]
+    };
+  }, [tournamentsTuple]);
 
   useEffect(() => {
     const getAllTournaments = async (): Promise<void> => {
       try {
-        const [ongoing, upcoming] = await getTournamentsTuple();
-
-        setOngoing(ongoing);
-        setUpcoming(upcoming);
+        const tournaments = await getTournamentsTuple();
+        setTournamentsTuple(tournaments);
       } catch (error) {
         showToast("Could not fetch tournament data.", "error");
       }
@@ -59,9 +66,9 @@ const Tournaments: React.FC = () => {
     };
 
     void getAllTournaments();
-  }, [showToast]);
+  }, []);
 
-  return <Outlet context={{ isLoading, ongoing, upcoming }} />;
+  return <Outlet context={{ isLoading, ...memoizedTournaments }} />;
 };
 
 export default Tournaments;
