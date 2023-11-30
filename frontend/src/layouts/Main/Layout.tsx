@@ -6,19 +6,21 @@ import {
   settings
 } from "layouts/NavigationBar/navigation-data";
 import React, { type ReactElement } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import "./Layout.css";
 import { useAuth } from "context/AuthContext";
-import InterceptorSetup from "api/axiosInterceptor";
 import Container from "@mui/material/Container";
+import { ArrowBack } from "@mui/icons-material";
+import { Button, Typography } from "@mui/material";
+import { homeRoute } from "routes/Router";
 
 const Layout = (): ReactElement => {
   const { isAuthenticated } = useAuth();
+  const { pathname } = useLocation();
+
+  const navigate = useNavigate();
   return (
     <div className="app-wrapper">
-      {/* Initialize axios interceptors here (dont know where else to put it...) */}
-      <InterceptorSetup />
-
       <NavigationBar
         navigationItems={
           isAuthenticated ? authenticatedNavItems : unAuthenticatedNavItems
@@ -26,6 +28,16 @@ const Layout = (): ReactElement => {
         settings={settings}
       />
       <Container className="app-container">
+        {pathname !== homeRoute && (
+          <Button
+            id="back-button"
+            onClick={() => navigate(-1)}
+            sx={{ display: "flex", gap: "5px", marginBottom: "6px" }}
+          >
+            <ArrowBack />
+            <Typography>Back</Typography>
+          </Button>
+        )}
         <Outlet />
       </Container>
       <Footer />
