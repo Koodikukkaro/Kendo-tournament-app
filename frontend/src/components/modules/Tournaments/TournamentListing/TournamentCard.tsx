@@ -27,31 +27,34 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
   };
 
   return (
-    <Card component="main">
+    <Card component="main" sx={{ position: "relative" }}>
       <CardActionArea
         onClick={() => {
           navigate(tournament.id);
         }}
       >
         <CardHeader title={tournament.name} />
-        <CardContent>
+        <CardContent sx={{ marginBottom: "32px" }}>
           <Typography color="text.secondary">
             Start Date:{" "}
-            {new Date(tournament.startDate).toLocaleDateString("en")}
+            {new Date(tournament.startDate).toLocaleDateString("fi")}
           </Typography>
 
           <Typography color="text.secondary">
-            End Date: {new Date(tournament.endDate).toLocaleDateString("en")}
+            End Date: {new Date(tournament.endDate).toLocaleDateString("fi")}
           </Typography>
         </CardContent>
-        {type === "upcoming" && (
-          <CardContent>
-            <Button color="primary" variant="outlined" onClick={handleClick}>
-              Sign up
-            </Button>
-          </CardContent>
-        )}
       </CardActionArea>
+      {type === "upcoming" && (
+        <Button
+          color="primary"
+          variant="outlined"
+          onClick={handleClick}
+          sx={{ position: "absolute", bottom: 5, right: 5 }}
+        >
+          Sign up
+        </Button>
+      )}
     </Card>
   );
 };
