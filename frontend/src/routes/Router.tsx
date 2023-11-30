@@ -15,14 +15,14 @@ import CreateTournamentForm from "components/modules/Tournaments/CreateTournamen
 import Signup from "components/modules/Tournaments/Signup/Signup";
 import TournamentDetails from "components/modules/Tournaments/TournamentDetails";
 import TournamentList from "components/modules/Tournaments/TournamentListing/TournamentsList";
-import Root from "./Root";
 import { TournamentsProvider } from "context/TournamentsContext";
 import { TournamentProvider } from "context/TournamentContext";
+import RootRoute from "./RootRoute";
 
 export const homeRoute = "/tournaments";
 
 const routes = createRoutesFromElements(
-  <Route element={<Root />}>
+  <Route element={<RootRoute />}>
     <Route element={<Layout />}>
       <Route path="/tournaments" element={<TournamentsProvider />}>
         <Route index element={<TournamentList />} />

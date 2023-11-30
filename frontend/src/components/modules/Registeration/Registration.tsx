@@ -3,7 +3,8 @@ import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import { Link, useNavigate } from "react-router-dom";
+import Link from "@mui/material/Link";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import api from "api/axios";
 import { type RegisterRequest } from "types/requests";
 import useToast from "hooks/useToast";
@@ -89,7 +90,9 @@ const RegisterForm: React.FC = () => {
           </Typography>
           <Typography variant="body1">
             {"Already have an account? "}
-            <Link to="/login">{"Sign In"}</Link>
+            <Link component={RouterLink} to="/login">
+              {"Sign In"}
+            </Link>
           </Typography>
           <Typography variant="body2">
             {"Fill in the fields below. Fields marked with * are required."}

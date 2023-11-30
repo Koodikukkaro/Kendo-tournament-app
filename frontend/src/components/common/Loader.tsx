@@ -1,7 +1,7 @@
 import React from "react";
 import Box from "@mui/material/Box";
 import CircularProgress, {
-  CircularProgressProps
+  type CircularProgressProps
 } from "@mui/material/CircularProgress";
 
 const Loader = (props?: CircularProgressProps): React.ReactElement => {

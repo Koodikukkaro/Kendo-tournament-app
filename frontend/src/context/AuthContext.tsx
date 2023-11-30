@@ -1,5 +1,6 @@
 import api from "api/axios";
 import Loader from "components/common/Loader";
+import useToast from "hooks/useToast";
 import React, {
   type ReactNode,
   createContext,
@@ -29,6 +30,7 @@ const AuthContext = createContext<IAuthContext>({
 });
 
 export const AuthProvider = ({ children }: Props): ReactElement => {
+  const showToast = useToast();
   const [userId, setUserId] = useState<string | undefined>();
   const [loading, setLoading] = useState(true);
 
@@ -52,11 +54,13 @@ export const AuthProvider = ({ children }: Props): ReactElement => {
   const login = async (payload: LoginRequest): Promise<void> => {
     const { userId } = await api.auth.login(payload);
     setUserId(userId);
+    showToast("Login successful!", "success");
   };
 
   const logout = async (): Promise<void> => {
     await api.auth.logout();
     setUserId(undefined);
+    showToast("Logout successful!", "success");
   };
 
   const contextValue = useMemo(

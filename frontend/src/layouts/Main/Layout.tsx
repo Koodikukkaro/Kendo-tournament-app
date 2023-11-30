@@ -31,7 +31,9 @@ const Layout = (): ReactElement => {
         {pathname !== homeRoute && (
           <Button
             id="back-button"
-            onClick={() => navigate(-1)}
+            onClick={() => {
+              navigate(-1);
+            }}
             sx={{ display: "flex", gap: "5px", marginBottom: "6px" }}
           >
             <ArrowBack />
