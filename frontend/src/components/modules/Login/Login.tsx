@@ -1,180 +1,142 @@
-import React, { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "context/AuthContext";
-import "../../common/Style/common.css";
-import "./login.css";
+import React from "react";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import Footer from "components/common/Footer/Footer";
-import TextField from "@mui/material/TextField";
-import ShowError from "components/common/ErrorMessage/Error";
+import Box from "@mui/material/Box";
+import { type LoginRequest } from "types/requests";
+import useToast from "hooks/useToast";
+import { useAuth } from "context/AuthContext";
+import { type LocationState } from "types/global";
+import {
+  FormContainer,
+  PasswordElement,
+  TextFieldElement,
+  useForm
+} from "react-hook-form-mui";
+import { homeRoute } from "routes/Router";
+import Link from "@mui/material/Link";
 
-interface LocationProps {
-  state: {
-    from: Location;
-  };
-}
-
-interface FormData {
-  login: string;
+interface LoginFormData {
+  email: string;
   password: string;
 }
 
-interface ErrorMessage {
-  message: string;
-}
+const defaultValues: LoginFormData = {
+  email: "",
+  password: ""
+};
 
 const LoginForm: React.FC = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
-  const location = useLocation() as unknown as LocationProps;
-  const from = location.state?.from?.pathname ?? "/";
-  const loginAPI = "http://localhost:8080/api/auth/login"; // transfer the base URL into env file.
+  const location = useLocation() as LocationState;
+  const showToast = useToast();
+  const { isAuthenticated, login } = useAuth();
+  const from = location.state?.from?.pathname ?? homeRoute;
 
-  const [formData, setFormData] = useState<FormData>({
-    login: "",
-    password: ""
+  /* Runs on the initial render and checks if the user
+   * was redirected due to being unauthenticated */
+  React.useEffect(() => {
+    if (!isAuthenticated && from !== homeRoute) {
+      showToast("You need to login to view this content", "warning");
+    }
+  }, [from]);
+
+  const formContext = useForm<LoginFormData>({
+    defaultValues,
+    mode: "onBlur"
   });
 
-  const [errorMessage, setErrorMessage] = useState<ErrorMessage>({
-    message: ""
-  });
-
-  const onHandleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
-  ): Promise<void> => {
-    event.preventDefault(); // Prevent the default form submit behavior
+  const onSubmit = async (data: LoginFormData): Promise<void> => {
     try {
-      const errorContext = ["requestBody.password", "requestBody.login"];
-      const response = await fetch(loginAPI, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          email: formData.login,
-          password: formData.password
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        // Store the token, and update auth state
-        await login();
-        navigate(from, { replace: true });
-      } else {
-        const errorData = await response.json();
-        const context = errorData.errors[0].context;
-        for (let i = 0; i < errorContext.length; i++) {
-          const key = errorContext[i];
-          if (context[key] !== undefined) {
-            setErrorMessage({
-              message: context[key].message
-            });
-            break; // found the error message
-          }
-        }
-      }
+      await login(data as LoginRequest);
+      navigate(from, { replace: true });
     } catch (error) {
-      console.log(error);
-      setErrorMessage({
-        message: "Unknown Error Occurred. Please try again later!"
-      });
+      showToast(error, "error");
     }
   };
 
-  const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    fieldName: string
-  ): void => {
-    const target = event.target as HTMLInputElement; // Type assertion
-    const value = target.type === "checkbox" ? target.checked : target.value;
-    setFormData((prevData) => ({
-      ...prevData,
-      [fieldName]: value
-    }));
-  };
-
   return (
-    <div className="gridContainer">
-      <Grid container className="">
-        {/* Left Panel */}
-        <Grid item xs={12} sm={7}>
-          <div className="leftPanel">
-            <form id="loginForm" className="form" onSubmit={onHandleSubmit}>
-              <Typography variant="h4" component="h4">
-                Sign In!
-              </Typography>
+    <Grid container display="flex" justifyContent="center">
+      <Box
+        sx={{
+          padding: "1em",
+          width: "500px"
+        }}
+      >
+        <Typography
+          component="h1"
+          variant="h5"
+          fontWeight="bold"
+          alignSelf="start"
+        >
+          {"Sign in"}
+        </Typography>
 
-              {errorMessage.message !== "" && (
-                <ShowError message={errorMessage.message}></ShowError>
-              )}
-              <TextField
-                label="Username/Email"
-                type="text"
-                name="login"
-                id="login"
-                placeholder="Type your username or email"
-                value={formData.login}
-                onChange={(e) => {
-                  handleInputChange(e, "login");
-                }}
-                margin="normal"
-                required
-                fullWidth
-              />
+        <FormContainer
+          defaultValues={defaultValues}
+          formContext={formContext}
+          onSuccess={onSubmit}
+        >
+          <TextFieldElement
+            required
+            name="email"
+            label="Email Address"
+            type="text"
+            fullWidth
+            margin="normal"
+          />
 
-              <TextField
-                label="Password"
-                type="password"
-                name="password"
-                id="password"
-                placeholder="Type your password"
-                value={formData.password}
-                onChange={(e) => {
-                  handleInputChange(e, "password");
-                }}
-                margin="normal"
-                required
-                fullWidth
-              />
+          <PasswordElement
+            required
+            name="password"
+            label="Password"
+            fullWidth
+            margin="normal"
+          />
 
-              <Typography variant="body2" className="forgotPassword">
-                <Link to="/404">Forgot your password?</Link>
-              </Typography>
-              <br />
-              <Button
-                type="submit"
-                id="btn-login"
-                variant="contained"
-                color="primary"
-                className="login-button"
-              >
-                Log in
-              </Button>
-            </form>
-          </div>
-        </Grid>
-
-        {/* Right Panel */}
-        <Grid item xs={12} sm={5} className="rightPanel">
-          <div className="right-container">
-            <Typography component="h3" variant="h3">
-              Don&apos;t have an account?
-            </Typography>
-            <br />
-            <Button variant="contained" color="success" className="sign-up-btn">
-              <Link to="/register" className="sign-up-link">
-                Register Here
-              </Link>
+          <Box margin="auto" width="200px">
+            <Button
+              type="submit"
+              id="btn-login"
+              variant="contained"
+              color="primary"
+              className="login-button"
+              fullWidth
+              sx={{ mt: 3, mb: 2 }}
+            >
+              {"Log in"}
             </Button>
-          </div>
+          </Box>
+        </FormContainer>
+
+        <Grid container gap="10px">
+          <Grid item xs>
+            <Typography variant="body2">
+              <Link
+                component={RouterLink}
+                to={homeRoute}
+                onClick={() => {
+                  showToast(
+                    "Password cannot be changed as of now. :(",
+                    "warning"
+                  );
+                }}
+              >
+                {"Forgot password?"}
+              </Link>
+            </Typography>
+          </Grid>
+          <Grid item>
+            <Typography variant="body2">
+              <Link component={RouterLink} to="/register">
+                {"Don't have an account? Sign Up"}
+              </Link>
+            </Typography>
+          </Grid>
         </Grid>
-      </Grid>
-      <Footer />
-    </div>
+      </Box>
+    </Grid>
   );
 };
 

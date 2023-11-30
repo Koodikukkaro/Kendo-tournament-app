@@ -1,22 +1,36 @@
-import { Controller, Route, Post, Tags, Body, Request } from "tsoa";
+import {
+  Controller,
+  Route,
+  Post,
+  Tags,
+  Body,
+  Request,
+  Get,
+  Security
+} from "tsoa";
 import { LoginRequest } from "../models/requestModel.js";
 import { AuthService } from "../services/authService.js";
+import { type JwtPayload } from "jsonwebtoken";
 import * as express from "express";
 
 @Route("auth")
 export class AuthController extends Controller {
   @Post("login")
   @Tags("Auth")
-  public async loginUser(@Body() requestBody: LoginRequest): Promise<void> {
-    this.setStatus(204);
+  public async loginUser(
+    @Body() requestBody: LoginRequest
+  ): Promise<{ userId: string }> {
+    this.setStatus(200);
 
-    const [accessToken, refreshToken] =
-      await this.service.createTokens(requestBody);
+    const { user, accessToken, refreshToken } =
+      await this.service.loginUser(requestBody);
 
     this.setHeader("Set-Cookie", [
       `accessToken=${accessToken}; Path=/api/; HttpOnly;`,
       `refreshToken=${refreshToken}; Path=/api/; HttpOnly;`
     ]);
+
+    return { userId: user.id.toString() };
   }
 
   @Post("logout")
@@ -31,7 +45,7 @@ export class AuthController extends Controller {
     ]);
   }
 
-  @Post("refresh")
+  @Get("refresh")
   @Tags("Auth")
   public async refreshToken(
     @Request() request: express.Request
@@ -46,6 +60,18 @@ export class AuthController extends Controller {
       `accessToken=${accessToken}; Path=/api/; HttpOnly;`,
       `refreshToken=${refreshToken}; Path=/api/; HttpOnly;`
     ]);
+  }
+
+  @Get("check-auth")
+  @Tags("Auth")
+  @Security("jwt")
+  public async checkAuthenticationStatus(
+    @Request() request: express.Request & { user: JwtPayload }
+  ): Promise<{ userId: string }> {
+    this.setStatus(200);
+
+    // This should never throw due to the middleware throwing if the user is not authenticated.
+    return { userId: request.user.id };
   }
 
   private get service(): AuthService {

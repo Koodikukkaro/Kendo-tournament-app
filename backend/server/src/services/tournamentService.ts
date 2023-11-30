@@ -1,11 +1,10 @@
 import NotFoundError from "../errors/NotFoundError.js";
+import { type CreateTournamentRequest } from "../models/requestModel.js";
 import { TournamentModel, type Tournament } from "../models/tournamentModel.js";
 import UserModel from "../models/userModel.js";
 import BadRequestError from "../errors/BadRequestError.js";
-import { type Types } from "mongoose";
 
 export class TournamentService {
-  // read
   public async getTournamentById(id: string): Promise<Tournament> {
     const tournament = await TournamentModel.findById(id).exec();
 
@@ -18,20 +17,48 @@ export class TournamentService {
     return await tournament.toObject();
   }
 
-  // create
+  public async getAllTournaments(limit: number): Promise<Tournament[]> {
+    const tournaments = await TournamentModel.find().limit(limit).exec();
+
+    if (tournaments === null || tournaments === undefined) {
+      throw new NotFoundError({
+        message: "No tournaments found"
+      });
+    }
+
+    return tournaments.map((tournament) => tournament.toObject());
+  }
+
   public async createTournament(
-    tournamentData: Tournament
+    tournamentData: CreateTournamentRequest,
+    creator: string
   ): Promise<Tournament> {
-    // maybe add created_by? not sure.
-    const newTournament = await TournamentModel.create(tournamentData);
+    if (!tournamentData.differentOrganizer) {
+      const organizer = await UserModel.findById(creator).exec();
+
+      if (organizer === null) {
+        // This should never throw due to the endpoint requiring authentication.
+        throw new NotFoundError({
+          message: "No user data found for the organizer."
+        });
+      }
+
+      tournamentData.organizerEmail = organizer.email;
+      tournamentData.organizerPhone = organizer.phoneNumber;
+    }
+
+    const newTournament = await TournamentModel.create({
+      ...tournamentData,
+      creator
+    });
+
     return await newTournament.toObject();
   }
 
-  // update - add players
   public async addPlayerToTournament(
     tournamentId: string,
-    playerId: Types.ObjectId
-  ): Promise<Tournament> {
+    playerId: string
+  ): Promise<void> {
     const tournament = await TournamentModel.findById(tournamentId).exec();
 
     if (tournament === null || tournament === undefined) {
@@ -49,7 +76,7 @@ export class TournamentService {
     }
 
     // Check if the player is already in the tournament
-    if (tournament.players.includes(playerId)) {
+    if (tournament.players.includes(player.id)) {
       throw new BadRequestError({
         message: "Player already registered in the tournament"
       });
@@ -62,9 +89,7 @@ export class TournamentService {
       });
     }
 
-    tournament.players.push(playerId);
+    tournament.players.push(player.id);
     await tournament.save();
-
-    return await tournament.toObject();
   }
 }
