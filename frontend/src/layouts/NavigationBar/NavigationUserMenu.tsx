@@ -4,7 +4,7 @@
   See the MUI example for responsive navbar with menu.
 */
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
@@ -16,20 +16,32 @@ import Tooltip from "@mui/material/Tooltip";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 
 import type { NavigationItem, NavigationData } from "./navigation-bar";
+import { useAuth } from "context/AuthContext";
 
 interface Props {
   settings: NavigationData;
 }
 
 const NavigationUserMenu: React.FC<Props> = (props) => {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
   );
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorElUser(event.currentTarget);
   };
-  const handleCloseUserMenu = (): void => {
+
+  const handleButtonClick = async (
+    navigationItem: NavigationItem
+  ): Promise<void> => {
     setAnchorElUser(null);
+    if (navigationItem.text === "Logout") {
+      await logout();
+    }
+
+    navigate(navigationItem.link);
   };
 
   return (
@@ -61,14 +73,16 @@ const NavigationUserMenu: React.FC<Props> = (props) => {
             horizontal: "right"
           }}
           open={Boolean(anchorElUser)}
-          onClose={handleCloseUserMenu}
+          onClose={() => {
+            setAnchorElUser(null);
+          }}
         >
           {props.settings.map((setting: NavigationItem) => (
             <MenuItem
               key={setting.text}
-              onClick={handleCloseUserMenu}
-              component={NavLink}
-              to={setting.link}
+              onClick={async () => {
+                await handleButtonClick(setting);
+              }}
             >
               {setting.text}
             </MenuItem>

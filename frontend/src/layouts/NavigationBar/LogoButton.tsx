@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
+import { homeRoute } from "routes/Router";
 // import SvgIcon from "@mui/material/SvgIcon";
 
 // import KendoIcon from "TODO/icons/kendoicon.svg";
@@ -14,7 +15,7 @@ interface Props {
 const LogoButton: React.FC<Props> = (props) => {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <IconButton component={NavLink} to="/">
+      <IconButton component={NavLink} to={homeRoute}>
         {/* <SvgIcon>
           https://mui.com/material-ui/icons/#svgicon
         </SvgIcon> */}

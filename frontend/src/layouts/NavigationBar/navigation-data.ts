@@ -31,7 +31,7 @@ export const authenticatedNavItems: NavigationData = [
 export const settings: NavigationData = [
   {
     text: "Profile",
-    link: "/"
+    link: "/profile"
   },
   {
     text: "Logout",

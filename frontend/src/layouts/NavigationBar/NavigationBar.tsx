@@ -4,7 +4,7 @@
   https://github.com/mui/material-ui/blob/v5.14.18/docs/data/material/components/app-bar/ResponsiveAppBar.tsx
 */
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -22,7 +22,8 @@ import LogoButton from "./LogoButton";
 // Text to display in the hamburger menu, navbar and the corresponding link
 // -,- in the menu and the corresponding link
 
-import type { NavigationData } from "./navigation-bar";
+import type { NavigationData, NavigationItem } from "./navigation-bar";
+import { useAuth } from "context/AuthContext";
 
 interface Props {
   window?: () => Window;
@@ -34,6 +35,8 @@ const businessName = "KendoApp";
 
 const NavigationBar: React.FC<Props> = (props) => {
   const { window, navigationItems } = props;
+  const { logout } = useAuth();
+  const navigate = useNavigate();
 
   const container =
     window !== undefined ? () => window().document.body : undefined;
@@ -41,6 +44,16 @@ const NavigationBar: React.FC<Props> = (props) => {
   const [openDrawer, setOpenDrawer] = React.useState<boolean>(false);
   const toggleDrawer = (): void => {
     setOpenDrawer((previousState) => !previousState);
+  };
+
+  const handleButtonClick = async (
+    navigationItem: NavigationItem
+  ): Promise<void> => {
+    if (navigationItem.link === "/logout") {
+      await logout();
+    }
+
+    navigate(navigationItem.link);
   };
 
   return (
@@ -68,8 +81,9 @@ const NavigationBar: React.FC<Props> = (props) => {
                   <Button
                     key={item.text}
                     sx={{ color: "#fff" }}
-                    component={NavLink}
-                    to={item.link}
+                    onClick={async () => {
+                      await handleButtonClick(item);
+                    }}
                   >
                     {item.text}
                   </Button>
