@@ -1,4 +1,5 @@
 import api from "api/axios";
+import Loader from "components/common/Loader";
 import React, {
   type ReactNode,
   createContext,
@@ -29,6 +30,7 @@ const AuthContext = createContext<IAuthContext>({
 
 export const AuthProvider = ({ children }: Props): ReactElement => {
   const [userId, setUserId] = useState<string | undefined>();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async (): Promise<void> => {
@@ -38,6 +40,8 @@ export const AuthProvider = ({ children }: Props): ReactElement => {
           setUserId(userId);
         } catch (error) {
           setUserId(undefined);
+        } finally {
+          setLoading(false);
         }
       }
     };
@@ -61,7 +65,20 @@ export const AuthProvider = ({ children }: Props): ReactElement => {
   );
 
   return (
-    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>
+      {loading ? (
+        <Loader
+          sx={{
+            position: "fixed",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)"
+          }}
+        />
+      ) : (
+        children
+      )}
+    </AuthContext.Provider>
   );
 };
 
