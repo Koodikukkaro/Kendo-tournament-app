@@ -21,7 +21,10 @@ export interface RegisterRequest {
   guardiansEmail?: string;
 }
 
-export type CreateTournamentRequest = Omit<Tournament, "id" | "creator">;
+export type CreateTournamentRequest = Omit<
+  Tournament,
+  "id" | "creator" | "matchSchedule" | "players"
+>;
 
 export interface SignupForTournamentRequest {
   playerId: string;
