@@ -14,7 +14,7 @@ import {
 import { TournamentService } from "../services/tournamentService.js";
 import {
   type Tournament,
-  AddPlayerRequest
+  SignupForTournamentRequest
 } from "../models/tournamentModel.js";
 import {
   CreateTournamentRequest,
@@ -56,18 +56,17 @@ export class TournamentController extends Controller {
   }
 
   @Security("jwt")
-  @Put("{tournamentId}/addPlayer")
+  @Put("{tournamentId}/sign-up")
   @Tags("Tournaments")
-  public async addPlayerToTournament(
+  public async signUpForTournament(
     @Path() tournamentId: ObjectIdString,
-    @Body() requestBody: AddPlayerRequest
-  ): Promise<Tournament> {
-    const result = await this.service.addPlayerToTournament(
+    @Body() requestBody: SignupForTournamentRequest
+  ): Promise<void> {
+    this.setStatus(204);
+    await this.service.addPlayerToTournament(
       tournamentId,
       requestBody.playerId
     );
-    this.setStatus(200); // OK status
-    return result;
   }
 
   private get service(): TournamentService {

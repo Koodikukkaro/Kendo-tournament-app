@@ -1,6 +1,7 @@
 import mongoose, { Schema, type Document, type Types } from "mongoose";
 import { type Match } from "./matchModel";
 import { type User } from "./userModel";
+import type { ObjectIdString } from "./requestModel";
 
 export enum TournamentType {
   RoundRobin = "Round Robin",
@@ -24,8 +25,8 @@ export interface Tournament {
   matchSchedule?: Match[];
 }
 
-export interface AddPlayerRequest {
-  playerId: Types.ObjectId;
+export interface SignupForTournamentRequest {
+  playerId: ObjectIdString;
 }
 
 const tournamentSchema = new Schema<Tournament & Document>(

@@ -3,7 +3,6 @@ import { type CreateTournamentRequest } from "../models/requestModel.js";
 import { TournamentModel, type Tournament } from "../models/tournamentModel.js";
 import UserModel from "../models/userModel.js";
 import BadRequestError from "../errors/BadRequestError.js";
-import { type Types } from "mongoose";
 
 export class TournamentService {
   public async getTournamentById(id: string): Promise<Tournament> {
@@ -56,11 +55,10 @@ export class TournamentService {
     return await newTournament.toObject();
   }
 
-  // update - add players
   public async addPlayerToTournament(
     tournamentId: string,
-    playerId: Types.ObjectId
-  ): Promise<Tournament> {
+    playerId: string
+  ): Promise<void> {
     const tournament = await TournamentModel.findById(tournamentId).exec();
 
     if (tournament === null || tournament === undefined) {
@@ -78,7 +76,7 @@ export class TournamentService {
     }
 
     // Check if the player is already in the tournament
-    if (tournament.players.includes(playerId)) {
+    if (tournament.players.includes(player.id)) {
       throw new BadRequestError({
         message: "Player already registered in the tournament"
       });
@@ -91,9 +89,7 @@ export class TournamentService {
       });
     }
 
-    tournament.players.push(playerId);
+    tournament.players.push(player.id);
     await tournament.save();
-
-    return await tournament.toObject();
   }
 }
