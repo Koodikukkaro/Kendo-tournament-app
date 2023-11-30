@@ -100,89 +100,87 @@ const OfficialGameInterface: React.FC = () => {
   }, [isTimerRunning]);
 
   return (
-    <div className="app-container">
-      <main className="main-content">
-        <div>
-          <Box className="playerBox" bgcolor="white">
-            <Typography variant="h1">Player 1</Typography>
-          </Box>
-          <Box className="playerBox" bgcolor="red">
-            <Typography variant="h1">Player 2</Typography>
-          </Box>
-        </div>
-        <div className="timerContainer">
-          <Typography className="timer" variant="h1">
-            {formatTime(timer)}
-          </Typography>
-          <Button onClick={handleTimerChange}>
-            {isTimerRunning ? "Stop" : "Start"}
-          </Button>
-        </div>
-        <div className="tableContainer">
-          <Table>
-            <TableBody>
-              {cells.rows.map((row, rowIndex) => (
-                <TableRow key={rowIndex}>
-                  {row.map((cell, columnIndex) => (
-                    <TableCell key={columnIndex}>{cell}</TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-        <div className="addButtonContainer">
-          <Button
-            className="button1"
-            onClick={() => {
-              handleOpen(1);
-            }}
-          >
-            Add point for player 1
-          </Button>
-          <Button
-            className="button2"
-            onClick={() => {
-              handleOpen(2);
-            }}
-          >
-            Add point for player 2
-          </Button>
-          <Dialog open={open}>
-            <DialogTitle>Select a Point</DialogTitle>
-            <DialogContent>
-              <RadioGroup
-                aria-label="point"
-                name="point"
-                value={selectedButton}
-                onChange={handleRadioButtonClick}
-              >
-                <FormControlLabel value="M" control={<Radio />} label="M" />
-                <FormControlLabel value="K" control={<Radio />} label="K" />
-                <FormControlLabel value="D" control={<Radio />} label="D" />
-                <FormControlLabel value="T" control={<Radio />} label="T" />
-                <FormControlLabel
-                  value="&Delta;"
-                  control={<Radio />}
-                  label="&Delta;"
-                />
-              </RadioGroup>
-              <Button
-                onClick={() => {
-                  handlePointShowing();
-                }}
-              >
-                OK
-              </Button>
-            </DialogContent>
-          </Dialog>
-        </div>
+    <main className="main-content">
+      <div>
+        <Box className="playerBox" bgcolor="white">
+          <Typography variant="h1">Player 1</Typography>
+        </Box>
+        <Box className="playerBox" bgcolor="red">
+          <Typography variant="h1">Player 2</Typography>
+        </Box>
+      </div>
+      <div className="timerContainer">
+        <Typography className="timer" variant="h1">
+          {formatTime(timer)}
+        </Typography>
+        <Button onClick={handleTimerChange}>
+          {isTimerRunning ? "Stop" : "Start"}
+        </Button>
+      </div>
+      <div className="tableContainer">
+        <Table>
+          <TableBody>
+            {cells.rows.map((row, rowIndex) => (
+              <TableRow key={rowIndex}>
+                {row.map((cell, columnIndex) => (
+                  <TableCell key={columnIndex}>{cell}</TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="addButtonContainer">
+        <Button
+          className="button1"
+          onClick={() => {
+            handleOpen(1);
+          }}
+        >
+          Add point for player 1
+        </Button>
+        <Button
+          className="button2"
+          onClick={() => {
+            handleOpen(2);
+          }}
+        >
+          Add point for player 2
+        </Button>
+        <Dialog open={open}>
+          <DialogTitle>Select a Point</DialogTitle>
+          <DialogContent>
+            <RadioGroup
+              aria-label="point"
+              name="point"
+              value={selectedButton}
+              onChange={handleRadioButtonClick}
+            >
+              <FormControlLabel value="M" control={<Radio />} label="M" />
+              <FormControlLabel value="K" control={<Radio />} label="K" />
+              <FormControlLabel value="D" control={<Radio />} label="D" />
+              <FormControlLabel value="T" control={<Radio />} label="T" />
+              <FormControlLabel
+                value="&Delta;"
+                control={<Radio />}
+                label="&Delta;"
+              />
+            </RadioGroup>
+            <Button
+              onClick={() => {
+                handlePointShowing();
+              }}
+            >
+              OK
+            </Button>
+          </DialogContent>
+        </Dialog>
+      </div>
 
-        <div>
-          <Typography>{/* text when match ends */}</Typography>
-        </div>
-      </main>
-    </div>
+      <div>
+        <Typography>{/* text when match ends */}</Typography>
+      </div>
+    </main>
   );
 };
 

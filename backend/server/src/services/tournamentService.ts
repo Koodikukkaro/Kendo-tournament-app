@@ -1,8 +1,10 @@
 import NotFoundError from "../errors/NotFoundError.js";
+import { type CreateTournamentRequest } from "../models/requestModel.js";
 import { TournamentModel, type Tournament } from "../models/tournamentModel.js";
+import UserModel from "../models/userModel.js";
+import BadRequestError from "../errors/BadRequestError.js";
 
 export class TournamentService {
-  // read
   public async getTournamentById(id: string): Promise<Tournament> {
     const tournament = await TournamentModel.findById(id).exec();
 
@@ -15,37 +17,79 @@ export class TournamentService {
     return await tournament.toObject();
   }
 
-  // create
+  public async getAllTournaments(limit: number): Promise<Tournament[]> {
+    const tournaments = await TournamentModel.find().limit(limit).exec();
+
+    if (tournaments === null || tournaments === undefined) {
+      throw new NotFoundError({
+        message: "No tournaments found"
+      });
+    }
+
+    return tournaments.map((tournament) => tournament.toObject());
+  }
+
   public async createTournament(
-    tournamentData: Tournament
+    tournamentData: CreateTournamentRequest,
+    creator: string
   ): Promise<Tournament> {
-    // maybe add created_by? not sure.
-    const newTournament = await TournamentModel.create(tournamentData);
+    if (!tournamentData.differentOrganizer) {
+      const organizer = await UserModel.findById(creator).exec();
+
+      if (organizer === null) {
+        // This should never throw due to the endpoint requiring authentication.
+        throw new NotFoundError({
+          message: "No user data found for the organizer."
+        });
+      }
+
+      tournamentData.organizerEmail = organizer.email;
+      tournamentData.organizerPhone = organizer.phoneNumber;
+    }
+
+    const newTournament = await TournamentModel.create({
+      ...tournamentData,
+      creator
+    });
+
     return await newTournament.toObject();
   }
 
-  // listing
-  // public async getAllTournaments(): Promise<Tournament[]> {
-  //     console.log("I am in get all tournament service")
-  //     return await TournamentModel.find().exec();
-  // }
+  public async addPlayerToTournament(
+    tournamentId: string,
+    playerId: string
+  ): Promise<void> {
+    const tournament = await TournamentModel.findById(tournamentId).exec();
 
-  // // all running
-  // public async getRunningTournaments(): Promise<Tournament[]> {
-  //     const currentDate = new Date();
+    if (tournament === null || tournament === undefined) {
+      throw new NotFoundError({
+        message: "Tournament not found"
+      });
+    }
 
-  //     return await TournamentModel.find({
-  //         startDate: { $lte: currentDate },
-  //         endDate: { $gte: currentDate }
-  //     }).exec();
-  // }
+    // Check if player exists in the UserModel
+    const player = await UserModel.findById(playerId).exec();
+    if (player === null || player === undefined) {
+      throw new NotFoundError({
+        message: "Player not found"
+      });
+    }
 
-  // // all future tournaments
-  // public async getUpcomingTournaments(): Promise<Tournament[]> {
-  //     const currentDate = new Date();
+    // Check if the player is already in the tournament
+    if (tournament.players.includes(player.id)) {
+      throw new BadRequestError({
+        message: "Player already registered in the tournament"
+      });
+    }
 
-  //     return await TournamentModel.find({
-  //         startDate: { $gt: currentDate }
-  //     }).exec();
-  // }
+    // Check if the tournament has reached its maximum number of players
+    if (tournament.players.length >= tournament.maxPlayers) {
+      throw new BadRequestError({
+        message: "Tournament has reached its maximum number of players"
+      });
+    }
+
+    tournament.players.push(player.id);
+    await tournament.save();
+  }
 }

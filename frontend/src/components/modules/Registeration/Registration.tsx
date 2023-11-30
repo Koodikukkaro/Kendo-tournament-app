@@ -1,324 +1,255 @@
+import React from "react";
 import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import ShowError from "components/common/ErrorMessage/Error";
-import Footer from "components/common/Footer/Footer";
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import "./registration.css";
+import Box from "@mui/material/Box";
+import Link from "@mui/material/Link";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import api from "api/axios";
+import { type RegisterRequest } from "types/requests";
+import useToast from "hooks/useToast";
+import {
+  CheckboxElement,
+  FormContainer,
+  PasswordElement,
+  PasswordRepeatElement,
+  TextFieldElement,
+  useForm,
+  useWatch
+} from "react-hook-form-mui";
+import {
+  isValidPassword,
+  isValidPhone,
+  isValidUsername
+} from "./registerationValidators";
+
+export interface RegisterFormData {
+  firstName: string;
+  lastName: string;
+  userName?: string;
+  email: string;
+  phoneNumber: string;
+  password: string;
+  passwordConfirmation: string;
+  nationality?: string;
+  inNationalTeam: boolean;
+  suomisportId?: string;
+  clubName?: string;
+  danRank?: string;
+  underage: boolean;
+  guardiansEmail?: string;
+}
+const defaultValues: RegisterFormData = {
+  firstName: "",
+  lastName: "",
+  userName: "",
+  email: "",
+  phoneNumber: "",
+  password: "",
+  passwordConfirmation: "",
+  nationality: "",
+  inNationalTeam: false,
+  suomisportId: "",
+  clubName: "",
+  danRank: "",
+  underage: false,
+  guardiansEmail: ""
+};
 
 const RegisterForm: React.FC = () => {
   const navigate = useNavigate();
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const registerAPI = "http://localhost:8080/api/user/register";
-
-  const isValidEmail = (email: string): boolean => {
-    return /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/.test(email);
-  };
-
-  const [formData, setFormData] = useState({
-    firstname: "",
-    lastname: "",
-    username: "",
-    email: "",
-    tel: "",
-    password: "",
-    passwordConfirmation: "",
-    rank: "",
-    club: "",
-    suomisport: "",
-    underage: false,
-    guardianEmail: "",
-    conditions: false
+  const showToast = useToast();
+  const formContext = useForm<RegisterFormData>({
+    defaultValues,
+    mode: "onBlur"
   });
+  const { underage } = useWatch<RegisterFormData>(formContext);
 
-  const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    fieldName: string
-  ): void => {
-    const target = event.target as HTMLInputElement; // Type assertion
-    const value = target.type === "checkbox" ? target.checked : target.value;
-    setFormData((prevData) => ({
-      ...prevData,
-      [fieldName]: value
-    }));
-  };
-
-  const onHandleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
-  ): Promise<void> => {
-    event.preventDefault(); // Prevent the default form submit behavior
+  const onSubmit = async (data: RegisterFormData): Promise<void> => {
     try {
-      const errorContext = ["requestBody.password", "requestBody.login"];
-      const response = await fetch(registerAPI, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-          phoneNumber: formData.tel,
-          firstName: formData.firstname,
-          lastName: formData.lastname,
-          clubName: formData.club,
-          danRank: formData.rank,
-          underage: formData.underage,
-          guardiansEmail: formData.guardianEmail,
-          role: "admin" // TODO: MUST REMOVE LATER.
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data);
-        // TODO: throw a message here to tell the user to login. or maybe a timed msg or soemthing.
-        navigate("/login", { replace: true });
-      } else {
-        const errorData = await response.json();
-        const context = errorData.errors[0].context;
-        for (let i = 0; i < errorContext.length; i++) {
-          const key = errorContext[i];
-          if (context[key] !== undefined) {
-            setErrorMessage(context[key].message);
-            break; // found the error message
-          }
-        }
-      }
+      const { passwordConfirmation, ...requestBody } = data;
+      await api.user.register(requestBody as RegisterRequest);
+      showToast("Registration successful!", "success");
+      navigate("/login", { replace: true });
     } catch (error) {
-      console.log(error);
-      setErrorMessage("Unknown Error Occurred. Please try again later!");
+      showToast(error, "error");
     }
   };
 
   return (
-    <div>
-      <Grid container className="container">
-        <Grid item xs={12} md={7} className="left-reg-panel">
-          <Grid item xs={12} className="left-page-info">
-            <Typography variant="h1" gutterBottom>
-              Create an Account
-            </Typography>
-            <Typography variant="body1">
-              Already have an account?
-              <Link to="/login" className="login-link">
-                Log in
-              </Link>
-            </Typography>
-            <Typography variant="body2">
-              Fill in the fields below. Fields marked with * are required.
-            </Typography>
-          </Grid>
-          <form
-            id="registerForm"
-            className="form-reg"
-            onSubmit={onHandleSubmit}
-          >
-            <ShowError message={errorMessage}></ShowError>
-            <TextField
-              label="First Name"
-              variant="outlined"
-              required
-              fullWidth
-              margin="normal"
-              value={formData.firstname}
-              onChange={(e) => {
-                handleInputChange(e, "firstname");
-              }}
-            />
+    <Grid container display="flex" justifyContent="center">
+      <Box
+        sx={{
+          padding: "1em",
+          width: "500px"
+        }}
+      >
+        <Box display="flex" flexDirection="column" gap="5px" width="100%">
+          <Typography component="h1" variant="h5" fontWeight="bold">
+            {"Create an account"}
+          </Typography>
+          <Typography variant="body1">
+            {"Already have an account? "}
+            <Link component={RouterLink} to="/login">
+              {"Sign In"}
+            </Link>
+          </Typography>
+          <Typography variant="body2">
+            {"Fill in the fields below. Fields marked with * are required."}
+          </Typography>
+        </Box>
 
-            <TextField
-              label="Last Name"
-              variant="outlined"
-              required
-              fullWidth
-              margin="normal"
-              value={formData.lastname}
-              onChange={(e) => {
-                handleInputChange(e, "lastname");
-              }}
-            />
+        <FormContainer
+          defaultValues={defaultValues}
+          formContext={formContext}
+          onSuccess={onSubmit}
+        >
+          <TextFieldElement
+            required
+            name="firstName"
+            label="First Name"
+            fullWidth
+            margin="normal"
+          />
 
-            <TextField
-              label="Email Address"
-              variant="outlined"
+          <TextFieldElement
+            required
+            name="lastName"
+            label="Last Name"
+            fullWidth
+            margin="normal"
+          />
+
+          <TextFieldElement
+            required
+            name="email"
+            label="Email Address"
+            type="email"
+            fullWidth
+            margin="normal"
+          />
+
+          <TextFieldElement
+            required
+            name="phoneNumber"
+            label="Phone Number"
+            type="tel"
+            fullWidth
+            margin="normal"
+            validation={{
+              validate: (value: string) => {
+                return (
+                  isValidPhone(value) || "Please enter a valid phone number"
+                );
+              }
+            }}
+          />
+
+          <PasswordElement
+            required
+            name="password"
+            label="Password"
+            fullWidth
+            margin="normal"
+            validation={{
+              validate: (value: string) => {
+                return (
+                  isValidPassword(value) ||
+                  "A valid password must contain at least one letter, one number, and be 8-30 characters long."
+                );
+              }
+            }}
+          />
+
+          <PasswordRepeatElement
+            passwordFieldName="password"
+            name="passwordConfirmation"
+            label="Repeat Password"
+            fullWidth
+            margin="normal"
+          />
+
+          <TextFieldElement
+            name="userName"
+            label="Username"
+            fullWidth
+            margin="normal"
+            validation={{
+              validate: (value: string) => {
+                return (
+                  isValidUsername(value) ||
+                  "Username must be 4-20 characters long, start and end with a letter or number, and contain only letters, numbers, dots, or underscores with no consecutive dots or underscores."
+                );
+              }
+            }}
+          />
+
+          <TextFieldElement
+            name="nationality"
+            label="Nationality"
+            fullWidth
+            margin="normal"
+          />
+
+          <CheckboxElement
+            name="inNationalTeam"
+            label="I'm in the national team ring"
+          />
+
+          <TextFieldElement
+            name="rank"
+            label="Dan Rank"
+            fullWidth
+            margin="normal"
+          />
+
+          <TextFieldElement
+            name="club"
+            label="Club"
+            fullWidth
+            margin="normal"
+          />
+
+          <TextFieldElement
+            name="suomisport"
+            label="Suomisport ID"
+            fullWidth
+            margin="normal"
+          />
+
+          <CheckboxElement
+            name="underage"
+            label="I'm underage"
+            onChange={(e) => {
+              formContext.resetField("guardiansEmail");
+              formContext.setValue("underage", e.target.checked);
+            }}
+          />
+          {Boolean(underage) && (
+            <TextFieldElement
               required
-              fullWidth
-              margin="normal"
-              value={formData.email}
+              name="guardiansEmail"
+              label="Guardian's Email Address"
               type="email"
-              error={formData.email !== "" && !isValidEmail(formData.email)}
-              helperText={
-                formData.email !== "" && !isValidEmail(formData.email)
-                  ? "Please enter a valid email"
-                  : ""
-              }
-              onChange={(e) => {
-                handleInputChange(e, "email");
-              }}
-            />
-
-            <TextField
-              label="Username"
-              variant="outlined"
-              required
               fullWidth
               margin="normal"
-              value={formData.username}
-              onChange={(e) => {
-                handleInputChange(e, "username");
-              }}
             />
+          )}
 
-            <TextField
-              label="Phone Number"
-              variant="outlined"
-              required
+          <Box margin="auto" width="200px">
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
               fullWidth
-              margin="normal"
-              value={formData.tel}
-              type="number"
-              onChange={(e) => {
-                handleInputChange(e, "tel");
-              }}
-              helperText="Enter your phone number"
-            />
-
-            <TextField
-              label="Password"
-              type="password"
-              variant="outlined"
-              required
-              fullWidth
-              margin="normal"
-              value={formData.password}
-              onChange={(e) => {
-                handleInputChange(e, "password");
-              }}
-            />
-
-            <TextField
-              label="Confirm Password"
-              type="password"
-              variant="outlined"
-              required
-              fullWidth
-              margin="normal"
-              value={formData.passwordConfirmation}
-              onChange={(e) => {
-                handleInputChange(e, "passwordConfirmation");
-              }}
-            />
-
-            <TextField
-              label="Dan Rank"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              value={formData.rank}
-              onChange={(e) => {
-                handleInputChange(e, "rank");
-              }}
-            />
-
-            <TextField
-              label="Club"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              value={formData.club}
-              onChange={(e) => {
-                handleInputChange(e, "club");
-              }}
-            />
-
-            <TextField
-              label="SuomiSport ID"
-              variant="outlined"
-              fullWidth
-              margin="normal"
-              value={formData.suomisport}
-              onChange={(e) => {
-                handleInputChange(e, "suomisport");
-              }}
-            />
-
-            {/* For checkbox */}
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formData.underage}
-                  onChange={(e) => {
-                    handleInputChange(e, "underage");
-                  }}
-                  name="underage"
-                />
-              }
-              label="I'm underage"
-            />
-            {formData.underage && (
-              <TextField
-                label="Guardian's Email"
-                variant="outlined"
-                required
-                fullWidth
-                margin="normal"
-                value={formData.guardianEmail}
-                error={
-                  formData.guardianEmail !== "" &&
-                  !isValidEmail(formData.guardianEmail)
-                }
-                helperText={
-                  formData.guardianEmail !== "" &&
-                  !isValidEmail(formData.guardianEmail)
-                    ? "Please enter a valid email"
-                    : ""
-                }
-                onChange={(e) => {
-                  handleInputChange(e, "guardianEmail");
-                }}
-              />
-            )}
-            <br />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  required
-                  checked={formData.conditions}
-                  onChange={(e) => {
-                    handleInputChange(e, "conditions");
-                  }}
-                  name="conditions"
-                />
-              }
-              label="By Checking this box, I agree to the Terms and Condition"
-            />
-            <br />
-            <Button type="submit" variant="contained" color="primary">
+              sx={{ mt: 3, mb: 2 }}
+            >
               Register
             </Button>
-          </form>
-        </Grid>
-
-        <Grid item xs={12} sm={5} className="right-reg-panel">
-          <div className="right-container">
-            <Typography component="h3" variant="h3">
-              Already have an Account?
-            </Typography>
-            <br />
-            <Button variant="contained" color="success">
-              <Link to="/login" className="login-btn">
-                Log in
-              </Link>
-            </Button>
-          </div>
-        </Grid>
-      </Grid>
-      <Footer />
-    </div>
+          </Box>
+        </FormContainer>
+      </Box>
+    </Grid>
   );
 };
 

@@ -8,6 +8,7 @@ export interface User {
   lastName: string;
   nationality: string;
   inNationalTeam: boolean;
+  suomisportId: string;
   clubName: string;
   danRank: string;
   underage: boolean;
@@ -41,3 +42,21 @@ export interface Match {
   winner?: string;
   comment?: string;
 }
+
+export interface Tournament {
+  id: string;
+  name: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+  type: TournamentType;
+  maxPlayers: number;
+  creator: string;
+  organizerEmail?: string;
+  organizerPhone?: string;
+  players: string[];
+  matchSchedule: Match[];
+}
+
+export type TournamentType = "Round Robin" | "Playoff" | "Preliminary Playoff";
