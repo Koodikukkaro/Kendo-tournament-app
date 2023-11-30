@@ -1,6 +1,7 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 import type { Tournament, User } from "types/models";
 import {
+  type SignupForTournamentRequest,
   type CreateTournamentRequest,
   type LoginRequest,
   type RegisterRequest
@@ -41,6 +42,14 @@ const request = {
   ) => {
     const response = await axiosInstance.post<T>(url, body, requestConfig);
     return responseBody(response);
+  },
+  put: async <T>(
+    url: string,
+    body: unknown,
+    requestConfig?: AxiosRequestConfig
+  ) => {
+    const response = await axiosInstance.put<T>(url, body, requestConfig);
+    return responseBody(response);
   }
 };
 
@@ -74,10 +83,11 @@ const tournaments = {
   createNew: async (body: CreateTournamentRequest) => {
     return await request.post<Tournament>(`${TOURNAMENTS_API}/create`, body);
   },
-  signup: async (tournamentId: string) => {
-    return await request.post(`${TOURNAMENTS_API}`, undefined, {
-      params: tournamentId
-    });
+  signup: async (tournamentId: string, body: SignupForTournamentRequest) => {
+    return await request.put(
+      `${TOURNAMENTS_API}/${tournamentId}/sign-up`,
+      body
+    );
   }
 };
 

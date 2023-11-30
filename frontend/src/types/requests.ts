@@ -22,3 +22,7 @@ export interface RegisterRequest {
 }
 
 export type CreateTournamentRequest = Omit<Tournament, "id" | "creator">;
+
+export interface SignupForTournamentRequest {
+  playerId: string;
+}
