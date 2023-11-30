@@ -18,6 +18,9 @@ import TournamentList from "components/modules/Tournaments/TournamentListing/Tou
 import { TournamentsProvider } from "context/TournamentsContext";
 import { TournamentProvider } from "context/TournamentContext";
 import RootRoute from "./RootRoute";
+import GameInterface from "components/modules/GameInterface/GameInterface";
+import OfficialGameInterface from "components/modules/GameInterface/OfficialGameInterface";
+import { SocketProvider } from "context/SocketContext";
 
 export const homeRoute = "/tournaments";
 
@@ -42,6 +45,17 @@ const routes = createRoutesFromElements(
             }
           />
         </Route>
+      </Route>
+
+      <Route element={<SocketProvider />}>
+        <Route
+          path="/tournaments/:id/matches/:id"
+          element={<GameInterface />}
+        ></Route>
+        <Route
+          path="/tournaments/:id/matches/:id"
+          element={<OfficialGameInterface />}
+        ></Route>
       </Route>
 
       <Route element={<AuthenticationGuard guardType="unauthenticated" />}>

@@ -1,68 +1,42 @@
 import React, { useState, useEffect } from "react";
-import {
-  Table,
-  Typography,
-  TableBody,
-  TableRow,
-  TableCell,
-  Button,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  Box
-} from "@mui/material";
-import "../../common/Style/common.css";
+import { Typography, Box } from "@mui/material";
 import "./OfficialGameInterface.css";
-import { socket } from "../../../sockets/index";
+import { joinMatch, leaveMatch } from "sockets/emit";
+// import { useSocket } from "context/SocketContext";
+import { useParams } from "react-router-dom";
 
+const GameInterface: React.FC = () => {
+  const [timer, setTimer] = useState<number | undefined>();
 
+  const { matchId } = useParams();
 
-  interface TimerStateEvent {
-    isTimerRunning: boolean;
-    currentTime: string;
-  };
+  //  const { matchInfo } = useSocket();
 
-  const TimerDisplay: React.FC = () => {
-    const [timerState, setTimerState] = useState<TimerStateEvent>({
-      isTimerRunning: false,
-      currentTime: '',
-    });
-    const [timer, setTimer] = useState<number | undefined>();
+  useEffect(() => {
+    if (matchId !== undefined) {
+      joinMatch(matchId);
+    }
 
-    useEffect(() => {
-        const handleTimerState = ({ isTimerRunning, currentTime }: TimerStateEvent) => {
-            console.log(isTimerRunning, currentTime);
-          setTimerState({ isTimerRunning, currentTime });
-          setTimer(Number(currentTime));
-        };
-    
-        socket.on('timer-state', (isTimerRunning, currentTime) => {
-            console.log("Listening");
-            console.log(isTimerRunning, currentTime);
-            handleTimerState;
-        });
-
-        return () => {
-          socket.off('timer-state', handleTimerState);
-        };
-      }, []);
+    return () => {
+      if (matchId !== undefined) {
+        leaveMatch(matchId);
+      }
+    };
+  }, []);
 
   return (
     <main className="main-content">
-      <div>
+      <Box display="flex" gap="20px" justifyContent="center">
         <Box className="playerBox" bgcolor="white">
-          <Typography variant="h1">Player 1</Typography>
+          <Typography variant="h3">Player 1</Typography>
         </Box>
-        <Box className="playerBox" bgcolor="red">
-          <Typography variant="h1">Player 2</Typography>
+        <Box className="playerBox" bgcolor="#db4744">
+          <Typography variant="h3">Player 2</Typography>
         </Box>
-      </div>
+      </Box>
       <div className="timerContainer">
         <Typography className="timer" variant="h1">
-            timer: {timer}
+          timer: {timer}
           {formatTime(timer)}
         </Typography>
       </div>
@@ -74,13 +48,13 @@ import { socket } from "../../../sockets/index";
 };
 
 const formatTime = (seconds: number | undefined): string => {
-    if (typeof seconds === 'undefined') {
-      return '';
-    }
-  
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
-  };
+  if (typeof seconds === "undefined") {
+    return "";
+  }
 
-  export default TimerDisplay;
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+};
+
+export default GameInterface;

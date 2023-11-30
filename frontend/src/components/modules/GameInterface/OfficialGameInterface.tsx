@@ -14,9 +14,11 @@ import {
   FormControlLabel,
   Box
 } from "@mui/material";
-import "../../common/Style/common.css";
 import "./OfficialGameInterface.css";
-import { toggleTimer } from "../../../sockets/emit";
+import api from "api/axios";
+import { useParams } from "react-router-dom";
+import { type AddPointRequest } from "types/requests";
+import type { PointType, PlayerColor } from "types/models";
 
 interface Cells {
   rows: string[][];
@@ -40,6 +42,19 @@ const OfficialGameInterface: React.FC = () => {
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
   const [currentPlayer, setCurrentPlayer] = useState<number | null>(null);
   const [pointCounter, setPointCounter] = useState<number>(0);
+  const [playerColor, setPlayerColor] = useState<PlayerColor>("red");
+
+  const { id } = useParams();
+
+  const buttonToTypeMap: Record<string, PointType> = {
+    M: "men",
+    K: "kote",
+    D: "do",
+    T: "tsuki",
+    "&Delta;": "hansoku"
+  };
+
+  const selectedPointType = buttonToTypeMap[selectedButton];
 
   const updateCell = (row: number, column: number, value: string): void => {
     setCells((prevCells) => {
@@ -49,7 +64,12 @@ const OfficialGameInterface: React.FC = () => {
     });
   };
 
-  const handlePointShowing = (): void => {
+  const pointRequest: AddPointRequest = {
+    pointType: selectedPointType,
+    pointColor: playerColor
+  };
+
+  const handlePointShowing = async (): Promise<void> => {
     if (currentPlayer !== null) {
       const row = pointCounter;
       const column = currentPlayer - 1;
@@ -57,6 +77,9 @@ const OfficialGameInterface: React.FC = () => {
       setOpen(false);
       setCurrentPlayer(null);
       setPointCounter((prevCounter) => prevCounter + 1);
+    }
+    if (id !== undefined) {
+      await apiPointRequest(id, pointRequest);
     }
   };
 
@@ -70,13 +93,46 @@ const OfficialGameInterface: React.FC = () => {
     setSelectedButton("");
     setCurrentPlayer(player);
     setOpen(true);
+    if (player === 1) {
+      setPlayerColor("white");
+    }
+    if (player === 2) {
+      setPlayerColor("red");
+    }
   };
 
-  const handleTimerChange = (): void => {
+  const apiPointRequest = async (
+    matchId: string,
+    body: AddPointRequest
+  ): Promise<void> => {
+    try {
+      console.log("Point sent", pointRequest);
+      await api.match.addPoint(matchId, body);
+    } catch (error) {
+      console.error("Data couldn't be sent", error);
+    }
+  };
+
+  const apiTimerRequest = async (matchId: string): Promise<void> => {
+    try {
+      if (!isTimerRunning) {
+        console.log("Start sent", pointRequest);
+        await api.match.startTimer(matchId);
+      } else {
+        console.log("Stop sent", pointRequest);
+        await api.match.stopTimer(matchId);
+      }
+    } catch (error) {
+      console.error("Data couldn't be sent", error);
+    }
+  };
+
+  const handleTimerChange = async (): Promise<void> => {
     /* TODO: Somehow manage the match API's elapsedTime when timer stops */
     setIsTimerRunning((prevIsTimerRunning) => !prevIsTimerRunning);
-
-    toggleTimer();
+    if (id !== undefined) {
+      await apiTimerRequest(id);
+    }
   };
 
   useEffect(() => {
@@ -100,87 +156,95 @@ const OfficialGameInterface: React.FC = () => {
   }, [isTimerRunning]);
 
   return (
-    <main className="main-content">
-      <div>
-        <Box className="playerBox" bgcolor="white">
-          <Typography variant="h1">Player 1</Typography>
+    <div className="app-container">
+      <main className="main-content">
+        <Box display="flex" gap="20px" justifyContent="center">
+          <Box className="playerBox" bgcolor="white">
+            <Typography variant="h3">Player 1</Typography>
+          </Box>
+          <Box className="playerBox" bgcolor="#db4744">
+            <Typography variant="h3">Player 2</Typography>
+          </Box>
         </Box>
-        <Box className="playerBox" bgcolor="red">
-          <Typography variant="h1">Player 2</Typography>
+        <Box display="flex" gap="20px" justifyContent="center">
+          <Typography className="timer" variant="h1">
+            {formatTime(timer)}
+          </Typography>
+          <Button onClick={handleTimerChange}>
+            {isTimerRunning ? "Stop" : "Start"}
+          </Button>
         </Box>
-      </div>
-      <div className="timerContainer">
-        <Typography className="timer" variant="h1">
-          {formatTime(timer)}
-        </Typography>
-        <Button onClick={handleTimerChange}>
-          {isTimerRunning ? "Stop" : "Start"}
-        </Button>
-      </div>
-      <div className="tableContainer">
-        <Table>
-          <TableBody>
-            {cells.rows.map((row, rowIndex) => (
-              <TableRow key={rowIndex}>
-                {row.map((cell, columnIndex) => (
-                  <TableCell key={columnIndex}>{cell}</TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="addButtonContainer">
-        <Button
-          className="button1"
-          onClick={() => {
-            handleOpen(1);
-          }}
-        >
-          Add point for player 1
-        </Button>
-        <Button
-          className="button2"
-          onClick={() => {
-            handleOpen(2);
-          }}
-        >
-          Add point for player 2
-        </Button>
-        <Dialog open={open}>
-          <DialogTitle>Select a Point</DialogTitle>
-          <DialogContent>
-            <RadioGroup
-              aria-label="point"
-              name="point"
-              value={selectedButton}
-              onChange={handleRadioButtonClick}
-            >
-              <FormControlLabel value="M" control={<Radio />} label="M" />
-              <FormControlLabel value="K" control={<Radio />} label="K" />
-              <FormControlLabel value="D" control={<Radio />} label="D" />
-              <FormControlLabel value="T" control={<Radio />} label="T" />
-              <FormControlLabel
-                value="&Delta;"
-                control={<Radio />}
-                label="&Delta;"
-              />
-            </RadioGroup>
+        <div className="tableContainer">
+          <Table>
+            <TableBody>
+              {cells.rows.map((row, rowIndex) => (
+                <TableRow key={rowIndex}>
+                  {row.map((cell, columnIndex) => (
+                    <TableCell key={columnIndex}>{cell}</TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        <br></br>
+        <div className="addButtonContainer">
+          <Box display="flex" gap="20px" justifyContent="center">
             <Button
+              className="button1"
               onClick={() => {
-                handlePointShowing();
+                handleOpen(1);
               }}
+              variant="contained"
             >
-              OK
+              Add point for player 1
             </Button>
-          </DialogContent>
-        </Dialog>
-      </div>
+            <Button
+              className="button2"
+              onClick={() => {
+                handleOpen(2);
+              }}
+              variant="contained"
+            >
+              Add point for player 2
+            </Button>
+          </Box>
+          <Dialog open={open}>
+            <DialogTitle>Select a Point</DialogTitle>
+            <DialogContent>
+              <RadioGroup
+                aria-label="point"
+                name="point"
+                value={selectedButton}
+                onChange={handleRadioButtonClick}
+              >
+                <FormControlLabel value="M" control={<Radio />} label="M" />
+                <FormControlLabel value="K" control={<Radio />} label="K" />
+                <FormControlLabel value="D" control={<Radio />} label="D" />
+                <FormControlLabel value="T" control={<Radio />} label="T" />
+                <FormControlLabel
+                  value="&Delta;"
+                  control={<Radio />}
+                  label="&Delta;"
+                />
+              </RadioGroup>
+              <Button
+                onClick={async () => {
+                  await handlePointShowing();
+                }}
+                disabled={!selectedButton}
+              >
+                OK
+              </Button>
+            </DialogContent>
+          </Dialog>
+        </div>
 
-      <div>
-        <Typography>{/* text when match ends */}</Typography>
-      </div>
-    </main>
+        <div>
+          <Typography>{/* text when match ends */}</Typography>
+        </div>
+      </main>
+    </div>
   );
 };
 

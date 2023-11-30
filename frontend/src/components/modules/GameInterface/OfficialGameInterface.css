@@ -5,20 +5,8 @@
   border-radius: 20px;
   margin-right: 16px;
   text-align: center;
-}
-
-.addButtonContainer {
-  display: flex;
-}
-
-.addButtonContainer button {
-  background-color: #666666;
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  margin-top: 10px;
-  cursor: pointer;
+  width: 40%;
+  height: 100px;
 }
 
 .tableContainer {
@@ -41,23 +29,3 @@ td {
   width: 80px;
 }
 
-.timerContainer {
-  display: flex;
-  align-items: center;
-}
-
-.timerContainer button {
-  background-color: #666666;
-  color: white;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  margin-top: 10px;
-  cursor: pointer;
-  width: 100px;
-}
-
-.timerContainer .timer {
-  text-align: center;
-  margin-left: 50px;
-}
