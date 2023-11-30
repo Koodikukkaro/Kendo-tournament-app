@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link as RouterLink, useLocation, useNavigate } from "react-router-dom";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -14,6 +14,8 @@ import {
   TextFieldElement,
   useForm
 } from "react-hook-form-mui";
+import { homeRoute } from "routes/Router";
+import Link from "@mui/material/Link";
 
 interface LoginFormData {
   email: string;
@@ -29,8 +31,16 @@ const LoginForm: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation() as LocationState;
   const showToast = useToast();
-  const { login } = useAuth();
-  const from = location.state?.from?.pathname ?? "/";
+  const { isAuthenticated, login } = useAuth();
+  const from = location.state?.from?.pathname ?? homeRoute;
+
+  /* Runs on the initial render and checks if the user
+   * was redirected due to being unauthenticated */
+  React.useEffect(() => {
+    if (!isAuthenticated && from !== homeRoute) {
+      showToast("You need to login to view this content", "warning");
+    }
+  }, [from]);
 
   const formContext = useForm<LoginFormData>({
     defaultValues,
@@ -40,7 +50,6 @@ const LoginForm: React.FC = () => {
   const onSubmit = async (data: LoginFormData): Promise<void> => {
     try {
       await login(data as LoginRequest);
-      showToast("Login successful!", "success");
       navigate(from, { replace: true });
     } catch (error) {
       showToast(error, "error");
@@ -104,12 +113,25 @@ const LoginForm: React.FC = () => {
         <Grid container gap="10px">
           <Grid item xs>
             <Typography variant="body2">
-              <Link to="/404">{"Forgot password?"}</Link>
+              <Link
+                component={RouterLink}
+                to={homeRoute}
+                onClick={() => {
+                  showToast(
+                    "Password cannot be changed as of now. :(",
+                    "warning"
+                  );
+                }}
+              >
+                {"Forgot password?"}
+              </Link>
             </Typography>
           </Grid>
           <Grid item>
             <Typography variant="body2">
-              <Link to="/register">{"Don't have an account? Sign Up"}</Link>
+              <Link component={RouterLink} to="/register">
+                {"Don't have an account? Sign Up"}
+              </Link>
             </Typography>
           </Grid>
         </Grid>
