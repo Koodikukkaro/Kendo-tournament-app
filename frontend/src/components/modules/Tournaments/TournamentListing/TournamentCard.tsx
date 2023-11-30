@@ -1,14 +1,12 @@
 import React from "react";
-import {
-  Button,
-  Card,
-  CardActionArea,
-  CardContent,
-  CardHeader,
-  Typography
-} from "@mui/material";
-import { type Tournament } from "types/models";
-import { useLocation, useNavigate } from "react-router-dom";
+import type { Tournament } from "types/models";
+import { useNavigate } from "react-router-dom";
+import Button from "@mui/material/Button";
+import CardActionArea from "@mui/material/CardActionArea";
+import CardHeader from "@mui/material/CardHeader";
+import Typography from "@mui/material/Typography";
+import CardContent from "@mui/material/CardContent";
+import Card from "@mui/material/Card";
 
 interface TournamentCardProps {
   tournament: Tournament;
@@ -20,11 +18,6 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
   type
 }) => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    e.stopPropagation();
-    navigate(`/${location.pathname}/${tournament.id}/sign-up`);
-  };
 
   return (
     <Card component="main" sx={{ position: "relative" }}>
@@ -33,7 +26,10 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
           navigate(tournament.id);
         }}
       >
-        <CardHeader title={tournament.name} />
+        <CardHeader
+          title={tournament.name}
+          titleTypographyProps={{ fontWeight: "500" }}
+        />
         <CardContent sx={{ marginBottom: "32px" }}>
           <Typography color="text.secondary">
             Start Date:{" "}
@@ -49,8 +45,10 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
         <Button
           color="primary"
           variant="outlined"
-          onClick={handleClick}
-          sx={{ position: "absolute", bottom: 5, right: 5 }}
+          onClick={() => {
+            navigate(`${tournament.id}/sign-up`);
+          }}
+          sx={{ position: "absolute", bottom: 10, right: 10 }}
         >
           Sign up
         </Button>

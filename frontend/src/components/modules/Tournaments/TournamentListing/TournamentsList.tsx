@@ -1,34 +1,30 @@
-import {
-  Box,
-  CircularProgress,
-  Grid,
-  SpeedDial,
-  SpeedDialAction,
-  SpeedDialIcon,
-  Tab,
-  Tabs,
-  Typography
-} from "@mui/material";
-import EventIcon from "@mui/icons-material/Event";
-import Container from "@mui/material/Container";
-import React, { useState } from "react";
+import React from "react";
 import TournamentCard from "./TournamentCard";
 import { useNavigate } from "react-router-dom";
-import { useTournament } from "../Tournaments";
+import { type TabType, useTournaments } from "context/TournamentsContext";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import SpeedDial from "@mui/material/SpeedDial";
+import SpeedDialAction from "@mui/material/SpeedDialAction";
+import SpeedDialIcon from "@mui/material/SpeedDialIcon";
+import EventIcon from "@mui/icons-material/Event";
+import Container from "@mui/material/Container";
 
 // SpeedDial actions
 const actions = [{ icon: <EventIcon />, name: "Create Tournament" }];
 
 const TournamentList: React.FC = () => {
-  const { isLoading, upcoming, ongoing } = useTournament();
   const navigate = useNavigate();
-  const [currentTab, setCurrentTab] = useState("ongoing");
+  const { upcoming, ongoing, setCurrentTab, currentTab } = useTournaments();
 
   const tournamentsToRender = currentTab === "ongoing" ? ongoing : upcoming;
 
   const handleTabChange = (
     _event: React.SyntheticEvent<Element, Event>,
-    tab: string
+    tab: TabType
   ): void => {
     setCurrentTab(tab);
     // Check the current scroll position
@@ -41,11 +37,7 @@ const TournamentList: React.FC = () => {
     }
   };
 
-  return isLoading ? (
-    <Box textAlign="center">
-      <CircularProgress />
-    </Box>
-  ) : (
+  return (
     <Container sx={{ position: "relative", paddingBottom: "30px" }}>
       {/* Floating Create Tournament Button */}
       <SpeedDial

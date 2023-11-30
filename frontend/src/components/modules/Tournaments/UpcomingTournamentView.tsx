@@ -1,87 +1,93 @@
-import React, { useState, useEffect } from "react";
-import { Typography, Button, Container } from "@mui/material";
+import React from "react";
 import { useNavigate } from "react-router-dom";
-
-interface TournamentData {
-  name: string;
-  startDate: string;
-  endDate: string;
-  type: string;
-  description: string;
-  otherPlayers: string[];
-}
+import { useTournament } from "context/TournamentContext";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 
 const UpcomingTournamentView: React.FC = () => {
   const navigate = useNavigate();
-  const [tournamentData, setTournamentData] = useState<TournamentData>({
-    name: "",
-    startDate: "",
-    endDate: "",
-    type: "",
-    description: "",
-    otherPlayers: []
-  });
-
-  const handleClick = (): void => {
-    navigate("sign-up");
-  };
-
-  useEffect(() => {
-    const fetchTournamentData = async (): Promise<void> => {
-      try {
-        // Mock data
-        const mockData = {
-          name: "Tournament Name",
-          startDate: "01/01/2024 14:00",
-          endDate: "02/01/2024 18:00",
-          type: "Round robin",
-          description: "This is a description of the tournament",
-          otherPlayers: ["Player 1", "Player 2", "Player 3"]
-        };
-
-        setTournamentData(mockData);
-      } catch (error) {
-        console.error("Error fetching tournament data:", error);
-      }
-    };
-    void fetchTournamentData();
-  }, []);
+  const tournament = useTournament();
 
   return (
-    <Container>
-      <Typography variant="h4" className="header">
-        Upcoming Tournament
+    <Container
+      component="main"
+      sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
+    >
+      <Typography
+        variant="h5"
+        className="header"
+        fontWeight="bold"
+        marginBottom="12px"
+      >
+        {tournament.name}
       </Typography>
-      <Typography variant="body1" className="subtext">
-        {tournamentData.name}
-      </Typography>
-      <Typography variant="body1" className="dates">
-        {tournamentData.startDate} - {tournamentData.endDate}
-      </Typography>
-      <Typography variant="body1" className="subtext">
-        Tournament type: {tournamentData.type}
-      </Typography>
-      <Typography variant="body1" className="subtext">
-        {tournamentData.description}
-      </Typography>
+
+      <Box>
+        <Typography variant="subtitle1" className="header" fontWeight="bold">
+          When:
+        </Typography>
+        <Typography variant="body1" className="dates">
+          {new Date(tournament.startDate).toLocaleString("fi")} -{" "}
+          {new Date(tournament.endDate).toLocaleString("fi")}
+        </Typography>
+      </Box>
+
+      <Box>
+        <Typography variant="subtitle1" className="header" fontWeight="bold">
+          Type of Tournament:
+        </Typography>
+        <Typography variant="body1" className="subtext">
+          {tournament.type}
+        </Typography>
+      </Box>
+
+      <Box>
+        <Typography variant="subtitle1" className="header" fontWeight="bold">
+          About the Tournament:
+        </Typography>
+        <Typography variant="body1" className="subtext">
+          {tournament.description}
+        </Typography>
+      </Box>
+
       <br />
-      <Typography variant="body1" className="subtext">
-        Want to attend?
-      </Typography>
-      <div className="field">
-        <Button variant="contained" color="primary" onClick={handleClick}>
+
+      <Box>
+        <Typography variant="body1" className="header">
+          Want to attend?
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => {
+            navigate("sign-up");
+          }}
+        >
           Sign up
         </Button>
-      </div>
+      </Box>
       <br />
-      <Typography variant="body1" className="subtext">
-        Others who have signed up:
-      </Typography>
-      {tournamentData.otherPlayers.map((player, index) => (
-        <Typography key={index} variant="body1" className="subtext">
-          {player}
+
+      {tournament.players.length > 0 ? (
+        <>
+          <Typography variant="body1" className="header" fontWeight="bold">
+            Others who have signed up:
+          </Typography>
+
+          {tournament.players.map((player, index) => (
+            <Typography key={index} variant="body1" className="subtext">
+              {/* TODO: Show relevant info here instead of ID. */}
+              {player}
+            </Typography>
+          ))}
+        </>
+      ) : (
+        <Typography variant="body1" className="header" fontWeight="bold">
+          No players have signed up yet.
         </Typography>
-      ))}
+      )}
     </Container>
   );
 };
