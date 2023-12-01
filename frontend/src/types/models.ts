@@ -41,6 +41,8 @@ export interface Match {
   players: MatchPlayer[];
   winner?: string;
   comment?: string;
+  admin: string;
+  officials?: string;
 }
 
 export interface Tournament {

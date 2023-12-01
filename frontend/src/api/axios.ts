@@ -103,7 +103,7 @@ const tournaments = {
 
 const match = {
   info: async (matchId: string) => {
-    await request.get<Match>(`${MATCH_API}${matchId}`);
+    return await request.get<Match>(`${MATCH_API}${matchId}`);
   },
   addPoint: async (matchId: string, body: AddPointRequest) => {
     return await request.patch(`${MATCH_API}${matchId}/points`, body);
