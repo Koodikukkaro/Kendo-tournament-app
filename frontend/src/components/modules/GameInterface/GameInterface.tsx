@@ -9,6 +9,7 @@ import { useParams } from "react-router-dom";
 import { type AddPointRequest } from "types/requests";
 import type { PointType, PlayerColor, Match } from "types/models";
 import "./GameInterface.css";
+import { useAuth } from "context/AuthContext";
 
 interface Cells {
   rows: string[][];
@@ -34,18 +35,26 @@ const GameInterface: React.FC = () => {
   const [pointCounter, setPointCounter] = useState<number>(0);
   const [playerColor, setPlayerColor] = useState<PlayerColor>("red");
 
-  const { id } = useParams();
-  let matchInfo: Match;
+  const { id: matchId } = useParams();
+  const { userId } = useAuth();
+  let matchInfo: Match = {
+    id: "",
+    timerStartedTimestamp: null,
+    elapsedTime: 0,
+    type: "group",
+    players: [],
+    admin: ""
+  };
   const players: string[] = [];
-  let winner: string;
+  let officialId: string = "";
+  let winner: string | undefined;
 
-  // TODO: Delta doesn't transform to PointType
   const buttonToTypeMap: Record<string, PointType> = {
     M: "men",
     K: "kote",
     D: "do",
     T: "tsuki",
-    "&Delta;": "hansoku"
+    "\u0394": "hansoku"
   };
 
   const selectedPointType = buttonToTypeMap[selectedButton];
@@ -72,8 +81,8 @@ const GameInterface: React.FC = () => {
       setCurrentPlayer(null);
       setPointCounter((prevCounter) => prevCounter + 1);
     }
-    if (id !== undefined) {
-      await apiPointRequest(id, pointRequest);
+    if (matchId !== undefined) {
+      await apiPointRequest(matchId, pointRequest);
     }
   };
 
@@ -123,25 +132,31 @@ const GameInterface: React.FC = () => {
 
   const handleTimerChange = async (): Promise<void> => {
     setIsTimerRunning((prevIsTimerRunning) => !prevIsTimerRunning);
-    if (id !== undefined) {
-      await apiTimerRequest(id);
+    if (matchId !== undefined) {
+      await apiTimerRequest(matchId);
     }
   };
 
   useEffect(() => {
     const getMatchData = async (): Promise<void> => {
-      if (id !== undefined) {
-        matchInfo = await api.match.info(id);
-        players[0] = (
-          await api.user.details(matchInfo.players[0].id)
-        ).firstName;
-        players[1] = (
-          await api.user.details(matchInfo.players[1].id)
-        ).firstName;
-        // TODO: Add websocket listener for winner?
-        if (matchInfo.winner !== undefined) {
-          winner = (await api.user.details(matchInfo.winner)).firstName;
+      try {
+        if (matchId !== undefined) {
+          matchInfo = await api.match.info(matchId);
+          players[0] = (
+            await api.user.details(matchInfo.players[0].id)
+          ).firstName;
+          players[1] = (
+            await api.user.details(matchInfo.players[1].id)
+          ).firstName;
+          if (matchInfo.winner !== undefined) {
+            winner = (await api.user.details(matchInfo.winner)).firstName;
+          }
+          if (matchInfo.officials !== undefined) {
+            officialId = matchInfo.officials;
+          }
         }
+      } catch (error) {
+        console.error("Data couldn't be fetched", error);
       }
     };
     void getMatchData();
@@ -163,7 +178,7 @@ const GameInterface: React.FC = () => {
         clearInterval(intervalId);
       }
     };
-  }, [isTimerRunning]);
+  }, [isTimerRunning, matchInfo, winner]);
 
   return (
     <div className="app-container">
@@ -178,26 +193,29 @@ const GameInterface: React.FC = () => {
         </Box>
         <Box display="flex" gap="20px" justifyContent="center">
           <Timer timer={timer} />
-          {/** TODO: Only show this when user is an official */}
-          <TimerButton
-            isTimerRunning={isTimerRunning}
-            handleTimerChange={handleTimerChange}
-          />
+          {userId !== officialId && (
+            <TimerButton
+              isTimerRunning={isTimerRunning}
+              handleTimerChange={handleTimerChange}
+            />
+          )}
         </Box>
         <PointTable cells={cells.rows} />
         <br></br>
-        {/** TODO: Only show this when user is an official */}
-        <OfficialButtons
-          open={open}
-          selectedButton={selectedButton}
-          handleRadioButtonClick={handleRadioButtonClick}
-          handlePointShowing={handlePointShowing}
-          handleOpen={handleOpen}
-        />
-        {/** TODO: Only show this when match is finished */}
-        <div>
-          <Typography>{/* {winner} */} wins!</Typography>
-        </div>
+        {userId !== officialId && (
+          <OfficialButtons
+            open={open}
+            selectedButton={selectedButton}
+            handleRadioButtonClick={handleRadioButtonClick}
+            handlePointShowing={handlePointShowing}
+            handleOpen={handleOpen}
+          />
+        )}
+        {winner !== undefined && (
+          <div>
+            <Typography>{winner} wins!</Typography>
+          </div>
+        )}
       </main>
     </div>
   );

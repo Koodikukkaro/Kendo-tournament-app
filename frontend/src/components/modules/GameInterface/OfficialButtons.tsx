@@ -58,11 +58,7 @@ const OfficialButtons: React.FC<AddPointDialogProps> = ({
             <FormControlLabel value="K" control={<Radio />} label="K" />
             <FormControlLabel value="D" control={<Radio />} label="D" />
             <FormControlLabel value="T" control={<Radio />} label="T" />
-            <FormControlLabel
-              value="&Delta;"
-              control={<Radio />}
-              label="&Delta;"
-            />
+            <FormControlLabel value="Δ" control={<Radio />} label="Δ" />
           </RadioGroup>
           <Button
             onClick={async () => {
