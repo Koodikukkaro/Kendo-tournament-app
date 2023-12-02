@@ -6,6 +6,7 @@ import express, {
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "../../build/swagger.json";
 import { globalErrorHandlerMiddleware } from "../middlewares/globalErrorHandler";
+import loggerware from "../middlewares/logger";
 import { RegisterRoutes } from "../../build/routes";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -26,6 +27,8 @@ export function CreateApp(): Application {
       credentials: true
     })
   );
+
+  app.use(loggerware);
 
   /* Register the auto generated routes */
   RegisterRoutes(app);
