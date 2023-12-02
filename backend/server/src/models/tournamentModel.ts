@@ -15,17 +15,6 @@ export interface UnsavedMatch {
   timerStartedTimestamp: Date | null;
 }
 
-interface PlayerDetail {
-  firstName: string;
-  lastName: string;
-  id: Types.ObjectId;
-}
-
-export interface ExtendedMatch extends Match {
-  playersDetails: Array<PlayerDetail>;
-  winnerDetails?: PlayerDetail | null;
-}
-
 export interface Tournament {
   tournamentName: string;
   location: string;
@@ -36,10 +25,8 @@ export interface Tournament {
   organizerEmail?: string;
   organizerPhone?: string;
   maxPlayers: number;
-  players: Types.ObjectId[]; // Array of player identifiers (userID from user objects)
-  playerDetails?: PlayerDetail[];
-  matchSchedule: Types.ObjectId[]; // Array of MatchModel (matches created in srevice)
-  matchScheduleDetails?: ExtendedMatch[];
+  players: Types.ObjectId[];
+  matchSchedule: Types.ObjectId[];
 }
 
 export interface AddPlayerRequest {
