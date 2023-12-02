@@ -28,16 +28,6 @@ export class TournamentController extends Controller {
   }
 
   @Security("jwt")
-  @Get("{id}/details")
-  @Tags("Tournament")
-  public async getTournamentDetails(
-    @Path() id: ObjectIdString
-  ): Promise<Tournament> {
-    this.setStatus(200);
-    return await this.service.getTournamentDetails(id);
-  }
-
-  @Security("jwt")
   @Post("create")
   @Tags("Tournament")
   public async createTournament(
@@ -60,17 +50,6 @@ export class TournamentController extends Controller {
       requestBody.playerId
     );
     this.setStatus(200); // OK status
-    return result;
-  }
-
-  @Security("jwt")
-  @Put("{tournamentId}/autoSchedule")
-  @Tags("Tournament")
-  public async autoSchedule(
-    @Path() tournamentId: ObjectIdString
-  ): Promise<Tournament> {
-    const result = await this.service.generateTournamentSchedule(tournamentId);
-    this.setStatus(201); // Created status
     return result;
   }
 

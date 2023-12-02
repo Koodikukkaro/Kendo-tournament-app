@@ -1,4 +1,4 @@
-import mongoose, { Schema, type Document, type Types } from "mongoose";
+import mongoose, { Schema, type Document, Types } from "mongoose";
 import { type MatchPlayer, type Match } from "./matchModel";
 
 export enum TournamentType {
@@ -15,23 +15,15 @@ export interface UnsavedMatch {
   timerStartedTimestamp: Date | null;
 }
 
-interface PlayerDetails {
-  firstName: string | null;
-  lastName: string | null;
-  id: string | null;
+interface PlayerDetail {
+  firstName: string;
+  lastName: string;
+  id: Types.ObjectId;
 }
 
 export interface ExtendedMatch extends Match {
-  playersDetails: Array<{
-    id: string | null;
-    firstName: string | null;
-    lastName: string | null;
-  }>;
-  winnerDetails?: {
-    id: string | null;
-    firstName: string | null;
-    lastName: string | null;
-  } | null;
+  playersDetails: Array<PlayerDetail>;
+  winnerDetails?: PlayerDetail | null;
 }
 
 export interface Tournament {
@@ -45,7 +37,7 @@ export interface Tournament {
   organizerPhone?: string;
   maxPlayers: number;
   players: Types.ObjectId[]; // Array of player identifiers (userID from user objects)
-  playerDetails?: PlayerDetails[];
+  playerDetails?: PlayerDetail[];
   matchSchedule: Types.ObjectId[]; // Array of MatchModel (matches created in srevice)
   matchScheduleDetails?: ExtendedMatch[];
 }
@@ -67,15 +59,15 @@ const tournamentSchema = new Schema<Tournament & Document>(
       required: true
     },
     maxPlayers: { type: Number, required: true },
-    players: [{ type: String }],
-    matchSchedule: [{ type: String }], // Reference to Match documents
+    players: [{ type: Types.ObjectId, ref: 'User' }],
+    matchSchedule: [{ type: Types.ObjectId, ref: 'Match' }], // Reference to Match documents
     organizerEmail: { type: String },
     organizerPhone: { type: String }
   },
   {
     timestamps: true,
-    toJSON: { virtuals: true }, // Enable virtuals in toJSON
-    toObject: { virtuals: true } // Enable virtuals in toObject
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
 
