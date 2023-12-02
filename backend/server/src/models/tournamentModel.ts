@@ -17,17 +17,6 @@ export interface UnsavedMatch {
   timerStartedTimestamp: Date | null;
 }
 
-interface PlayerDetail {
-  firstName: string;
-  lastName: string;
-  id: Types.ObjectId;
-}
-
-export interface ExtendedMatch extends Match {
-  playersDetails: Array<PlayerDetail>;
-  winnerDetails?: PlayerDetail | null;
-}
-
 export interface Tournament {
   id: Types.ObjectId;
   name: string;
@@ -40,8 +29,8 @@ export interface Tournament {
   organizerEmail?: string;
   organizerPhone?: string;
   maxPlayers: number;
-  players: Types.ObjectId[]; // Array of player identifiers (userID from user objects)
-  matchSchedule?: Match[];
+  players: Types.ObjectId[];
+  matchSchedule: Types.ObjectId[];
 }
 
 export interface SignupForTournamentRequest {
