@@ -1,9 +1,10 @@
-import { type Request, type Response, type NextFunction } from "express";
+import morgan from "morgan";
 import logger from "../utility/logger";
 
-const loggerware = (req: Request, res: Response, next: NextFunction): void => {
-  logger.info(`${req.method} ${req.url}`);
-  next();
-};
-
-export default loggerware;
+export const httpLogger = morgan("tiny", {
+  stream: {
+    write: (message) => {
+      logger.info(message.trim());
+    }
+  }
+});

@@ -1,15 +1,16 @@
+import cookieParser from "cookie-parser";
+import cors from "cors";
 import express, {
   type Application,
   type Request,
   type Response
 } from "express";
 import swaggerUi from "swagger-ui-express";
+
 import swaggerDocument from "../../build/swagger.json";
 import { globalErrorHandlerMiddleware } from "../middlewares/globalErrorHandler";
-import loggerware from "../middlewares/logger";
+import { httpLogger } from "../middlewares/logger";
 import { RegisterRoutes } from "../../build/routes";
-import cookieParser from "cookie-parser";
-import cors from "cors";
 
 export function CreateApp(): Application {
   const app = express();
@@ -28,7 +29,7 @@ export function CreateApp(): Application {
     })
   );
 
-  app.use(loggerware);
+  app.use(httpLogger);
 
   /* Register the auto generated routes */
   RegisterRoutes(app);
