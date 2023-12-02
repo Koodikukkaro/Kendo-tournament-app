@@ -13,7 +13,7 @@ import MatchModel from "../models/matchModel.js";
 import { CreateTournamentRequest } from "../models/requestModel.js";
 
 export class TournamentService {
-  public async getTournamentById(id: string): Promise<Tournament> {
+  public async getTournamentById(id: string): Promise<Tournament> { 
     const tournament = await TournamentModel.findById(id).exec();
 
     if (tournament === null || tournament === undefined) {
@@ -24,6 +24,7 @@ export class TournamentService {
 
     return await tournament.toObject();
   }
+
 
   public async getAllTournaments(limit: number): Promise<Tournament[]> {
     const tournaments = await TournamentModel.find().limit(limit).exec();
@@ -86,7 +87,6 @@ export class TournamentService {
       });
     }
 
-    // Check if player exists in the UserModel
     const player = await UserModel.findById(playerId).exec();
     if (player === null || player === undefined) {
       throw new NotFoundError({
@@ -101,7 +101,14 @@ export class TournamentService {
       });
     }
 
-    // Check if the tournament has reached its maximum number of players
+    const currentDate = new Date();
+    const startDate = new Date(tournament.startDate);
+    if (currentDate > startDate) {
+      throw new BadRequestError({
+        message: `Cannot add new players as the tournament has already started on ${startDate.toDateString()}`
+      });
+    }
+
     if (tournament.players.length >= tournament.maxPlayers) {
       throw new BadRequestError({
         message: "Tournament has reached its maximum number of players"
@@ -110,10 +117,17 @@ export class TournamentService {
 
     tournament.players.push(player.id);
     await tournament.save();
+
+    if (tournament.players.length > 1) {
+      const newMatchIds = await this.generateTournamentSchedule(tournament, player.id);
+      if (newMatchIds.length !== 0) {
+        tournament.matchSchedule.push(...newMatchIds);
+        await tournament.save();
+      }
+    }
+    return await tournament.toObject();
   }
 
-
-  // update - add custom match
   public async addMatchToTournament(
     tournamentId: string,
     unsavedMatch: UnsavedMatch
@@ -150,127 +164,85 @@ export class TournamentService {
     return await tournament.toObject();
   }
 
-
-  public async generateTournamentSchedule(
-    tournamentId: string
-  ): Promise<Tournament> {
-    const tournament = await TournamentModel.findById(tournamentId).exec();
-
-    if (tournament === null || tournament === undefined) {
-      throw new NotFoundError({
-        message: "Tournament not found"
-      });
-    }
-
-    if (tournament.players.length !== tournament.maxPlayers) {
-      throw new BadRequestError({
-        message: "Tournament player count has not reached the maximum capacity"
-      });
-    }
-
+  private async generateTournamentSchedule(
+    tournament: Tournament,
+    newPlayer: Types.ObjectId,
+  ): Promise<Types.ObjectId[]> {
     let matches: UnsavedMatch[] = [];
 
     switch (tournament.type) {
       case TournamentType.RoundRobin:
-        if (
-          this.calculateRoundRobinMatches(tournament.maxPlayers) ===
-          tournament.matchSchedule.length
-        ) {
-          throw new BadRequestError({
-            message:
-              "We have already created the match schedule for this tournament."
-          });
-        }
-        matches = this.generateRoundRobinSchedule(tournament.players);
+        matches = this.generateRoundRobinSchedule(tournament.players, newPlayer);
         break;
       case TournamentType.Playoff:
-        matches = await this.generatePlayoffSchedule(
-          tournament.players,
-          tournament.matchSchedule
-        );
+        matches = await this.generatePlayoffSchedule(tournament.players, tournament.matchSchedule);
         break;
     }
 
-    // Create Match documents for each match
-    for (const match of matches) {
-      const matchDocument = await MatchModel.create(match);
-      tournament.matchSchedule.push(matchDocument._id);
+    if (matches.length === 0) {
+      return [];
     }
 
-    await tournament.save();
-    return await tournament.toObject();
+    const matchDocuments = await MatchModel.insertMany(matches);
+    return matchDocuments.map(doc => doc._id);
   }
 
-  // private function
+
   private generateRoundRobinSchedule(
-    playerIds: Types.ObjectId[]
+    playerIds: Types.ObjectId[],
+    newPlayer: Types.ObjectId,
   ): UnsavedMatch[] {
     const matches: UnsavedMatch[] = [];
     for (let i = 0; i < playerIds.length; i++) {
-      for (let j = i + 1; j < playerIds.length; j++) {
+      if (!playerIds[i].equals(newPlayer)) {
         matches.push({
           players: [
-            { id: playerIds[i], points: [], color: "red" },
-            { id: playerIds[j], points: [], color: "white" }
+            { id: newPlayer, points: [], color: "red" },
+            { id: playerIds[i], points: [], color: "white" }
           ],
-          type: "group", // decide what this is going to be.
-          admin: null, // this has to be an ID.
+          type: "group",
+          admin: null,
           elapsedTime: 0,
           timerStartedTimestamp: null
-          // Set other Match fields as necessary
         });
       }
     }
     return matches;
   }
 
-  // private function
   private async generatePlayoffSchedule(
     playerIds: Types.ObjectId[],
-    previousMatches: Types.ObjectId[]
+    previousMatches: Types.ObjectId[],
   ): Promise<UnsavedMatch[]> {
     const matches: UnsavedMatch[] = [];
-    let currentRoundPlayers = [];
-    // check if there's any previous matches.
-    if (previousMatches.length === 0) {
-      // work with original list
-      currentRoundPlayers = [...playerIds];
-    } else {
-      const matchPromises = previousMatches.map(
-        async (matchId) => await MatchModel.findById(matchId).exec()
-      );
-      const matchDatas = await Promise.all(matchPromises);
+    const playerSet = new Set<Types.ObjectId>();
 
-      for (const matchData of matchDatas) {
-        const winnerId = matchData?.winner;
-        if (winnerId === null || winnerId === undefined) {
-          throw new BadRequestError({
-            message:
-              "Cannot create a new round because the last round of the playoffs is not yet complete."
-          });
-        }
-        currentRoundPlayers.push(winnerId);
-      }
+    const matchDatas = await MatchModel.find({
+      _id: { $in: previousMatches }
+    }).exec();
+
+    for (const matchData of matchDatas) {
+      matchData.players.forEach(player => playerSet.add(player.id));
     }
+    const extraPlayers = playerIds.filter(id => !playerSet.has(id.toString()));
 
-    for (let i = 0; i < playerIds.length; i += 2) {
-      // only works in power of 2.
+    if (extraPlayers.length === 2) {
       matches.push({
         players: [
-          { id: playerIds[i], points: [], color: "red" },
-          { id: playerIds[i + 1], points: [], color: "white" }
+          { id: extraPlayers[0], points: [], color: "red" },
+          { id: extraPlayers[1], points: [], color: "white" }
         ],
-        type: "playoff", // decide what this is going to be.
-        admin: null, // this has to be an ID.
+        type: "playoff",
+        admin: null,
         elapsedTime: 0,
         timerStartedTimestamp: null
-        // Set other Match fields as necessary
       });
     }
+
     return matches;
   }
 
-  // private utility function
+
   private isPowerOfTwo(n: number): boolean {
     if (n <= 0) {
       return false;
@@ -278,7 +250,6 @@ export class TournamentService {
     return (n & (n - 1)) === 0;
   }
 
-  // private utility function
   private calculateRoundRobinMatches(playerCount: number): number {
     if (playerCount < 2) {
       throw new BadRequestError({
@@ -292,79 +263,57 @@ export class TournamentService {
   private async tournamentToObject(
     tournamentObject: Tournament & Document
   ): Promise<Tournament & Document> {
-    const playerPromises = tournamentObject.players.map(
-      async (playerId) =>
-        await UserModel.findById(playerId)
-          .select("firstName lastName _id")
-          .exec()
-    );
+    const playerIds = tournamentObject.players;
+    const players = await UserModel.find({
+      _id: { $in: playerIds }
+    })
+      .select("firstName lastName _id")
+      .exec();
 
-    const players = await Promise.all(playerPromises);
-    tournamentObject.playerDetails = players.map((player) =>
-      player !== null && player !== undefined
-        ? {
-            firstName: player.firstName,
-            lastName: player.lastName,
-            id: player._id.toString()
-          }
-        : {
-            firstName: "",
-            lastName: "",
-            id: null
-          }
-    );
+    tournamentObject.playerDetails = players.map((player) => ({
+      firstName: player.firstName,
+      lastName: player.lastName,
+      id: player._id
+    }));
 
-    const matchPromises = tournamentObject.matchSchedule.map(
-      async (matchId) => await MatchModel.findById(matchId).exec()
-    );
+    const matches = await MatchModel.find({
+      _id: { $in: tournamentObject.matchSchedule }
+    }).exec();
 
-    const matches = await Promise.all(matchPromises);
     const extendedMatches: ExtendedMatch[] = [];
 
     for (const match of matches) {
-      if (match !== null && match !== undefined) {
-        const playerDetailsPromises = match.players.map(
-          async (player) =>
-            await UserModel.findById(player.id)
-              .select("firstName lastName _id")
-              .exec()
-        );
+      const playerIds = match.players.map(player => player.id);
+      const playersDetails = await UserModel.find({
+        _id: { $in: playerIds }
+      })
+        .select("firstName lastName _id")
+        .exec();
 
-        const playersDetails = await Promise.all(playerDetailsPromises);
-        const extendedPlayers = playersDetails.map((player) => ({
-          id:
-            player !== null && player !== undefined
-              ? player._id.toString()
-              : null,
-          firstName:
-            player !== null && player !== undefined ? player.firstName : null,
-          lastName:
-            player !== null && player !== undefined ? player.lastName : null
-        }));
+      const extendedPlayers = playersDetails.map((player) => ({
+        id: player._id,
+        firstName: player.firstName,
+        lastName: player.lastName
+      }));
 
-        let winnerDetails = null;
-        if (match.winner !== null && match.winner !== undefined) {
-          const winner = await UserModel.findById(match.winner)
-            .select("firstName lastName _id")
-            .exec();
-          winnerDetails = {
-            id:
-              winner !== null && winner !== undefined
-                ? winner._id.toString()
-                : null,
-            firstName:
-              winner !== null && winner !== undefined ? winner.firstName : null,
-            lastName:
-              winner !== null && winner !== undefined ? winner.lastName : null
-          };
-        }
 
-        extendedMatches.push({
-          ...match.toObject(),
-          playersDetails: extendedPlayers,
-          winnerDetails
-        });
+      let winnerDetails = null;
+      if (match.winner !== null && match.winner !== undefined) {
+        const winner = await UserModel.findById(match.winner)
+          .select("firstName lastName _id")
+          .exec();
+        winnerDetails = {
+          id: winner._id,
+          firstName: winner.firstName,
+          lastName: winner.lastName
+        };
       }
+
+      extendedMatches.push({
+        ...match.toObject(),
+        playersDetails: extendedPlayers,
+        winnerDetails
+      });
     }
 
     tournamentObject.matchScheduleDetails = extendedMatches;

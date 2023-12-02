@@ -17,23 +17,15 @@ export interface UnsavedMatch {
   timerStartedTimestamp: Date | null;
 }
 
-interface PlayerDetails {
-  firstName: string | null;
-  lastName: string | null;
-  id: string | null;
+interface PlayerDetail {
+  firstName: string;
+  lastName: string;
+  id: Types.ObjectId;
 }
 
 export interface ExtendedMatch extends Match {
-  playersDetails: Array<{
-    id: string | null;
-    firstName: string | null;
-    lastName: string | null;
-  }>;
-  winnerDetails?: {
-    id: string | null;
-    firstName: string | null;
-    lastName: string | null;
-  } | null;
+  playersDetails: Array<PlayerDetail>;
+  winnerDetails?: PlayerDetail | null;
 }
 
 export interface Tournament {
