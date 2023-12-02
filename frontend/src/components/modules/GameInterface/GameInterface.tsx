@@ -193,7 +193,7 @@ const GameInterface: React.FC = () => {
         </Box>
         <Box display="flex" gap="20px" justifyContent="center">
           <Timer timer={timer} />
-          {userId !== officialId && (
+          {userId === officialId && (
             <TimerButton
               isTimerRunning={isTimerRunning}
               handleTimerChange={handleTimerChange}
@@ -202,7 +202,7 @@ const GameInterface: React.FC = () => {
         </Box>
         <PointTable cells={cells.rows} />
         <br></br>
-        {userId !== officialId && (
+        {userId === officialId && (
           <OfficialButtons
             open={open}
             selectedButton={selectedButton}
