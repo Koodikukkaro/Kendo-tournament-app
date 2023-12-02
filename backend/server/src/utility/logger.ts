@@ -1,19 +1,19 @@
-import winston from "winston";
+import { createLogger, transports, format } from "winston";
 
-const logger = winston.createLogger({
+const logger = createLogger({
   // https://github.com/winstonjs/winston/blob/HEAD/docs/transports.md#file-transport
-  transports: [new winston.transports.Console()],
-  exceptionHandlers: [new winston.transports.Console()],
+  transports: [new transports.Console()],
+  // exceptionHandlers: [new winston.transports.Console()],
   // Winston will exit after logging an uncaughtException, unless
   // exitOnError: false,
-  rejectionHandlers: [new winston.transports.Console()],
+  // rejectionHandlers: [new winston.transports.Console()],
   // format: winston.format.printf((info) => `${info.message}`)
-  format: winston.format.combine(
-    // format.colorize()
-    // winston.format.timestamp(),
-    winston.format.simple(),
-    winston.format.errors({ stack: true })
-    // winston.format.json()
+  format: format.combine(
+    // Works except for json.
+    format.colorize({ colors: { error: "red" } }),
+
+    format.simple()
+    // format.errors({ stack: true })
   )
 });
 

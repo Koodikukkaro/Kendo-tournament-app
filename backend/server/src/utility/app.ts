@@ -9,7 +9,7 @@ import swaggerUi from "swagger-ui-express";
 
 import swaggerDocument from "../../build/swagger.json";
 import { globalErrorHandlerMiddleware } from "../middlewares/globalErrorHandler";
-import { httpLogger } from "../middlewares/logger";
+import { httpLogger, errorLogger } from "../middlewares/logger";
 import { RegisterRoutes } from "../../build/routes";
 
 export function CreateApp(): Application {
@@ -40,6 +40,7 @@ export function CreateApp(): Application {
   });
 
   /* Error handling middleware */
+  app.use(errorLogger);
   app.use(globalErrorHandlerMiddleware);
 
   return app;
