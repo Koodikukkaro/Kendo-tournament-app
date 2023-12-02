@@ -48,7 +48,7 @@ const routes = createRoutesFromElements(
 
       <Route element={<SocketProvider />}>
         <Route
-          path="/tournaments/:id/matches/:id"
+          path="tournaments/:id/matches/:id"
           element={<GameInterface />}
         ></Route>
       </Route>

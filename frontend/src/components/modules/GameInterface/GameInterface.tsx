@@ -10,6 +10,8 @@ import { type AddPointRequest } from "types/requests";
 import type { PointType, PlayerColor, Match } from "types/models";
 import "./GameInterface.css";
 import { useAuth } from "context/AuthContext";
+import { joinMatch, leaveMatch } from "sockets/emit";
+import { useSocket } from "context/SocketContext";
 
 interface Cells {
   rows: string[][];
@@ -26,6 +28,18 @@ const GameInterface: React.FC = () => {
     ]
   };
 
+  const { matchInfo } = useSocket();
+
+  useEffect(() => {
+    if (matchId !== undefined) {
+      joinMatch(matchId);
+
+      return () => {
+        leaveMatch(matchId);
+      };
+    }
+  }, []);
+
   const [cells, setCells] = useState<Cells>(initialCells);
   const [open, setOpen] = useState(false);
   const [selectedButton, setSelectedButton] = useState<string>("");
@@ -35,16 +49,8 @@ const GameInterface: React.FC = () => {
   const [pointCounter, setPointCounter] = useState<number>(0);
   const [playerColor, setPlayerColor] = useState<PlayerColor>("red");
 
-  const { id: matchId } = useParams();
+  const { matchId } = useParams();
   const { userId } = useAuth();
-  let matchInfo: Match = {
-    id: "",
-    timerStartedTimestamp: null,
-    elapsedTime: 0,
-    type: "group",
-    players: [],
-    admin: ""
-  };
   const players: string[] = [];
   let officialId: string = "";
   let winner: string | undefined;
@@ -140,19 +146,20 @@ const GameInterface: React.FC = () => {
   useEffect(() => {
     const getMatchData = async (): Promise<void> => {
       try {
-        if (matchId !== undefined) {
-          matchInfo = await api.match.info(matchId);
-          players[0] = (
-            await api.user.details(matchInfo.players[0].id)
-          ).firstName;
-          players[1] = (
-            await api.user.details(matchInfo.players[1].id)
-          ).firstName;
-          if (matchInfo.winner !== undefined) {
-            winner = (await api.user.details(matchInfo.winner)).firstName;
-          }
-          if (matchInfo.officials !== undefined) {
-            officialId = matchInfo.officials;
+        if (matchInfo !==  undefined) {
+          if (matchId !== undefined) {
+            players[0] = (
+              await api.user.details(matchInfo.players[0].id)
+            ).firstName;
+            players[1] = (
+              await api.user.details(matchInfo.players[1].id)
+            ).firstName;
+            if (matchInfo.winner !== undefined) {
+              winner = (await api.user.details(matchInfo.winner)).firstName;
+            }
+            if (matchInfo.officials !== undefined) {
+              officialId = matchInfo.officials;
+            }
           }
         }
       } catch (error) {
@@ -202,7 +209,7 @@ const GameInterface: React.FC = () => {
         </Box>
         <PointTable cells={cells.rows} />
         <br></br>
-        {userId === officialId && (
+        {(userId === officialId && winner !== undefined)&& (
           <OfficialButtons
             open={open}
             selectedButton={selectedButton}
