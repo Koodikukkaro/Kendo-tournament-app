@@ -24,40 +24,32 @@ export const homeRoute = "/tournaments";
 const routes = createRoutesFromElements(
   <Route element={<RootRoute />}>
     <Route element={<Layout />}>
-      <Route path="/tournaments" element={<TournamentsProvider />}>
-        <Route index element={<TournamentList />} />
-
-        <Route element={<AuthenticationGuard />}>
-          <Route path="new-tournament" element={<CreateTournamentForm />} />
-        </Route>
-
-        <Route path=":id" element={<TournamentProvider />}>
-          <Route index element={<TournamentDetails />} />
-          <Route
-            path="sign-up"
-            element={
-              <AuthenticationGuard>
-                <Signup />
-              </AuthenticationGuard>
-            }
-          />
-        </Route>
-      </Route>
-
       <Route element={<AuthenticationGuard guardType="unauthenticated" />}>
+        <Route path="/tournaments" element={<TournamentsProvider />}>
+          <Route index element={<TournamentList />} />
+
+          <Route path=":id" element={<TournamentProvider />}>
+            <Route index element={<TournamentDetails />} />
+            <Route
+              path="sign-up"
+              element={
+                <AuthenticationGuard>
+                  <Signup />
+                </AuthenticationGuard>
+              }
+            />
+          </Route>
+        </Route>
         <Route path="login" element={<LoginForm />} />
-      </Route>
-
-      <Route element={<AuthenticationGuard guardType="unauthenticated" />}>
         <Route path="register" element={<RegisterForm />} />
+        {/* Redirect from other routes */}
+        <Route path="*" element={<Navigate to={"/tournaments"} replace />} />
       </Route>
 
       <Route element={<AuthenticationGuard />}>
         <Route path="profile" element={<Profile />} />
+        <Route path="new-tournament" element={<CreateTournamentForm />} />
       </Route>
-
-      {/* Redirect from other routes */}
-      <Route path="*" element={<Navigate to={"/tournaments"} replace />} />
     </Route>
   </Route>
 );
