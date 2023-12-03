@@ -35,7 +35,7 @@ const APP_NAME = "KendoApp";
 
 const NavigationBar: React.FC<Props> = (props) => {
   const { window, navigationItems } = props;
-  const { logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
   const container =
@@ -90,7 +90,9 @@ const NavigationBar: React.FC<Props> = (props) => {
                 ))}
               </Box>
               <LogoButton logoName={APP_NAME} />
-              <NavigationUserMenu settings={props.settings} />
+              {isAuthenticated ? (
+                <NavigationUserMenu settings={props.settings} />
+              ) : null}
             </Toolbar>
           </Container>
         </AppBar>
