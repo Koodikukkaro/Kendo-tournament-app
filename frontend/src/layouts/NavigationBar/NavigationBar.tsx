@@ -31,7 +31,7 @@ interface Props {
   navigationItems: NavigationData;
 }
 
-const businessName = "KendoApp";
+const APP_NAME = "KendoApp";
 
 const NavigationBar: React.FC<Props> = (props) => {
   const { window, navigationItems } = props;
@@ -89,7 +89,7 @@ const NavigationBar: React.FC<Props> = (props) => {
                   </Button>
                 ))}
               </Box>
-              <LogoButton logoName={businessName} />
+              <LogoButton logoName={APP_NAME} />
               <NavigationUserMenu settings={props.settings} />
             </Toolbar>
           </Container>
@@ -101,7 +101,7 @@ const NavigationBar: React.FC<Props> = (props) => {
         toggleDrawer={toggleDrawer}
         drawerIsOpen={openDrawer}
         navigationItems={navigationItems}
-        drawerTitle={businessName}
+        drawerTitle={APP_NAME}
       />
     </>
   );

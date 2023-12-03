@@ -6,7 +6,8 @@
 import { type NavigationData } from "./navigation-bar";
 
 // Text to display and the corresponding link
-export const unAuthenticatedNavItems: NavigationData = [
+
+export const signupData: NavigationData = [
   {
     text: "Login",
     link: "/login"
@@ -16,6 +17,13 @@ export const unAuthenticatedNavItems: NavigationData = [
     link: "/register"
   }
 ];
+
+export const unAuthenticatedNavItems: NavigationData = [
+  {
+    text: "Home",
+    link: "/"
+  }
+].concat(signupData);
 
 export const authenticatedNavItems: NavigationData = [
   {
@@ -35,6 +43,7 @@ export const settings: NavigationData = [
   },
   {
     text: "Logout",
-    link: "/"
+    // TODO
+    link: "/TODO"
   }
 ];
