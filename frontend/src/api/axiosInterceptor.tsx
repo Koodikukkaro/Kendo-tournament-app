@@ -4,6 +4,7 @@ import { AUTH_API, axiosAuthInstance, axiosInstance } from "./axios";
 import useToast from "hooks/useToast";
 import type { AxiosRequestConfig, AxiosError, AxiosResponse } from "axios";
 import { type ApiErrorResponse } from "types/responses";
+import routePaths from "routes/route-paths";
 
 /**
  * Component responsible for setting up a response interceptor
@@ -39,7 +40,7 @@ const InterceptorSetup = (): null => {
 
       // If token refresh fails, redirect the user to the login page, but store the state they were.
       // This way we can redirect them back to where they left.
-      navigate("/login", { replace: true, state: { from: location } });
+      navigate(routePaths.login, { replace: true, state: { from: location } });
     }
   };
 

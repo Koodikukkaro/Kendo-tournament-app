@@ -1,5 +1,6 @@
 import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import routePaths from "routes/route-paths";
 
 export type ProtectedRouteProps = { children?: React.ReactElement } & {
   isAllowed: boolean;
@@ -9,7 +10,7 @@ export type ProtectedRouteProps = { children?: React.ReactElement } & {
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   isAllowed,
   children,
-  redirectPath = "/"
+  redirectPath = routePaths.homeRoute
 }) => {
   const location = useLocation();
 

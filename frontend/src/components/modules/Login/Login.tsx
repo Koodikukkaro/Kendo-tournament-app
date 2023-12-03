@@ -130,7 +130,7 @@ const LoginForm: React.FC = () => {
           </Grid>
           <Grid item>
             <Typography variant="body2">
-              <Link component={RouterLink} to="/register">
+              <Link component={RouterLink} to={routePaths.register}>
                 {"Don't have an account? Sign Up"}
               </Link>
             </Typography>
