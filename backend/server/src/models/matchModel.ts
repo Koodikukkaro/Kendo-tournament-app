@@ -26,8 +26,7 @@ export interface Match {
   winner?: Types.ObjectId;
   comment?: string;
   tournamentId: Types.ObjectId;
-  admin: Types.ObjectId;
-  officials?: Types.ObjectId;
+  officials: Types.ObjectId[];
 }
 
 const pointSchema = new Schema<MatchPoint>(
@@ -75,9 +74,6 @@ const matchSchema = new Schema<Match>(
     tournamentId: {
       type: Schema.Types.ObjectId,
       ref: "Tournament"
-    },
-    admin: {
-      type: Schema.Types.ObjectId
     },
     officials: {
       type: [Schema.Types.ObjectId],

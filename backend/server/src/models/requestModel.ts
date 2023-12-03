@@ -87,8 +87,7 @@ export interface CreateMatchRequest {
    */
   players: MatchPlayerPayload[];
   tournamentId: ObjectIdString;
-  admin: ObjectIdString;
-  officials: ObjectIdString[];
+  officials?: ObjectIdString[];
   matchType: MatchType;
   comment?: string;
 }
