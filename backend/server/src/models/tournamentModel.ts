@@ -1,5 +1,5 @@
 import mongoose, { Schema, type Document, type Types } from "mongoose";
-import { MatchPlayer, type Match } from "./matchModel";
+import { MatchPlayer } from "./matchModel";
 import { type User } from "./userModel";
 import type { ObjectIdString } from "./requestModel";
 
@@ -15,6 +15,7 @@ export interface UnsavedMatch {
   admin: Types.ObjectId | null;
   elapsedTime: number;
   timerStartedTimestamp: Date | null;
+  tournamentRound?: number;
 }
 
 export interface Tournament {

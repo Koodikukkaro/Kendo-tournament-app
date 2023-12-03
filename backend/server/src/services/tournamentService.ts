@@ -7,7 +7,7 @@ import {
 } from "../models/tournamentModel.js";
 import UserModel from "../models/userModel.js";
 import BadRequestError from "../errors/BadRequestError.js";
-import { type Types } from "mongoose";
+import { Types } from "mongoose";
 import MatchModel from "../models/matchModel.js";
 import { CreateTournamentRequest } from "../models/requestModel.js";
 
@@ -241,7 +241,8 @@ export class TournamentService {
         type: "playoff",
         admin: null,
         elapsedTime: 0,
-        timerStartedTimestamp: null
+        timerStartedTimestamp: null,
+        tournamentRound: 1
       });
     }
 
