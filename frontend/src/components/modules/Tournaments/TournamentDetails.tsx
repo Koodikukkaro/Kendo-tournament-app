@@ -6,7 +6,7 @@ import ErrorModal from "components/common/ErrorModal";
 import { type Tournament } from "types/models";
 import { useTournament } from "context/TournamentContext";
 import { useNavigate } from "react-router-dom";
-import { homeRoute } from "routes/Router";
+import routePaths from "routes/route-paths";
 
 const getTournamentComponent = (
   tournament: Tournament
@@ -33,7 +33,7 @@ const TournamentDetails: React.FC = (): React.ReactElement => {
       <ErrorModal
         open={true}
         onClose={() => {
-          navigate(homeRoute);
+          navigate(routePaths.homeRoute);
         }}
         errorMessage={`This tournament seems to be invalid. Contact ${tournament.organizerEmail} for more information about this tournament.`}
       />

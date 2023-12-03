@@ -18,8 +18,8 @@ import TournamentList from "components/modules/Tournaments/TournamentListing/Tou
 import { TournamentsProvider } from "context/TournamentsContext";
 import { TournamentProvider } from "context/TournamentContext";
 import RootRoute from "./RootRoute";
+import routePaths from "route-paths";
 
-export const homeRoute = "/tournaments";
 
 const routes = createRoutesFromElements(
   <Route element={<RootRoute />}>

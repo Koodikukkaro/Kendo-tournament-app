@@ -9,7 +9,7 @@ import {
 import { useTournaments } from "./TournamentsContext";
 import Loader from "components/common/Loader";
 import ErrorModal from "components/common/ErrorModal";
-import { homeRoute } from "routes/Router";
+import routePaths from "routes/route-paths";
 
 /*
  * Child provider for singular tournament components.
@@ -43,7 +43,7 @@ export const TournamentProvider = (): ReactElement => {
       <ErrorModal
         open={true}
         onClose={() => {
-          navigate(homeRoute);
+          navigate(routePaths.homeRoute);
         }}
         errorMessage={
           "No data was found for this tournament. Close this to go back to the previous view."

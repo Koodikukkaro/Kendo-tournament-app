@@ -12,7 +12,7 @@ import { useAuth } from "context/AuthContext";
 import Container from "@mui/material/Container";
 import { ArrowBack } from "@mui/icons-material";
 import { Button, Typography } from "@mui/material";
-import { homeRoute } from "routes/Router";
+import routePaths from "routes/route-paths";
 
 const Layout = (): ReactElement => {
   const { isAuthenticated } = useAuth();
@@ -28,7 +28,7 @@ const Layout = (): ReactElement => {
         settings={settings}
       />
       <Container className="app-container">
-        {pathname !== homeRoute && (
+        {pathname !== routePaths.homeRoute && (
           <Button
             id="back-button"
             onClick={() => {

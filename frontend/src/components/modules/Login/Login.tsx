@@ -14,7 +14,7 @@ import {
   TextFieldElement,
   useForm
 } from "react-hook-form-mui";
-import { homeRoute } from "routes/Router";
+import routePaths from "routes/route-paths";
 import Link from "@mui/material/Link";
 
 interface LoginFormData {
@@ -32,6 +32,7 @@ const LoginForm: React.FC = () => {
   const location = useLocation() as LocationState;
   const showToast = useToast();
   const { isAuthenticated, login } = useAuth();
+  const { homeRoute } = routePaths;
   const from = location.state?.from?.pathname ?? homeRoute;
 
   /* Runs on the initial render and checks if the user
