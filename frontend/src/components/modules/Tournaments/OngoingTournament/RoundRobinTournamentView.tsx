@@ -12,6 +12,19 @@ import {
   Button
 } from "@mui/material";
 import "react-tabs/style/react-tabs.css";
+import { Match, MatchPlayer, User } from "types/models";
+import { useParams } from "react-router-dom";
+import { useAuth } from "context/AuthContext";
+import { useTournament } from "context/TournamentContext";
+import api from "api/axios";
+
+
+interface tournamentPlayer {
+  name: string;
+  wins: number;
+  losses: number;
+  points: number;
+}
 
 interface NamesState {
   player1: string;
@@ -25,23 +38,41 @@ const RoundRobinTournamentView: React.FC = () => {
     { player1: "", player2: "" }
   ]);
   const [tableData, setTableData] = useState<string[][]>([]);
+  
+  const { matchId } = useParams();
+  const { userId } = useAuth();
+  let officialId: string = "";
+  let winner: string | undefined;
+  const tournament = useTournament();
+  let players: tournamentPlayer[] = [];
 
   useEffect(() => {
     const fetchMatchData = async (): Promise<void> => {
-      /* TODO: Actual API call to get the names, wins, losses
-        and points for every attending player.
-        Check which matches are upcoming and which ongoing. */
-      try {
-        const mappedMatchPlayers: NamesState[] = [
-          { player1: "Jukka", player2: "Matti" },
-          { player1: "Pekka", player2: "Katti" }
-        ];
-        setNamePairs(mappedMatchPlayers);
-        /* TODO: This needs a counter to actually count the number of attendees */
-        setNumberOfAttendees(4);
-      } catch (error) {
-        console.error("Error fetching match data", error);
+      const matches: Match[] = tournament.matchSchedule;
+      const playersIds: string[] = tournament.players;
+      if (playersIds.length > 0) {
+        for (let i = 0; i < playersIds.length; i++) {
+          players[i].name = (await api.user.details(playersIds[i])).firstName;
+        }
       }
+      const mappedMatchPlayers: NamesState[] = [];
+      if (players.length > 0) {
+        for (let i = 0; i < players.length; i += 2) {
+          const nameState: NamesState = {
+            player1: players[i].name || "",
+            player2: players[i + 1].name || "",
+          };
+          mappedMatchPlayers.push(nameState);
+        }
+        setNamePairs(mappedMatchPlayers);
+        setNumberOfAttendees(players.length);
+        /* TODO: Get the wins, losses
+          and points for every attending player.
+          Check which matches are upcoming and which ongoing. */
+        
+      }
+      
+      
     };
 
     void fetchMatchData();
