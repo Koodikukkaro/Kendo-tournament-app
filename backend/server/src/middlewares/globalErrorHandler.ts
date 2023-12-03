@@ -29,6 +29,7 @@ export const globalErrorHandlerMiddleware = (
 
   if (err instanceof ValidateError) {
     const { fields } = err;
+    // TODO: (just a logger development reminder)
     return res
       .status(400)
       .send({ errors: [{ message: "Validation error", context: fields }] });

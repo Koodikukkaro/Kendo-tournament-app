@@ -24,14 +24,12 @@ const logger = createLogger({
       maxFiles: 5
     })
   ]
+  // handleExceptions: true,
   // exceptionHandlers: [new winston.transports.Console()],
+  // format.errors({ stack: true })
   // Winston will exit after logging an uncaughtException, unless
   // exitOnError: false,
   // rejectionHandlers: [new winston.transports.Console()],
-  // format: winston.format.printf((info) => `${info.message}`)
-  // format: format.combine(
-  //   // format.errors({ stack: true })
-  // )
   // format: consoleFormat
   // format: fileFormat
 });

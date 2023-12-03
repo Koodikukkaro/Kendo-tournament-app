@@ -3,6 +3,7 @@ import morgan from "morgan";
 import { ValidateError } from "tsoa";
 import logger from "../utility/logger";
 
+// Might be preferable to get rid of morgan
 // Can't use "dev" because of winston file logging
 export const httpLogger = morgan("tiny", {
   stream: {
@@ -10,7 +11,8 @@ export const httpLogger = morgan("tiny", {
       logger.http(message.trim());
     }
   },
-  // errorLogger logs errors
+  // errorLogger logs errors. However, errorLogger may not be able
+  // to acquire the proper status code
   skip: (req: Request, res: Response) => res.statusCode >= 400
 });
 
@@ -22,17 +24,12 @@ export const errorLogger = (
 ): void => {
   if (error instanceof ValidateError) {
     logger.warn(error.name, { error, requestPath: req.path });
-    // logger.warn(error.name, {
-    //   requestPath: req.path,
-    //   errorFields: error.fields,
-    //   statusCode: error.status
-    // });
+
     next(error);
     return;
   }
 
   logger.error(error.name, { error, requestPath: req.path });
-  // logger.error(error.name { errorFields: error.fields });
 
   next(error);
 };
