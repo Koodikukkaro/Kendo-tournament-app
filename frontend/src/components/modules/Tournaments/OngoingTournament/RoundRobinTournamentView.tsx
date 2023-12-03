@@ -38,6 +38,8 @@ const RoundRobinTournamentView: React.FC = () => {
     { player1: "", player2: "" }
   ]);
   const [tableData, setTableData] = useState<string[][]>([]);
+  const [ongoingMatchElements, setOngoingMatchElements] = useState<ReactNode[]>([]);
+  const [upcomingMatchElements, setUpcomingMatchElements] = useState<ReactNode[]>([]);
   
   const { matchId } = useParams();
   const { userId } = useAuth();
@@ -45,10 +47,11 @@ const RoundRobinTournamentView: React.FC = () => {
   let winner: string | undefined;
   const tournament = useTournament();
   let players: tournamentPlayer[] = [];
+  let ongoingMatches: Match[] = [];
+  let upcomingMatches: Match[] = [];
 
   useEffect(() => {
-    const fetchMatchData = async (): Promise<void> => {
-      const matches: Match[] = tournament.matchSchedule;
+    const getPlayerNames = async (): Promise<void> => {
       const playersIds: string[] = tournament.players;
       if (playersIds.length > 0) {
         for (let i = 0; i < playersIds.length; i++) {
@@ -67,16 +70,40 @@ const RoundRobinTournamentView: React.FC = () => {
         setNamePairs(mappedMatchPlayers);
         setNumberOfAttendees(players.length);
         /* TODO: Get the wins, losses
-          and points for every attending player.
-          Check which matches are upcoming and which ongoing. */
+          and points for every attending player. */
         
       }
-      
-      
     };
 
-    void fetchMatchData();
-  }, []);
+    void getPlayerNames();
+
+    const sortMatches = (): void => {
+      const matches: Match[] = tournament.matchSchedule;
+      const currentDate = new Date();
+    
+      if (matches.length > 0) {
+        const sortedMatches = matches
+          .filter((match) => match.startTimestamp !== undefined)
+          .sort((a, b) => {
+            const dateA = a.startTimestamp as Date;
+            const dateB = b.startTimestamp as Date;
+            return dateB.getTime() - dateA.getTime();
+          });
+    
+        // Sort matches into ongoing and upcoming
+        ongoingMatches = sortedMatches.filter(
+          (match) => match.startTimestamp && match.startTimestamp <= currentDate
+        );
+    
+        upcomingMatches = sortedMatches.filter(
+          (match) => match.startTimestamp && match.startTimestamp > currentDate
+        );
+      }
+    };
+    
+  void sortMatches();
+
+}, []);
 
   useEffect(() => {
     const flattenedNames: string[] = namePairs.flatMap((pair) => [
@@ -122,6 +149,43 @@ const RoundRobinTournamentView: React.FC = () => {
     );
   };
 
+  useEffect(() => {
+    const fetchAndRenderMatches = async () => {
+      const ongoingElements = [];
+      const upcomingElements = [];
+
+      for (const [index, match] of ongoingMatches.entries()) {
+        const player1Details = await api.user.details(match.players[0].id);
+        const player2Details = await api.user.details(match.players[1].id);
+        ongoingElements.push(
+          <div style={{ marginBottom: "10px" }} key={index}>
+            <Button variant="contained">
+              {`${player1Details.firstName} - ${player2Details.firstName}`}
+            </Button>
+          </div>
+        );
+      }
+
+      for (const [index, match] of upcomingMatches.entries()) {
+        const player1Details = await api.user.details(match.players[0].id);
+        const player2Details = await api.user.details(match.players[1].id);
+        upcomingElements.push(
+          <div style={{ marginBottom: "10px" }} key={index}>
+            <Button variant="contained">
+              {`${player1Details.firstName} - ${player2Details.firstName}`}
+            </Button>
+          </div>
+        );
+      }
+
+      setOngoingMatchElements(ongoingElements);
+      setUpcomingMatchElements(upcomingElements);
+    };
+
+    void fetchAndRenderMatches();
+  }, [ongoingMatches, upcomingMatches]);
+  
+
   return (
     <>
       <Tabs
@@ -143,19 +207,12 @@ const RoundRobinTournamentView: React.FC = () => {
           <div>
             <Typography variant="h5">Ongoing matches:</Typography>
           </div>
-          <div>
-            {namePairs.map((match, index) => (
-              <div style={{ marginBottom: "10px" }} key={index}>
-                <Button variant="contained">
-                  {`${match.player1} - ${match.player2}`}
-                </Button>
-              </div>
-            ))}
-          </div>
+          <div>{ongoingMatchElements}</div>
+
           <div>
             <Typography variant="h5">Upcoming matches:</Typography>
           </div>
-          <div>{/* Add matches here */}</div>
+          <div>{upcomingMatchElements}</div>
         </TabPanel>
       </Tabs>
     </>
