@@ -3,10 +3,11 @@ import morgan from "morgan";
 import { ValidateError } from "tsoa";
 import logger from "../utility/logger";
 
+// Can't use "dev" because of winston file logging
 export const httpLogger = morgan("tiny", {
   stream: {
     write: (message) => {
-      logger.info(message.trim());
+      logger.http(message.trim());
     }
   },
   // errorLogger logs errors
@@ -20,18 +21,18 @@ export const errorLogger = (
   next: NextFunction
 ): void => {
   if (error instanceof ValidateError) {
-    // logger.warn(error.message, { error });
-    // logger.warn(error);
-    // logger.warn(error.name, error.fields);
-    logger.warn(error.name, {
-      requestPath: req.path,
-      errorFields: error.fields
-    });
+    logger.warn(error.name, { error, requestPath: req.path });
+    // logger.warn(error.name, {
+    //   requestPath: req.path,
+    //   errorFields: error.fields,
+    //   statusCode: error.status
+    // });
     next(error);
     return;
   }
 
-  logger.error(error.message, { error });
+  logger.error(error.name, { error, requestPath: req.path });
+  // logger.error(error.name { errorFields: error.fields });
 
   next(error);
 };

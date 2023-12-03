@@ -29,7 +29,6 @@ export const globalErrorHandlerMiddleware = (
 
   if (err instanceof ValidateError) {
     const { fields } = err;
-    // console.warn(`Caught Validation Error for ${req.path}:`, err.fields);
     return res
       .status(400)
       .send({ errors: [{ message: "Validation error", context: fields }] });
