@@ -31,11 +31,11 @@ interface Props {
   navigationItems: NavigationData;
 }
 
-const businessName = "KendoApp";
+const APP_NAME = "KendoApp";
 
 const NavigationBar: React.FC<Props> = (props) => {
   const { window, navigationItems } = props;
-  const { logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
   const container =
@@ -89,8 +89,10 @@ const NavigationBar: React.FC<Props> = (props) => {
                   </Button>
                 ))}
               </Box>
-              <LogoButton logoName={businessName} />
-              <NavigationUserMenu settings={props.settings} />
+              <LogoButton logoName={APP_NAME} />
+              {isAuthenticated ? (
+                <NavigationUserMenu settings={props.settings} />
+              ) : null}
             </Toolbar>
           </Container>
         </AppBar>
@@ -101,7 +103,7 @@ const NavigationBar: React.FC<Props> = (props) => {
         toggleDrawer={toggleDrawer}
         drawerIsOpen={openDrawer}
         navigationItems={navigationItems}
-        drawerTitle={businessName}
+        drawerTitle={APP_NAME}
       />
     </>
   );
