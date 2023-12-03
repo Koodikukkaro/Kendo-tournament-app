@@ -25,6 +25,7 @@ export interface Match {
   players: MatchPlayer[];
   winner?: Types.ObjectId;
   comment?: string;
+  tournamentId: Types.ObjectId;
   admin: Types.ObjectId;
   officials?: Types.ObjectId;
 }
@@ -71,6 +72,10 @@ const matchSchema = new Schema<Match>(
       required: true
     },
     comment: { type: String, required: false },
+    tournamentId: {
+      type: Schema.Types.ObjectId,
+      ref: "Tournament"
+    },
     admin: {
       type: Schema.Types.ObjectId
     },

@@ -86,6 +86,7 @@ export interface CreateMatchRequest {
    * @maxItems 2 Two players are required
    */
   players: MatchPlayerPayload[];
+  tournamentId: ObjectIdString;
   admin: ObjectIdString;
   officials: ObjectIdString[];
   matchType: MatchType;
