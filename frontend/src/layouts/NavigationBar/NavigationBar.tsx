@@ -23,6 +23,7 @@ import LogoButton from "./LogoButton";
 // -,- in the menu and the corresponding link
 
 import type { NavigationData, NavigationItem } from "./navigation-bar";
+import routePaths from "routes/route-paths";
 import { useAuth } from "context/AuthContext";
 
 interface Props {
@@ -49,7 +50,7 @@ const NavigationBar: React.FC<Props> = (props) => {
   const handleButtonClick = async (
     navigationItem: NavigationItem
   ): Promise<void> => {
-    if (navigationItem.link === "/logout") {
+    if (navigationItem.link === routePaths.logout) {
       await logout();
     }
 

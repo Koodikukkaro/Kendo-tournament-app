@@ -1,6 +1,7 @@
 import React from "react";
 import { useAuth } from "context/AuthContext";
 import { ProtectedRoute } from "routes/ProtectedRoute";
+import routePaths from "routes/route-paths";
 
 export interface AuthenticationGuardProps {
   guardType?: "authenticated" | "unauthenticated";
@@ -21,7 +22,10 @@ export const AuthenticationGuard: React.FC<AuthenticationGuardProps> = ({
 
   return (
     <ProtectedRoute
-      redirectPath={redirectPath ?? (isAuthenticated ? "/" : "/login")}
+      redirectPath={
+        redirectPath ??
+        (isAuthenticated ? routePaths.homeRoute : routePaths.login)
+      }
       isAllowed={isAllowed}
       {...props}
     />
