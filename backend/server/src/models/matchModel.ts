@@ -27,6 +27,7 @@ export interface Match {
   comment?: string;
   admin: Types.ObjectId;
   officials?: Types.ObjectId;
+  tournamentRound ?: number;
 }
 
 const pointSchema = new Schema<MatchPoint>(
@@ -77,6 +78,9 @@ const matchSchema = new Schema<Match>(
     officials: {
       type: [Schema.Types.ObjectId],
       default: []
+    },
+    tournamentRound: {
+      type: Number, required: false, default: 1
     }
   },
   {

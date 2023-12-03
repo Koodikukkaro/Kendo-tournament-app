@@ -1,5 +1,5 @@
 import mongoose, { Schema, type Document, Types } from "mongoose";
-import { type MatchPlayer, type Match } from "./matchModel";
+import { type MatchPlayer } from "./matchModel";
 
 export enum TournamentType {
   RoundRobin = "Round Robin",
@@ -13,6 +13,7 @@ export interface UnsavedMatch {
   admin: Types.ObjectId | null;
   elapsedTime: number;
   timerStartedTimestamp: Date | null;
+  tournamentRound?: number;
 }
 
 export interface Tournament {
