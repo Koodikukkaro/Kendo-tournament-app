@@ -1,5 +1,5 @@
 import mongoose, { Schema, type Document, Types } from "mongoose";
-import { type MatchPlayer } from "./matchModel";
+import { type MatchPlayer, Match } from "./matchModel";
 
 export enum TournamentType {
   RoundRobin = "Round Robin",

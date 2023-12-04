@@ -210,18 +210,15 @@ export class MatchService {
   ): Promise<void> {
     const tournament = await TournamentModel.findOne({
       matchSchedule: matchId
-    })
-      .populate({
-        path: "matchSchedule",
-        model: "Match"
-      })
-      .exec();
+    }).exec();
 
     if (tournament?.tournamentType !== TournamentType.Playoff) {
       return;
     }
 
-    const playedMatches = tournament.matchSchedule as unknown as Match[];
+    const playedMatches = await MatchModel.find({
+      _id: { $in: tournament.matchSchedule }
+    }).exec();
 
     // Find the current round from the match
     const currentMatch = playedMatches.find((match) =>
@@ -234,6 +231,7 @@ export class MatchService {
     }
     let currentRound = currentMatch.tournamentRound;
     if (currentRound === undefined) {
+      // this will never happen.
       currentRound = 1;
     }
     const nextRound = currentRound + 1;
