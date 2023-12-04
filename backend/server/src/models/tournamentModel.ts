@@ -28,7 +28,7 @@ export interface Tournament {
   organizerEmail?: string;
   organizerPhone?: string;
   maxPlayers: number;
-  players: (Types.ObjectId | User)[];
+  players: Array<Types.ObjectId | User>;
   matchSchedule: Match[];
 }
 

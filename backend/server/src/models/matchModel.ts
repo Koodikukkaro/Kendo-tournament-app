@@ -23,7 +23,7 @@ export interface Match {
   elapsedTime: number;
   endTimestamp?: Date;
   type: MatchType;
-  players: (Types.ObjectId | MatchPlayer)[];
+  players: Array<Types.ObjectId | MatchPlayer>;
   winner?: Types.ObjectId;
   comment?: string;
   tournamentId: Types.ObjectId | Tournament;

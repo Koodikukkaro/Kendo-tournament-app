@@ -12,16 +12,14 @@ import {
   Query
 } from "tsoa";
 import { TournamentService } from "../services/tournamentService.js";
-import {
-  type Tournament,
-  SignupForTournamentRequest,
-  UnsavedMatch
-} from "../models/tournamentModel.js";
+import { UnsavedMatch } from "../models/tournamentModel.js";
+import type { Tournament } from "../models/tournamentModel.js";
 import {
   CreateTournamentRequest,
-  ObjectIdString
+  ObjectIdString,
+  SignupForTournamentRequest
 } from "../models/requestModel.js";
-import { type JwtPayload } from "jsonwebtoken";
+import type { JwtPayload } from "jsonwebtoken";
 import type * as express from "express";
 
 @Route("tournaments")
@@ -69,7 +67,6 @@ export class TournamentController extends Controller {
       requestBody.playerId
     );
   }
-
 
   @Security("jwt")
   @Put("{tournamentId}/manualSchedule")

@@ -9,7 +9,7 @@ import UserModel from "../models/userModel.js";
 import BadRequestError from "../errors/BadRequestError.js";
 import { type Types } from "mongoose";
 import MatchModel from "../models/matchModel.js";
-import { CreateTournamentRequest } from "../models/requestModel.js";
+import { type CreateTournamentRequest } from "../models/requestModel.js";
 
 export class TournamentService {
   public async getTournamentById(id: string): Promise<Tournament> {
@@ -194,7 +194,7 @@ export class TournamentService {
     newPlayer: Types.ObjectId
   ): Promise<Types.ObjectId[]> {
     let matches: UnsavedMatch[] = [];
-    switch (tournament.tournamentType) {
+    switch (tournament.type) {
       case TournamentType.RoundRobin:
         matches = this.generateRoundRobinSchedule(
           tournament.players,

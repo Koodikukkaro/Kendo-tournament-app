@@ -98,9 +98,17 @@ export interface AddPointRequest {
   comment?: string;
 }
 
-export type CreateTournamentRequest = Omit<
+export type CreateTournamentRequest = Pick<
   Tournament,
-  "id" | "creator" | "players"
+  | "name"
+  | "location"
+  | "startDate"
+  | "endDate"
+  | "type"
+  | "maxPlayers"
+  | "organizerEmail"
+  | "organizerPhone"
+  | "description"
 > & {
   differentOrganizer: boolean;
 };
