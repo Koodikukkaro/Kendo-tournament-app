@@ -47,8 +47,8 @@ const tournamentSchema = new Schema<Tournament & Document>(
       required: true
     },
     maxPlayers: { type: Number, required: true },
-    players: [{ type: Types.ObjectId, ref: 'User' }],
-    matchSchedule: [{ type: Types.ObjectId, ref: 'Match' }], // Reference to Match documents
+    players: [{ type: Types.ObjectId, ref: "User" }],
+    matchSchedule: [{ type: Types.ObjectId, ref: "Match" }], // Reference to Match documents
     organizerEmail: { type: String },
     organizerPhone: { type: String }
   },
