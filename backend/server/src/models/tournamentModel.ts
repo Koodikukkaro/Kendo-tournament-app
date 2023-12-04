@@ -1,4 +1,4 @@
-import mongoose, { Schema, type Document, type Types } from "mongoose";
+import mongoose, { Schema, type Document, Types } from "mongoose";
 import { MatchPlayer } from "./matchModel";
 import { type User } from "./userModel";
 import type { ObjectIdString } from "./requestModel";
@@ -50,14 +50,14 @@ const tournamentSchema = new Schema<Tournament & Document>(
       enum: Object.values(TournamentType),
       required: true
     },
-    players: { type: [String], default: [] },
-    matchSchedule: [{ type: Schema.Types.ObjectId, ref: "Match" }], // Reference to Match documents
     maxPlayers: { type: Number, required: true },
     creator: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: "User"
     },
+    players: [{ type: Types.ObjectId, ref: "User" }],
+    matchSchedule: [{ type: Types.ObjectId, ref: "Match" }], // Reference to Match documents
     organizerEmail: { type: String },
     organizerPhone: { type: String }
   },

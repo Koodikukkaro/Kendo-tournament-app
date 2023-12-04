@@ -7,7 +7,7 @@ import {
 } from "../models/tournamentModel.js";
 import UserModel from "../models/userModel.js";
 import BadRequestError from "../errors/BadRequestError.js";
-import { Types } from "mongoose";
+import { type Types } from "mongoose";
 import MatchModel from "../models/matchModel.js";
 import { CreateTournamentRequest } from "../models/requestModel.js";
 
@@ -118,7 +118,10 @@ export class TournamentService {
     await tournament.save();
 
     if (tournament.players.length > 1) {
-      const newMatchIds = await this.generateTournamentSchedule(tournament, player.id);
+      const newMatchIds = await this.generateTournamentSchedule(
+        tournament,
+        player.id
+      );
       if (newMatchIds.length !== 0) {
         tournament.matchSchedule.push(...newMatchIds);
         await tournament.save();
@@ -172,16 +175,22 @@ export class TournamentService {
 
   private async generateTournamentSchedule(
     tournament: Tournament,
-    newPlayer: Types.ObjectId,
+    newPlayer: Types.ObjectId
   ): Promise<Types.ObjectId[]> {
     let matches: UnsavedMatch[] = [];
 
     switch (tournament.type) {
       case TournamentType.RoundRobin:
-        matches = this.generateRoundRobinSchedule(tournament.players, newPlayer);
+        matches = this.generateRoundRobinSchedule(
+          tournament.players,
+          newPlayer
+        );
         break;
       case TournamentType.Playoff:
-        matches = await this.generatePlayoffSchedule(tournament.players, tournament.matchSchedule);
+        matches = await this.generatePlayoffSchedule(
+          tournament.players,
+          tournament.matchSchedule
+        );
         break;
     }
 
@@ -190,13 +199,12 @@ export class TournamentService {
     }
 
     const matchDocuments = await MatchModel.insertMany(matches);
-    return matchDocuments.map(doc => doc._id);
+    return matchDocuments.map((doc) => doc._id);
   }
-
 
   private generateRoundRobinSchedule(
     playerIds: Types.ObjectId[],
-    newPlayer: Types.ObjectId,
+    newPlayer: Types.ObjectId
   ): UnsavedMatch[] {
     const matches: UnsavedMatch[] = [];
     for (let i = 0; i < playerIds.length; i++) {
@@ -218,7 +226,7 @@ export class TournamentService {
 
   private async generatePlayoffSchedule(
     playerIds: Types.ObjectId[],
-    previousMatches: Types.ObjectId[],
+    previousMatches: Types.ObjectId[]
   ): Promise<UnsavedMatch[]> {
     const matches: UnsavedMatch[] = [];
     const playerSet = new Set<Types.ObjectId>();
@@ -228,9 +236,9 @@ export class TournamentService {
     }).exec();
 
     for (const matchData of matchDatas) {
-      matchData.players.forEach(player => playerSet.add(player.id));
+      matchData.players.forEach((player) => playerSet.add(player.id));
     }
-    const extraPlayers = playerIds.filter(id => !playerSet.has(id.toString()));
+    const extraPlayers = playerIds.filter((id) => !playerSet.has(id));
 
     if (extraPlayers.length === 2) {
       matches.push({
@@ -248,7 +256,6 @@ export class TournamentService {
 
     return matches;
   }
-
 
   private isPowerOfTwo(n: number): boolean {
     if (n <= 0) {

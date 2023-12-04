@@ -9,7 +9,7 @@ import {
   type CreateMatchRequest,
   type AddPointRequest
 } from "../models/requestModel.js";
-import { Types } from "mongoose";
+import { type Types } from "mongoose";
 import { TournamentModel, TournamentType } from "../models/tournamentModel.js";
 
 // Note by Samuel:
@@ -203,46 +203,63 @@ export class MatchService {
     }
   }
 
-  private async createPlayoffSchedule(matchId: Types.ObjectId, winnerId: Types.ObjectId): Promise<void> {
+  private async createPlayoffSchedule(
+    matchId: Types.ObjectId,
+    winnerId: Types.ObjectId
+  ): Promise<void> {
     const tournament = await TournamentModel.findOne({
       matchSchedule: matchId
-    }).populate({
-      path: 'matchSchedule',
-      model: 'Match'
-    }).exec();
+    })
+      .populate({
+        path: "matchSchedule",
+        model: "Match"
+      })
+      .exec();
 
     if (tournament?.tournamentType !== TournamentType.Playoff) {
       return;
     }
 
-    const playedMatches = tournament.matchSchedule;
+    const playedMatches = tournament.matchSchedule as unknown as Match[];
 
     // Find the current round from the match
-    const currentMatch = playedMatches.find(match => match._id.equals(matchId));
-    if (!currentMatch) {
+    const currentMatch = playedMatches.find((match) =>
+      match.id.equals(matchId)
+    );
+    if (currentMatch === null || currentMatch === undefined) {
       throw new NotFoundError({
         message: "Match not found in tournament schedule"
       });
     }
-    const currentRound = currentMatch.tournamentRound;
+    let currentRound = currentMatch.tournamentRound;
+    if (currentRound === undefined) {
+      currentRound = 1;
+    }
     const nextRound = currentRound + 1;
 
     // Filter for winners in the current round
     const winners = playedMatches
-      .filter(match => match.tournamentRound === currentRound && match.winner)
-      .map(match => match.winner);
+      .filter((match) => match.tournamentRound === currentRound && match.winner)
+      .map((match) => match.winner)
+      .filter((winner): winner is Types.ObjectId => winner != null);
 
     // Find eligible winners who don't have a match in the next round
-    const eligibleWinners = winners.filter(winner => {
-      return !playedMatches.some(match =>
-        match.tournamentRound === nextRound &&
-        match.players.some(player => player.id.toString() == winner.toString())
+    const eligibleWinners = winners.filter((winner) => {
+      if (!winner) {
+        return false;
+      }
+      return !playedMatches.some(
+        (match) =>
+          match.tournamentRound === nextRound &&
+          match.players.some(
+            (player) => player.id.toString() === winner.toString()
+          )
       );
     });
 
     // Pair current winner with eligible winners for the next round
     for (const pairWithWinnerId of eligibleWinners) {
-      if (!pairWithWinnerId.equals(winnerId)) {
+      if (pairWithWinnerId && !pairWithWinnerId.equals(winnerId)) {
         // Create a new match
         const newMatch = {
           players: [
@@ -263,7 +280,9 @@ export class MatchService {
 
     // Save the tournament if new matches were added
     if (eligibleWinners.length > 0) {
-      await TournamentModel.findByIdAndUpdate(tournament._id, { matchSchedule: tournament.matchSchedule });
+      await TournamentModel.findByIdAndUpdate(tournament._id, {
+        matchSchedule: tournament.matchSchedule
+      });
     }
   }
 }

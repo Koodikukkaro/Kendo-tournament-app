@@ -27,7 +27,7 @@ export interface Match {
   comment?: string;
   tournamentId: Types.ObjectId;
   officials: Types.ObjectId[];
-  tournamentRound ?: number;
+  tournamentRound?: number;
 }
 
 const pointSchema = new Schema<MatchPoint>(
@@ -81,7 +81,9 @@ const matchSchema = new Schema<Match>(
       default: []
     },
     tournamentRound: {
-      type: Number, required: false, default: 1
+      type: Number,
+      required: false,
+      default: 1
     }
   },
   {
