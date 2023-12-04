@@ -3,10 +3,12 @@ import jwt, { type JwtPayload, type VerifyErrors } from "jsonwebtoken";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 import ForbiddenError from "../errors/ForbiddenError.js";
 import config from "../utility/config.js";
+import { type ObjectIdString } from "../models/requestModel.js";
 
 // Redeclare the jsonwebtoken module with an extended Payload
 declare module "jsonwebtoken" {
   export interface JwtPayload {
+    id: ObjectIdString;
     adminTournaments: string[];
     officialTournaments: string[];
   }

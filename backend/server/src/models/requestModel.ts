@@ -1,4 +1,5 @@
 import type { MatchType, PlayerColor, PointType } from "./matchModel.js";
+import type { Tournament } from "./tournamentModel.js";
 
 /**
  * MongoDB Object ID.
@@ -22,7 +23,7 @@ export interface RegisterRequest {
   password: string;
   /**
    * @example "KendoMaster123"
-   * @pattern ^(?=.{4,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._åäöÅÄÖ]+(?<![_.])$ Username invalid. Must be 4-20 characters long, start and end with a letter or number, and contain only letters, numbers, dots, or underscores with no consecutive dots or underscores.
+   * @pattern ^$|^(?=.{4,20}$)(?![_.])(?!.*[_.]{2})[a-zA-Z0-9._åäöÅÄÖ]+(?<![_.])$ Username invalid. Must be 4-20 characters long, start and end with a letter or number, and contain only letters, numbers, dots, or underscores with no consecutive dots or underscores.
    */
   userName?: string;
   /**
@@ -39,9 +40,13 @@ export interface RegisterRequest {
    */
   lastName: string;
   /**
-   * @example "FIN
+   * @example "FIN"
    */
-  nationality: string;
+  nationality?: string;
+  /**
+   * @example "sportId123"
+   */
+  suomisportId?: string;
   inNationalTeam: boolean;
   /**
    * @example "Seinäjoki Kendo club"
@@ -81,8 +86,8 @@ export interface CreateMatchRequest {
    * @maxItems 2 Two players are required
    */
   players: MatchPlayerPayload[];
-  admin: ObjectIdString;
-  officials: ObjectIdString[];
+  tournamentId: ObjectIdString;
+  officials?: ObjectIdString[];
   matchType: MatchType;
   comment?: string;
 }
@@ -92,3 +97,10 @@ export interface AddPointRequest {
   pointColor: PlayerColor;
   comment?: string;
 }
+
+export type CreateTournamentRequest = Omit<
+  Tournament,
+  "id" | "creator" | "players"
+> & {
+  differentOrganizer: boolean;
+};

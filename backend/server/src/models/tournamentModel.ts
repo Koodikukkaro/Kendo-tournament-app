@@ -1,5 +1,7 @@
-import mongoose, { Schema, type Document, Types } from "mongoose";
-import { type MatchPlayer, Match } from "./matchModel";
+import mongoose, { Schema, type Document, type Types } from "mongoose";
+import { MatchPlayer, type Match } from "./matchModel";
+import { type User } from "./userModel";
+import type { ObjectIdString } from "./requestModel";
 
 export enum TournamentType {
   RoundRobin = "Round Robin",
@@ -13,49 +15,61 @@ export interface UnsavedMatch {
   admin: Types.ObjectId | null;
   elapsedTime: number;
   timerStartedTimestamp: Date | null;
-  tournamentRound?: number;
 }
 
 export interface Tournament {
-  tournamentName: string;
+  id: Types.ObjectId;
+  name: string;
   location: string;
   startDate: string;
   endDate: string;
   description: string;
-  tournamentType: TournamentType;
+  type: TournamentType;
+  creator: Types.ObjectId | User;
   organizerEmail?: string;
   organizerPhone?: string;
   maxPlayers: number;
-  players: Types.ObjectId[];
-  matchSchedule: Types.ObjectId[];
+  players: Types.ObjectId[]; // Array of player identifiers (userID from user objects)
+  matchSchedule: Match[];
 }
 
-export interface AddPlayerRequest {
-  playerId: Types.ObjectId;
+export interface SignupForTournamentRequest {
+  playerId: ObjectIdString;
 }
 
 const tournamentSchema = new Schema<Tournament & Document>(
   {
-    tournamentName: { type: String, required: true },
+    name: { type: String, required: true },
     location: { type: String, required: true },
-    startDate: { type: String },
+    startDate: { type: String, required: true },
     endDate: { type: String, required: true },
     description: { type: String, required: true },
-    tournamentType: {
+    type: {
       type: String,
       enum: Object.values(TournamentType),
       required: true
     },
+    players: { type: [String], default: [] },
+    matchSchedule: [{ type: Schema.Types.ObjectId, ref: "Match" }], // Reference to Match documents
     maxPlayers: { type: Number, required: true },
-    players: [{ type: Types.ObjectId, ref: "User" }],
-    matchSchedule: [{ type: Types.ObjectId, ref: "Match" }], // Reference to Match documents
+    creator: {
+      type: Schema.Types.ObjectId,
+      required: true,
+      ref: "User"
+    },
     organizerEmail: { type: String },
     organizerPhone: { type: String }
   },
   {
     timestamps: true,
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true }
+    toObject: {
+      virtuals: true,
+      versionKey: false,
+      transform(_doc, ret, _options) {
+        ret.id = ret._id;
+        delete ret._id;
+      }
+    }
   }
 );
 

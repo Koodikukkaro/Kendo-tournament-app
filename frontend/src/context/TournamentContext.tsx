@@ -1,0 +1,58 @@
+import React, { type ReactElement, useEffect, useState } from "react";
+import { type Tournament } from "types/models";
+import {
+  Outlet,
+  useNavigate,
+  useOutletContext,
+  useParams
+} from "react-router-dom";
+import { useTournaments } from "./TournamentsContext";
+import Loader from "components/common/Loader";
+import ErrorModal from "components/common/ErrorModal";
+import { homeRoute } from "routes/Router";
+
+/*
+ * Child provider for singular tournament components.
+ * Acts as a provider for searching the tournament from the parent 'TournamentsProvider',
+ * and passing it to the child component(s).
+ * */
+export const TournamentProvider = (): ReactElement => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { upcoming, ongoing, isLoading, isError } = useTournaments();
+  const [value, setValue] = useState<Tournament | undefined>();
+  const [isInitialRender, setIsInitialRender] = useState(true);
+
+  useEffect(() => {
+    setValue(
+      upcoming.find((x) => x.id === id) ?? ongoing.find((x) => x.id === id)
+    );
+    setIsInitialRender(false);
+  }, [isLoading, upcoming, ongoing, id]);
+
+  if (isLoading || isInitialRender) {
+    return <Loader />;
+  }
+
+  /* If there is no error and no tournament found for the id in the route,
+   * render an error modal and navigate back to the tournaments page.
+   * We only render child components if there is valid data to display.
+   */
+  if (!isError && value === undefined) {
+    return (
+      <ErrorModal
+        open={true}
+        onClose={() => {
+          navigate(homeRoute);
+        }}
+        errorMessage={
+          "No data was found for this tournament. Close this to go back to the previous view."
+        }
+      />
+    );
+  }
+
+  return <Outlet context={value} />;
+};
+
+export const useTournament = (): Tournament => useOutletContext<Tournament>();

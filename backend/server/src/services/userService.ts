@@ -25,7 +25,10 @@ export class UserService {
       });
     }
 
-    const existingUser = await UserModel.findOne({ email });
+    const existingUser = await UserModel.findOne({ email })
+      .collation({ locale: "en", strength: 2 })
+      .exec();
+
     if (existingUser != null) {
       throw new BadRequestError({
         message: "Email for this user already exists"

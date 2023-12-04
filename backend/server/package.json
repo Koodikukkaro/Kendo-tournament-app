@@ -6,7 +6,7 @@
   "main": "index.ts",
   "scripts": {
     "build": "tsoa spec-and-routes && tsc",
-    "start": "node build/src/index.js",
+    "start": "tsx src/index.ts",
     "dev": "concurrently \"nodemon\" \"nodemon -x tsoa spec-and-routes\"",
     "test": "ts-mocha test/*.ts",
     "lint": "eslint './src/**/*.ts' --cache --cache-strategy content ",

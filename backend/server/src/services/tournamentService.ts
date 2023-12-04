@@ -9,6 +9,7 @@ import UserModel from "../models/userModel.js";
 import BadRequestError from "../errors/BadRequestError.js";
 import { type Types } from "mongoose";
 import MatchModel from "../models/matchModel.js";
+import { CreateTournamentRequest } from "../models/requestModel.js";
 
 export class TournamentService {
   public async getTournamentById(id: string): Promise<Tournament> {
@@ -29,18 +30,45 @@ export class TournamentService {
     return await tournament.toObject();
   }
 
+  public async getAllTournaments(limit: number): Promise<Tournament[]> {
+    const tournaments = await TournamentModel.find().limit(limit).exec();
+
+    if (tournaments === null || tournaments === undefined) {
+      throw new NotFoundError({
+        message: "No tournaments found"
+      });
+    }
+
+    return tournaments.map((tournament) => tournament.toObject());
+  }
+
   public async createTournament(
-    tournamentData: Tournament
+    tournamentData: CreateTournamentRequest,
+    creator: string
   ): Promise<Tournament> {
+    if (!tournamentData.differentOrganizer) {
+      const organizer = await UserModel.findById(creator).exec();
+
+      if (organizer === null) {
+        // This should never throw due to the endpoint requiring authentication.
+        throw new NotFoundError({
+          message: "No user data found for the organizer."
+        });
+      }
+
+      tournamentData.organizerEmail = organizer.email;
+      tournamentData.organizerPhone = organizer.phoneNumber;
+    }
+
     if (
-      tournamentData.tournamentType === TournamentType.Playoff &&
+      tournamentData.type === TournamentType.Playoff &&
       !this.isPowerOfTwo(tournamentData.maxPlayers)
     ) {
       throw new BadRequestError({
         message:
           "Invalid number of players for a playoff tournament. The total number of players must be a power of 2."
       });
-    } else if (tournamentData.tournamentType === TournamentType.RoundRobin) {
+    } else if (tournamentData.type === TournamentType.RoundRobin) {
       this.calculateRoundRobinMatches(tournamentData.maxPlayers);
     }
 
@@ -53,14 +81,19 @@ export class TournamentService {
           "Invalid tournament dates. The start date must be before the end date."
       });
     }
-    const newTournament = await TournamentModel.create(tournamentData);
+
+    const newTournament = await TournamentModel.create({
+      ...tournamentData,
+      creator
+    });
+
     return await newTournament.toObject();
   }
 
   public async addPlayerToTournament(
     tournamentId: string,
-    playerId: Types.ObjectId
-  ): Promise<Tournament> {
+    playerId: string
+  ): Promise<void> {
     const tournament = await TournamentModel.findById(tournamentId).exec();
 
     if (tournament === null || tournament === undefined) {
@@ -76,7 +109,8 @@ export class TournamentService {
       });
     }
 
-    if (tournament.players.includes(playerId)) {
+    // Check if the player is already in the tournament
+    if (tournament.players.includes(player.id)) {
       throw new BadRequestError({
         message: "Player already registered in the tournament"
       });
@@ -96,7 +130,7 @@ export class TournamentService {
       });
     }
 
-    tournament.players.push(playerId);
+    tournament.players.push(player.id);
     await tournament.save();
 
     if (tournament.players.length > 1) {

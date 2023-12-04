@@ -2,9 +2,11 @@ import path from "path";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import ESLintPlugin from "eslint-webpack-plugin";
+import DotenvPlugin from "dotenv-webpack";
 import type { Configuration as DevServerConfiguration } from "webpack-dev-server";
 import type { Configuration } from "webpack";
 
+const envFilePath = path.resolve(__dirname, ".env");
 const prod = process.env.NODE_ENV === "production";
 
 const devServer: DevServerConfiguration = {
@@ -42,6 +44,9 @@ const config: Configuration = {
   devServer,
   devtool: prod ? undefined : "source-map",
   plugins: [
+    new DotenvPlugin({
+      path: envFilePath
+    }),
     new ESLintPlugin({
       extensions: ["ts", "tsx"]
     }),

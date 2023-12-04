@@ -7,51 +7,69 @@ import {
   Security,
   Body,
   Post,
-  Put
+  Put,
+  Request,
+  Query
 } from "tsoa";
 import { TournamentService } from "../services/tournamentService.js";
 import {
-  Tournament,
-  AddPlayerRequest,
+  type Tournament,
+  SignupForTournamentRequest,
   UnsavedMatch
 } from "../models/tournamentModel.js";
-import { ObjectIdString } from "../models/requestModel.js";
+import {
+  CreateTournamentRequest,
+  ObjectIdString
+} from "../models/requestModel.js";
+import { type JwtPayload } from "jsonwebtoken";
+import type * as express from "express";
 
-@Route("tournament")
+@Route("tournaments")
 export class TournamentController extends Controller {
-  @Security("jwt")
   @Get("{id}")
-  @Tags("Tournament")
+  @Tags("Tournaments")
   public async getTournament(@Path() id: ObjectIdString): Promise<Tournament> {
     this.setStatus(200);
     return await this.service.getTournamentById(id);
   }
 
-  @Security("jwt")
-  @Post("create")
-  @Tags("Tournament")
-  public async createTournament(
-    @Body() tournamentData: Tournament
-  ): Promise<Tournament> {
-    this.setStatus(201); // Created status
-
-    return await this.service.createTournament(tournamentData);
+  @Get()
+  @Tags("Tournaments")
+  public async getTournaments(
+    @Query() limit: number = 20
+  ): Promise<Tournament[]> {
+    this.setStatus(200);
+    return await this.service.getAllTournaments(limit);
   }
 
   @Security("jwt")
-  @Put("{tournamentId}/addPlayer")
-  @Tags("Tournament")
-  public async addPlayerToTournament(
-    @Path() tournamentId: ObjectIdString,
-    @Body() requestBody: AddPlayerRequest
+  @Post("create")
+  @Tags("Tournaments")
+  public async createTournament(
+    @Request() request: express.Request & { user: JwtPayload },
+    @Body() tournamentData: CreateTournamentRequest
   ): Promise<Tournament> {
-    const result = await this.service.addPlayerToTournament(
+    this.setStatus(201);
+
+    const creator = request.user.id;
+
+    return await this.service.createTournament(tournamentData, creator);
+  }
+
+  @Security("jwt")
+  @Put("{tournamentId}/sign-up")
+  @Tags("Tournaments")
+  public async signUpForTournament(
+    @Path() tournamentId: ObjectIdString,
+    @Body() requestBody: SignupForTournamentRequest
+  ): Promise<void> {
+    this.setStatus(204);
+    await this.service.addPlayerToTournament(
       tournamentId,
       requestBody.playerId
     );
-    this.setStatus(200); // OK status
-    return result;
   }
+
 
   @Security("jwt")
   @Put("{tournamentId}/manualSchedule")

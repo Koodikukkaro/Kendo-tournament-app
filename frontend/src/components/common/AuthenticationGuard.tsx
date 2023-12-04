@@ -3,23 +3,25 @@ import { useAuth } from "context/AuthContext";
 import { ProtectedRoute } from "routes/ProtectedRoute";
 
 export interface AuthenticationGuardProps {
-  children?: React.ReactElement;
-  redirectPath?: string;
   guardType?: "authenticated" | "unauthenticated";
+  redirectPath?: string;
+  children?: React.ReactElement;
 }
 
 export const AuthenticationGuard: React.FC<AuthenticationGuardProps> = ({
-  redirectPath = "/login",
   guardType = "authenticated",
+  redirectPath,
   ...props
 }) => {
-  const { user } = useAuth();
+  const { isAuthenticated } = useAuth();
 
-  const isAllowed = guardType === "authenticated" && user !== null;
+  const isAllowed =
+    (guardType === "authenticated" && isAuthenticated) ||
+    (guardType === "unauthenticated" && !isAuthenticated);
 
   return (
     <ProtectedRoute
-      redirectPath={redirectPath}
+      redirectPath={redirectPath ?? (isAuthenticated ? "/" : "/login")}
       isAllowed={isAllowed}
       {...props}
     />

@@ -9,8 +9,9 @@ export interface User {
   phoneNumber: string;
   firstName: string;
   lastName: string;
-  nationality: string;
+  nationality?: string;
   inNationalTeam: boolean;
+  suomisportId?: string;
   clubName?: string;
   danRank?: string;
   underage: boolean;
@@ -27,12 +28,21 @@ type UserModelType = mongoose.Model<User, Record<string, unknown>, UserMethods>;
 
 const schema = new Schema<User, UserMethods>(
   {
-    email: { type: String, required: true, unique: true },
+    email: {
+      type: String,
+      required: true,
+      index: {
+        name: "email_idx",
+        unique: true,
+        collation: { locale: "en", strength: 2 }
+      }
+    },
     password: { type: String, required: true, select: false },
     userName: { type: String },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    nationality: { type: String, required: true },
+    nationality: { type: String },
+    suomisportId: { type: String },
     inNationalTeam: { type: Boolean, default: false },
     phoneNumber: { type: String, required: true },
     clubName: { type: String },

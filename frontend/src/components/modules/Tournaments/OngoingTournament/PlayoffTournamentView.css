@@ -1,0 +1,27 @@
+.tournamentBracketRoot {
+    padding: 16px;
+  }
+  
+  .bracketContainer {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: space-evenly;
+    margin-top: 16px;
+  }
+  
+  .matchContainer {
+    flex: 0 0 calc(33.33% - 16px); 
+    box-sizing: border-box;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-bottom: 16px;
+    min-width: 150px;
+    text-align: center;
+    word-break: break-all; 
+  }
+  
+  .matchGridItem {
+    margin-bottom: 16px; 
+  }
+  
