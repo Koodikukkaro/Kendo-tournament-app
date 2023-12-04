@@ -1,7 +1,6 @@
 import mongoose, { Schema, type Document, type Types } from "mongoose";
-import { MatchPlayer, type Match } from "./matchModel";
+import type { MatchPlayer, Match } from "./matchModel";
 import { type User } from "./userModel";
-import type { ObjectIdString } from "./requestModel";
 
 export enum TournamentType {
   RoundRobin = "Round Robin",
@@ -29,12 +28,8 @@ export interface Tournament {
   organizerEmail?: string;
   organizerPhone?: string;
   maxPlayers: number;
-  players: Types.ObjectId[]; // Array of player identifiers (userID from user objects)
+  players: (Types.ObjectId | User)[];
   matchSchedule: Match[];
-}
-
-export interface SignupForTournamentRequest {
-  playerId: ObjectIdString;
 }
 
 const tournamentSchema = new Schema<Tournament & Document>(
@@ -49,8 +44,8 @@ const tournamentSchema = new Schema<Tournament & Document>(
       enum: Object.values(TournamentType),
       required: true
     },
-    players: { type: [String], default: [] },
-    matchSchedule: [{ type: Schema.Types.ObjectId, ref: "Match" }], // Reference to Match documents
+    players: [{ type: Schema.Types.ObjectId, ref: "User", default: [] }],
+    matchSchedule: [{ type: Schema.Types.ObjectId, ref: "Match" }],
     maxPlayers: { type: Number, required: true },
     creator: {
       type: Schema.Types.ObjectId,

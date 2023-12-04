@@ -104,3 +104,7 @@ export type CreateTournamentRequest = Omit<
 > & {
   differentOrganizer: boolean;
 };
+
+export interface SignupForTournamentRequest {
+  playerId: ObjectIdString;
+}
