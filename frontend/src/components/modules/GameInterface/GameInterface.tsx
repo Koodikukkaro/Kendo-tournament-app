@@ -7,28 +7,28 @@ import TimerButton from "./TimerButton";
 import api from "api/axios";
 import { useParams } from "react-router-dom";
 import { type AddPointRequest } from "types/requests";
-import type { PointType, PlayerColor, Match } from "types/models";
+import type { PointType, PlayerColor, Match, MatchPlayer } from "types/models";
 import "./GameInterface.css";
 import { useAuth } from "context/AuthContext";
 import { joinMatch, leaveMatch } from "sockets/emit";
 import { useSocket } from "context/SocketContext";
 
-interface Cells {
-  rows: string[][];
+export interface matchData {
+  timerTime: number;
+  players: MatchPlayer[];
+  playerNames: string[];
+  winner: string | undefined;
+  officials: string;
 }
 
 const GameInterface: React.FC = () => {
-  const initialCells: Cells = {
-    rows: [
-      ["", ""],
-      ["", ""],
-      ["", ""],
-      ["", ""],
-      ["", ""]
-    ]
-  };
-
-  const { matchInfo } = useSocket();
+  const [matchInfo, setMatchInfo] = useState<matchData>({
+    timerTime: 300,
+    players: [],
+    playerNames: [],
+    winner: undefined,
+    officials: ""
+  });
 
   useEffect(() => {
     if (matchId !== undefined) {
@@ -40,135 +40,77 @@ const GameInterface: React.FC = () => {
     }
   }, []);
 
-  const [cells, setCells] = useState<Cells>(initialCells);
   const [open, setOpen] = useState(false);
   const [selectedButton, setSelectedButton] = useState<string>("");
-  const [timer, setTimer] = useState<number>(300);
+  const [timer, setTimer] = useState<number>(matchInfo.timerTime);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
-  const [currentPlayer, setCurrentPlayer] = useState<number | null>(null);
-  const [pointCounter, setPointCounter] = useState<number>(0);
   const [playerColor, setPlayerColor] = useState<PlayerColor>("red");
 
   const { matchId } = useParams();
   const { userId } = useAuth();
-  const players: string[] = [];
-  let officialId: string = "";
-  let winner: string | undefined;
-
-  const buttonToTypeMap: Record<string, PointType> = {
-    M: "men",
-    K: "kote",
-    D: "do",
-    T: "tsuki",
-    "\u0394": "hansoku"
-  };
-
-  const selectedPointType = buttonToTypeMap[selectedButton];
-
-  const updateCell = (row: number, column: number, value: string): void => {
-    setCells((prevCells) => {
-      const newRows = [...prevCells.rows];
-      newRows[row][column] = value;
-      return { rows: newRows };
-    });
-  };
-
-  const pointRequest: AddPointRequest = {
-    pointType: selectedPointType,
-    pointColor: playerColor
-  };
-
-  const handlePointShowing = async (): Promise<void> => {
-    if (currentPlayer !== null) {
-      const row = pointCounter;
-      const column = currentPlayer - 1;
-      updateCell(row, column, selectedButton);
-      setOpen(false);
-      setCurrentPlayer(null);
-      setPointCounter((prevCounter) => prevCounter + 1);
-    }
-    if (matchId !== undefined) {
-      await apiPointRequest(matchId, pointRequest);
-    }
-  };
-
-  const handleRadioButtonClick = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ): void => {
-    setSelectedButton(event.target.value);
-  };
-
-  const handleOpen = (player: number): void => {
-    setSelectedButton("");
-    setCurrentPlayer(player);
-    setOpen(true);
-    if (player === 1) {
-      setPlayerColor("white");
-    }
-    if (player === 2) {
-      setPlayerColor("red");
-    }
-  };
-
-  const apiPointRequest = async (
-    matchId: string,
-    body: AddPointRequest
-  ): Promise<void> => {
-    try {
-      console.log("Point sent", pointRequest);
-      await api.match.addPoint(matchId, body);
-    } catch (error) {
-      console.error("Data couldn't be sent", error);
-    }
-  };
-
-  const apiTimerRequest = async (matchId: string): Promise<void> => {
-    try {
-      if (!isTimerRunning) {
-        console.log("Start sent", pointRequest);
-        await api.match.startTimer(matchId);
-      } else {
-        console.log("Stop sent", pointRequest);
-        await api.match.stopTimer(matchId);
-      }
-    } catch (error) {
-      console.error("Data couldn't be sent", error);
-    }
-  };
-
-  const handleTimerChange = async (): Promise<void> => {
-    setIsTimerRunning((prevIsTimerRunning) => !prevIsTimerRunning);
-    if (matchId !== undefined) {
-      await apiTimerRequest(matchId);
-    }
-  };
+  const { matchInfo: matchInfoFromSocket } = useSocket();
 
   useEffect(() => {
     const getMatchData = async (): Promise<void> => {
       try {
-        if (matchInfo !==  undefined) {
-          if (matchId !== undefined) {
-            players[0] = (
-              await api.user.details(matchInfo.players[0].id)
+        let matchPlayers: MatchPlayer[] = [];
+        const playersNames: string[] = [];
+        let matchWinner: string | undefined;
+        let officialId: string = "";
+        let time: number = 0;
+        if (matchInfoFromSocket !== undefined) {
+          matchPlayers = matchInfoFromSocket.players;
+          playersNames[0] = (
+            await api.user.details(matchInfoFromSocket.players[0].id)
+          ).firstName;
+          playersNames[1] = (
+            await api.user.details(matchInfoFromSocket.players[1].id)
+          ).firstName;
+          if (matchInfoFromSocket.winner !== undefined) {
+            matchWinner = (await api.user.details(matchInfoFromSocket.winner))
+              .firstName;
+          }
+          if (matchInfoFromSocket.officials !== undefined) {
+            officialId = matchInfoFromSocket.officials;
+          }
+          time = 300 - Math.round(matchInfoFromSocket.elapsedTime / 1000);
+        } else if (matchId !== undefined) {
+          const matchFromApi: Match = await api.match.info(matchId);
+          if (matchFromApi !== undefined) {
+            matchPlayers = matchFromApi.players;
+            playersNames[0] = (
+              await api.user.details(matchFromApi.players[0].id)
             ).firstName;
-            players[1] = (
-              await api.user.details(matchInfo.players[1].id)
+            playersNames[1] = (
+              await api.user.details(matchFromApi.players[1].id)
             ).firstName;
-            if (matchInfo.winner !== undefined) {
-              winner = (await api.user.details(matchInfo.winner)).firstName;
+            if (matchFromApi.winner !== undefined) {
+              matchWinner = (await api.user.details(matchFromApi.winner))
+                .firstName;
             }
-            if (matchInfo.officials !== undefined) {
-              officialId = matchInfo.officials;
+            if (matchFromApi.officials !== undefined) {
+              officialId = matchFromApi.officials;
             }
+            time = 300 - Math.round(matchFromApi.elapsedTime / 1000);
           }
         }
+        setMatchInfo({
+          timerTime: time,
+          players: matchPlayers,
+          playerNames: playersNames,
+          winner: matchWinner,
+          officials: officialId
+        });
       } catch (error) {
         console.error("Data couldn't be fetched", error);
       }
     };
     void getMatchData();
+  }, [matchInfo, matchInfoFromSocket]);
 
+  useEffect(() => {
     let intervalId: NodeJS.Timeout | null = null;
+    setTimer(matchInfo.timerTime);
 
     if (isTimerRunning) {
       intervalId = setInterval(() => {
@@ -185,42 +127,122 @@ const GameInterface: React.FC = () => {
         clearInterval(intervalId);
       }
     };
-  }, [isTimerRunning, matchInfo, winner]);
+  }, [isTimerRunning]);
+
+  const buttonToTypeMap: Record<string, PointType> = {
+    M: "men",
+    K: "kote",
+    D: "do",
+    T: "tsuki",
+    "\u0394": "hansoku"
+  };
+
+  const selectedPointType = buttonToTypeMap[selectedButton];
+
+  const pointRequest: AddPointRequest = {
+    pointType: selectedPointType,
+    pointColor: playerColor
+  };
+
+  const handlePointShowing = async (): Promise<void> => {
+    setOpen(false);
+    if (matchId !== undefined) {
+      await apiPointRequest(matchId, pointRequest);
+    }
+  };
+
+  const handleRadioButtonClick = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    setSelectedButton(event.target.value);
+  };
+
+  const handleOpen = (player: number): void => {
+    setSelectedButton("");
+    setOpen(true);
+    if (player === 1) {
+      setPlayerColor("white");
+    }
+    if (player === 2) {
+      setPlayerColor("red");
+    }
+  };
+
+  const apiPointRequest = async (
+    matchId: string,
+    body: AddPointRequest
+  ): Promise<void> => {
+    try {
+      await api.match.addPoint(matchId, body);
+    } catch (error) {
+      console.error("Data couldn't be sent", error);
+    }
+  };
+
+  const apiTimerRequest = async (matchId: string): Promise<void> => {
+    try {
+      if (!isTimerRunning) {
+        await api.match.startTimer(matchId);
+      } else {
+        await api.match.stopTimer(matchId);
+      }
+    } catch (error) {
+      console.error("Data couldn't be sent", error);
+    }
+  };
+
+  const handleTimerChange = async (): Promise<void> => {
+    setIsTimerRunning((prevIsTimerRunning) => !prevIsTimerRunning);
+    if (matchId !== undefined) {
+      await apiTimerRequest(matchId);
+    }
+  };
+
+  function handleClose(): void {
+    setOpen(false);
+  }
 
   return (
     <div className="app-container">
       <main className="main-content">
         <Box display="flex" gap="20px" justifyContent="center">
           <Box className="playerBox" bgcolor="white">
-            <Typography variant="h3">Player 1 {players[0]}</Typography>
+            <Typography variant="h3">{matchInfo.playerNames[0]}</Typography>
           </Box>
           <Box className="playerBox" bgcolor="#db4744">
-            <Typography variant="h3">Player 2 {players[1]}</Typography>
+            <Typography variant="h3">{matchInfo.playerNames[1]}</Typography>
           </Box>
         </Box>
         <Box display="flex" gap="20px" justifyContent="center">
           <Timer timer={timer} />
-          {userId === officialId && (
-            <TimerButton
-              isTimerRunning={isTimerRunning}
-              handleTimerChange={handleTimerChange}
+          {userId !== null &&
+            userId !== undefined &&
+            matchInfo.officials.includes(userId) &&
+            matchInfo.winner === undefined && (
+              <TimerButton
+                isTimerRunning={isTimerRunning}
+                handleTimerChange={handleTimerChange}
+              />
+            )}
+        </Box>
+        <PointTable matchInfo={matchInfo} />
+        <br></br>
+        {userId !== null &&
+          userId !== undefined &&
+          matchInfo.officials.includes(userId) &&
+          matchInfo.winner === undefined && (
+            <OfficialButtons
+              open={open}
+              selectedButton={selectedButton}
+              handleRadioButtonClick={handleRadioButtonClick}
+              handlePointShowing={handlePointShowing}
+              handleOpen={handleOpen}
+              handleClose={handleClose}
             />
           )}
-        </Box>
-        <PointTable cells={cells.rows} />
-        <br></br>
-        {(userId === officialId && winner !== undefined)&& (
-          <OfficialButtons
-            open={open}
-            selectedButton={selectedButton}
-            handleRadioButtonClick={handleRadioButtonClick}
-            handlePointShowing={handlePointShowing}
-            handleOpen={handleOpen}
-          />
-        )}
-        {winner !== undefined && (
+        {matchInfo.winner !== undefined && (
           <div>
-            <Typography>{winner} wins!</Typography>
+            <Typography>{matchInfo.winner} wins!</Typography>
           </div>
         )}
       </main>

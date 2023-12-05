@@ -16,6 +16,7 @@ interface AddPointDialogProps {
   handleRadioButtonClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   handlePointShowing: () => Promise<void>;
   handleOpen: (player: number) => void;
+  handleClose: () => void;
 }
 
 const OfficialButtons: React.FC<AddPointDialogProps> = ({
@@ -23,7 +24,8 @@ const OfficialButtons: React.FC<AddPointDialogProps> = ({
   selectedButton,
   handleRadioButtonClick,
   handlePointShowing,
-  handleOpen
+  handleOpen,
+  handleClose
 }) => {
   return (
     <div>
@@ -45,7 +47,7 @@ const OfficialButtons: React.FC<AddPointDialogProps> = ({
           Add point for player 2
         </Button>
       </Box>
-      <Dialog open={open}>
+      <Dialog open={open} onClose={handleClose}>
         <DialogTitle>Select a Point</DialogTitle>
         <DialogContent>
           <RadioGroup
@@ -64,7 +66,7 @@ const OfficialButtons: React.FC<AddPointDialogProps> = ({
             onClick={async () => {
               await handlePointShowing();
             }}
-            disabled={!selectedButton}
+            disabled={selectedButton === ""}
           >
             OK
           </Button>
