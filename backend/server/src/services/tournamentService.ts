@@ -5,14 +5,12 @@ import {
   type UnsavedMatch,
   TournamentType
 } from "../models/tournamentModel.js";
-import UserModel from "../models/userModel.js";
+import UserModel, { type User } from "../models/userModel.js";
 import BadRequestError from "../errors/BadRequestError.js";
-import { Types } from "mongoose";
+import { type Types } from "mongoose";
 import MatchModel from "../models/matchModel.js";
 import { type CreateTournamentRequest } from "../models/requestModel.js";
-import { User } from "../models/userModel.js";
-import { Match } from "../models/matchModel.js";
-import { MatchPlayer } from "../models/matchModel.js";
+import { type Match, type MatchPlayer } from "../models/matchModel.js";
 
 export class TournamentService {
   public async getTournamentById(id: string): Promise<Tournament> {
@@ -20,9 +18,9 @@ export class TournamentService {
       .populate<{ creator: User }>({ path: "creator", model: "User" })
       .populate<{ players: User[] }>({ path: "players", model: "User" })
       .populate<{
-        matchSchedule: Match[],
-        'matchSchedule.players': User[],
-        'matchSchedule.winner': User
+        matchSchedule: Match[];
+        "matchSchedule.players": User[];
+        "matchSchedule.winner": User;
       }>({
         path: "matchSchedule",
         model: "Match",
@@ -255,7 +253,7 @@ export class TournamentService {
     previousMatches: Types.ObjectId[]
   ): Promise<UnsavedMatch[]> {
     const matches: UnsavedMatch[] = [];
-    const playerSet = new Set<String>();
+    const playerSet = new Set<string>();
 
     const matchDatas = await MatchModel.find({
       _id: { $in: previousMatches }

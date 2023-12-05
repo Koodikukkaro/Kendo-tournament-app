@@ -1,4 +1,5 @@
 import MatchModel, {
+  type MatchPlayer,
   type Match,
   type MatchPoint,
   type PlayerColor
@@ -163,16 +164,18 @@ export class MatchService {
     point: MatchPoint,
     pointColor: PlayerColor
   ): void {
-    const [player1, player2] = match.players;
+    const player1: MatchPlayer = match.players[0] as MatchPlayer;
+    const player2: MatchPlayer = match.players[1] as MatchPlayer;
     const pointWinner = player1.color === pointColor ? player1 : player2;
     pointWinner.points.push(point);
   }
 
   private async checkMatchOutcome(match: Match): Promise<void> {
     const MAXIMUM_POINTS = 2;
-    const [player1, player2] = match.players;
     let player1Points = 0;
     let player2Points = 0;
+    const player1: MatchPlayer = match.players[0] as MatchPlayer;
+    const player2: MatchPlayer = match.players[1] as MatchPlayer;
 
     player1.points.forEach((point: MatchPoint) => {
       if (point.type === "hansoku") {
@@ -210,8 +213,7 @@ export class MatchService {
     const tournament = await TournamentModel.findOne({
       matchSchedule: matchId
     }).exec();
-
-    if (tournament?.tournamentType !== TournamentType.Playoff) {
+    if (tournament?.type !== TournamentType.Playoff) {
       return;
     }
 
@@ -219,23 +221,17 @@ export class MatchService {
       _id: { $in: tournament.matchSchedule }
     }).exec();
 
-    // Find the current round from the match
-    const currentMatch = playedMatches.find((match) =>
-      match.id.equals(matchId)
+    const currentMatch = playedMatches.find(
+      (match) => match.id.toString() === matchId.toString()
     );
     if (currentMatch === null || currentMatch === undefined) {
       throw new NotFoundError({
         message: "Match not found in tournament schedule"
       });
     }
-    let currentRound = currentMatch.tournamentRound;
-    if (currentRound === undefined) {
-      // this will never happen.
-      currentRound = 1;
-    }
+    const currentRound = currentMatch.tournamentRound;
     const nextRound = currentRound + 1;
 
-    // Filter for winners in the current round
     const winners = playedMatches
       .filter((match) => match.tournamentRound === currentRound && match.winner)
       .map((match) => match.winner)
@@ -258,7 +254,7 @@ export class MatchService {
     // Pair current winner with eligible winners for the next round
     for (const pairWithWinnerId of eligibleWinners) {
       if (pairWithWinnerId && !pairWithWinnerId.equals(winnerId)) {
-        // Create a new match
+        // Create a new match.
         const newMatch = {
           players: [
             { id: winnerId, points: [], color: "red" },
