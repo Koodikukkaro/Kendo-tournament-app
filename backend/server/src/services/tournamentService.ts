@@ -7,20 +7,20 @@ import {
 } from "../models/tournamentModel.js";
 import UserModel from "../models/userModel.js";
 import BadRequestError from "../errors/BadRequestError.js";
-import { type Types } from "mongoose";
+import { Types } from "mongoose";
 import MatchModel from "../models/matchModel.js";
 import { type CreateTournamentRequest } from "../models/requestModel.js";
+import { User } from "../models/userModel.js";
+import { Match } from "../models/matchModel.js";
+import { MatchPlayer } from "../models/matchModel.js";
 
 export class TournamentService {
   public async getTournamentById(id: string): Promise<Tournament> {
     const tournament = await TournamentModel.findById(id)
-      .populate("players")
-      .populate({
-        path: "matchSchedule",
-        model: "Match"
-      })
+      .populate<{ creator: User }>({ path: "creator", model: "User" })
+      .populate<{ players: User[] }>({ path: "players", model: "User" })
+      .populate<{ matchSchedule: Match[] }>({ path: "matchSchedule", model: "Match" })
       .exec();
-
     if (tournament === null || tournament === undefined) {
       throw new NotFoundError({
         message: "Tournament not found"
@@ -197,14 +197,14 @@ export class TournamentService {
     switch (tournament.type) {
       case TournamentType.RoundRobin:
         matches = this.generateRoundRobinSchedule(
-          tournament.players,
+          tournament.players as Types.ObjectId[],
           newPlayer
         );
         break;
       case TournamentType.Playoff:
         matches = await this.generatePlayoffSchedule(
-          tournament.players,
-          tournament.matchSchedule
+          tournament.players as Types.ObjectId[],
+          tournament.matchSchedule as Types.ObjectId[]
         );
         break;
     }
@@ -244,16 +244,25 @@ export class TournamentService {
     previousMatches: Types.ObjectId[]
   ): Promise<UnsavedMatch[]> {
     const matches: UnsavedMatch[] = [];
-    const playerSet = new Set<Types.ObjectId>();
+    const playerSet = new Set<String>();
 
     const matchDatas = await MatchModel.find({
       _id: { $in: previousMatches }
     }).exec();
 
     for (const matchData of matchDatas) {
-      matchData.players.forEach((player) => playerSet.add(player.id));
+      matchData.players.forEach((player) => {
+        if ((player as MatchPlayer).id) {
+          playerSet.add((player as MatchPlayer).id.toString());
+        }
+      });
     }
-    const extraPlayers = playerIds.filter((id) => !playerSet.has(id));
+    const extraPlayers = [];
+    for (const id of playerIds) {
+      if (!playerSet.has(id.toString())) {
+        extraPlayers.push(id);
+      }
+    }
 
     if (extraPlayers.length === 2) {
       matches.push({

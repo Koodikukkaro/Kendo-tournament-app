@@ -14,6 +14,7 @@ export interface UnsavedMatch {
   admin: Types.ObjectId | null;
   elapsedTime: number;
   timerStartedTimestamp: Date | null;
+  tournamentRound?: number;
 }
 
 export interface Tournament {
@@ -29,7 +30,7 @@ export interface Tournament {
   organizerPhone?: string;
   maxPlayers: number;
   players: Array<Types.ObjectId | User>;
-  matchSchedule: Match[];
+  matchSchedule: Array<Types.ObjectId | Match>;
 }
 
 const tournamentSchema = new Schema<Tournament & Document>(
@@ -45,7 +46,7 @@ const tournamentSchema = new Schema<Tournament & Document>(
       required: true
     },
     players: [{ type: Schema.Types.ObjectId, ref: "User", default: [] }],
-    matchSchedule: [{ type: Schema.Types.ObjectId, ref: "Match" }],
+    matchSchedule: [{ type: Schema.Types.ObjectId, ref: "Match", default: [] }],
     maxPlayers: { type: Number, required: true },
     creator: {
       type: Schema.Types.ObjectId,
