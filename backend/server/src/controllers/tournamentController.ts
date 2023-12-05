@@ -70,7 +70,7 @@ export class TournamentController extends Controller {
 
   @Security("jwt")
   @Put("{tournamentId}/manualSchedule")
-  @Tags("Tournament")
+  @Tags("Tournaments")
   public async manualSchedule(
     @Path() tournamentId: ObjectIdString,
     @Body() requestBody: UnsavedMatch
