@@ -21,12 +21,6 @@ export function initSocket(server: http.Server): Server {
     socket.on("leave-match", async (matchId: string) => {
       await socket.leave(matchId);
     });
-
-    socket.on("toggle-timer", () => {
-      const currentTime = 200; // Get real time from API?
-      isTimerRunning = !isTimerRunning;
-      io.emit("timer-state", { isTimerRunning, currentTime });
-    });
   });
 
   return io;

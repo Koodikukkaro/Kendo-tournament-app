@@ -7,8 +7,3 @@ export const joinMatch = (matchId: string): void => {
 export const leaveMatch = (matchId: string): void => {
   socket.emit("leave-match", matchId);
 };
-
-export const toggleTimer = (): void => {
-  console.log("toggleTimer() works");
-  socket.emit("toggle-timer");
-};
