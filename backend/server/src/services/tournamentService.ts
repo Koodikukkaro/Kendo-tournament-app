@@ -19,7 +19,18 @@ export class TournamentService {
     const tournament = await TournamentModel.findById(id)
       .populate<{ creator: User }>({ path: "creator", model: "User" })
       .populate<{ players: User[] }>({ path: "players", model: "User" })
-      .populate<{ matchSchedule: Match[] }>({ path: "matchSchedule", model: "Match" })
+      .populate<{
+        matchSchedule: Match[],
+        'matchSchedule.players': User[],
+        'matchSchedule.winner': User
+      }>({
+        path: "matchSchedule",
+        model: "Match",
+        populate: [
+          { path: "players", model: "User" },
+          { path: "winner", model: "User" }
+        ]
+      })
       .exec();
     if (tournament === null || tournament === undefined) {
       throw new NotFoundError({
