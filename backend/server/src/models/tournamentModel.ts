@@ -1,5 +1,5 @@
 import mongoose, { Schema, type Document, type Types } from "mongoose";
-import type { MatchPlayer, Match } from "./matchModel";
+import type { Match } from "./matchModel";
 import { type User } from "./userModel";
 
 export enum TournamentType {
@@ -8,7 +8,15 @@ export enum TournamentType {
   PreliminiaryPlayoff = "Preliminary Playoff"
 }
 
-export interface UnsavedMatch extends Pick<Match, "players" | "type" | "elapsedTime" | "timerStartedTimestamp" | "tournamentRound"> { }
+export interface UnsavedMatch
+  extends Pick<
+    Match,
+    | "players"
+    | "type"
+    | "elapsedTime"
+    | "timerStartedTimestamp"
+    | "tournamentRound"
+  > {}
 
 export interface Tournament {
   id: Types.ObjectId;

@@ -18,10 +18,10 @@ export class TournamentService {
       .populate<{ creator: User }>({ path: "creator", model: "User" })
       .populate<{ players: User[] }>({ path: "players", model: "User" })
       .populate<{
-        matchSchedule: Match[]
+        matchSchedule: Match[];
       }>({
         path: "matchSchedule",
-        model: "Match",
+        model: "Match"
       })
       .exec();
     if (tournament === null || tournament === undefined) {
@@ -169,7 +169,7 @@ export class TournamentService {
     }
 
     for (const player of unsavedMatch.players) {
-      //player.id is a String from the requestBody. conversion is necessary here.
+      // player.id is a String from the requestBody. conversion is necessary here.
       const playerId = new Types.ObjectId(player.id);
 
       if (!tournament.players.includes(playerId)) {
@@ -235,7 +235,7 @@ export class TournamentService {
           type: "group",
           elapsedTime: 0,
           timerStartedTimestamp: null,
-          tournamentRound: 1,
+          tournamentRound: 1
         });
       }
     }
@@ -255,9 +255,7 @@ export class TournamentService {
 
     for (const matchData of matchDatas) {
       matchData.players.forEach((player) => {
-        if ((player as MatchPlayer).id) {
-          playerSet.add((player as MatchPlayer).id.toString());
-        }
+        playerSet.add((player as MatchPlayer).id.toString());
       });
     }
     const extraPlayers = [];
