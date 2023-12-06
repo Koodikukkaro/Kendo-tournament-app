@@ -212,14 +212,20 @@ export class MatchService {
   ): Promise<void> {
     const tournament = await TournamentModel.findOne({
       matchSchedule: matchId
-    }).exec();
+    })
+      .populate<{
+        matchSchedule: Match[];
+      }>({
+        path: "matchSchedule",
+        model: "Match"
+      })
+      .exec();
+
     if (tournament?.type !== TournamentType.Playoff) {
       return;
     }
 
-    const playedMatches = await MatchModel.find({
-      _id: { $in: tournament.matchSchedule }
-    }).exec();
+    const playedMatches = tournament.matchSchedule;
 
     const currentMatch = playedMatches.find(
       (match) => match.id.toString() === matchId.toString()
