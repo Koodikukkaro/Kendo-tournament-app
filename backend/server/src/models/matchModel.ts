@@ -1,4 +1,5 @@
 import mongoose, { Schema, type Types } from "mongoose";
+import type { Tournament } from "./tournamentModel";
 
 export type PlayerColor = "red" | "white";
 export type PointType = "men" | "kote" | "do" | "tsuki" | "hansoku";
@@ -22,11 +23,12 @@ export interface Match {
   elapsedTime: number;
   endTimestamp?: Date;
   type: MatchType;
-  players: MatchPlayer[];
+  players: Array<Types.ObjectId | MatchPlayer>;
   winner?: Types.ObjectId;
   comment?: string;
-  tournamentId: Types.ObjectId;
+  tournamentId: Types.ObjectId | Tournament;
   officials: Types.ObjectId[];
+  tournamentRound: number;
 }
 
 const pointSchema = new Schema<MatchPoint>(
@@ -78,6 +80,10 @@ const matchSchema = new Schema<Match>(
     officials: {
       type: [Schema.Types.ObjectId],
       default: []
+    },
+    tournamentRound: {
+      type: Number,
+      default: 1
     }
   },
   {
