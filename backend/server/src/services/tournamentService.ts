@@ -255,7 +255,13 @@ export class TournamentService {
 
     for (const matchData of matchDatas) {
       matchData.players.forEach((player) => {
-        playerSet.add((player as MatchPlayer).id.toString());
+        const playerAsMatchPlayer = player as MatchPlayer;
+        if (
+          playerAsMatchPlayer.id !== null &&
+          playerAsMatchPlayer.id !== undefined
+        ) {
+          playerSet.add((player as MatchPlayer).id.toString());
+        }
       });
     }
     const extraPlayers = [];

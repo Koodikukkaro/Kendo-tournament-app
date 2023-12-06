@@ -239,7 +239,7 @@ export class MatchService {
 
     // Find eligible winners who don't have a match in the next round
     const eligibleWinners = winners.filter((winner) => {
-      if (!winner) {
+      if (winner === null || winner === undefined) {
         return false;
       }
       return !playedMatches.some(
@@ -253,7 +253,11 @@ export class MatchService {
 
     // Pair current winner with eligible winners for the next round
     for (const pairWithWinnerId of eligibleWinners) {
-      if (pairWithWinnerId && !pairWithWinnerId.equals(winnerId)) {
+      if (
+        pairWithWinnerId !== null &&
+        pairWithWinnerId !== undefined &&
+        !pairWithWinnerId.equals(winnerId)
+      ) {
         // Create a new match.
         const newMatch = {
           players: [
