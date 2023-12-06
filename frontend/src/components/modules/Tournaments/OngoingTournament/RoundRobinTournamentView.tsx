@@ -38,46 +38,41 @@ const RoundRobinTournamentView: React.FC = () => {
   >([]);
 
   const tournament = useTournament();
-  const players: tournamentPlayer[] = [];
+  const [players, setPlayers] = useState<tournamentPlayer[]>([]);
   let ongoingMatches: Match[] = [];
   let upcomingMatches: Match[] = [];
   const navigate = useNavigate();
 
   useEffect(() => {
-    const getPlayerNames = async (): Promise<void> => {
-      const playersObjects: User[] = tournament.players;
-      if (playersObjects.length > 0) {
-        for (const playerObject of playersObjects) {
-          const playerExists = players.some(
-            (player) => player.id === playerObject.id
-          );
-          if (!playerExists) {
-            players.push({
-              id: playerObject.id,
-              name: playerObject.firstName,
-              wins: 0,
-              losses: 0,
-              points: 0
-            });
+    const getPlayerNames = (): void => {
+      setPlayers((prevPlayers) => {
+        const updatedPlayers = [...prevPlayers];
+
+        const playersObjects: User[] = tournament.players;
+        if (playersObjects.length > 0) {
+          for (const playerObject of playersObjects) {
+            const playerExists = updatedPlayers.some(
+              (player) => player.id === playerObject.id
+            );
+            if (!playerExists) {
+              updatedPlayers.push({
+                id: playerObject.id,
+                name: playerObject.firstName,
+                wins: 0,
+                losses: 0,
+                points: 0
+              });
+            }
           }
         }
-      }
-      setNumberOfAttendees(players.length);
+        console.log(updatedPlayers)
 
-      console.log(players);
-      const playerNames = players.map((player) => player.name);
-      console.log(playerNames);
-
-      const initialTableData: string[][] = playerNames.map((name) => [
-        name,
-        "0",
-        "0",
-        "0"
-      ]);
-      setTableData(initialTableData);
+        setNumberOfAttendees(updatedPlayers.length);
+        return updatedPlayers;
+      });
     };
 
-    void getPlayerNames();
+    getPlayerNames();
 
     const sortMatches = (): void => {
       const matches: Match[] = tournament.matchSchedule;
@@ -116,7 +111,19 @@ const RoundRobinTournamentView: React.FC = () => {
       }
     };
     sortMatches();
+    updatePlayerStats();
   }, [tournament]);
+
+  useEffect(() => {
+    const playerNames = players.map((player) => player.name);
+    const initialTableData: string[][] = playerNames.map((name) => [
+      name,
+      "0",
+      "0",
+      "0"
+    ]);
+    setTableData(initialTableData);
+  }, [tableData]);
 
   useEffect(() => {
     const createMatchButtons = async (): Promise<void> => {
@@ -158,12 +165,49 @@ const RoundRobinTournamentView: React.FC = () => {
     void createMatchButtons();
   }, []);
 
+  const updatePlayerStats = (): void => {
+    setPlayers((prevPlayers) => {
+      const updatedPlayers = [...prevPlayers];
+  
+      for (const match of tournament.matchSchedule) {
+        if (match.winner) {
+          const winner = updatedPlayers.find((player) => player.id === match.winner);
+          const loser = updatedPlayers.find((playerId) => playerId.id !== match.winner);
+  
+          if (winner && loser) {
+            winner.wins += 1;
+            loser.losses += 1;
+          }
+  
+          for (const matchPlayer of match.players) {
+            const player = updatedPlayers.find((player) => player.id === matchPlayer.id);
+            if (player) {
+              player.points += matchPlayer.points.length;
+            }
+          }
+        }
+      }
+      return updatedPlayers;
+    });
+  };
+  
+
   const generateTableCells = (rowIndex: number): React.ReactNode[] => {
-    return tableData[rowIndex]?.map((content, columnIndex) => (
-      <TableCell key={columnIndex}>
-        <Typography>{content}</Typography>
+    const player = players[rowIndex];
+    return [
+      <TableCell key={0}>
+        <Typography>{player.name}</Typography>
+      </TableCell>,
+      <TableCell key={1}>
+        <Typography>{player.wins}</Typography>
+      </TableCell>,
+      <TableCell key={2}>
+        <Typography>{player.losses}</Typography>
+      </TableCell>,
+      <TableCell key={3}>
+        <Typography>{player.points}</Typography>
       </TableCell>
-    ));
+    ];
   };
 
   const generateTable = (): ReactNode => {
