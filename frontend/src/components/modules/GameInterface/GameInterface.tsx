@@ -109,9 +109,12 @@ const GameInterface: React.FC = () => {
   }, [matchInfo, matchInfoFromSocket]);
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout | null = null;
     setTimer(matchInfo.timerTime);
+  }, [matchInfo.timerTime]);
 
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout | null = null;
+  
     if (isTimerRunning) {
       intervalId = setInterval(() => {
         setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));
@@ -121,13 +124,14 @@ const GameInterface: React.FC = () => {
         clearInterval(intervalId);
       }
     }
-
+  
     return () => {
       if (intervalId !== null) {
         clearInterval(intervalId);
       }
     };
-  }, [isTimerRunning]);
+  }, [isTimerRunning, matchInfo.timerTime]);
+  
 
   const buttonToTypeMap: Record<string, PointType> = {
     M: "men",
@@ -183,6 +187,7 @@ const GameInterface: React.FC = () => {
     try {
       if (!isTimerRunning) {
         await api.match.startTimer(matchId);
+        setTimer(matchInfo.timerTime);
       } else {
         await api.match.stopTimer(matchId);
       }
