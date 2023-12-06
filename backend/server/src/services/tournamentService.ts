@@ -7,7 +7,7 @@ import {
 } from "../models/tournamentModel.js";
 import UserModel, { type User } from "../models/userModel.js";
 import BadRequestError from "../errors/BadRequestError.js";
-import { type Types } from "mongoose";
+import { Types } from "mongoose";
 import MatchModel from "../models/matchModel.js";
 import { type CreateTournamentRequest } from "../models/requestModel.js";
 import { type Match, type MatchPlayer } from "../models/matchModel.js";
@@ -18,16 +18,10 @@ export class TournamentService {
       .populate<{ creator: User }>({ path: "creator", model: "User" })
       .populate<{ players: User[] }>({ path: "players", model: "User" })
       .populate<{
-        matchSchedule: Match[];
-        "matchSchedule.players": User[];
-        "matchSchedule.winner": User;
+        matchSchedule: Match[]
       }>({
         path: "matchSchedule",
         model: "Match",
-        populate: [
-          { path: "players", model: "User" },
-          { path: "winner", model: "User" }
-        ]
       })
       .exec();
     if (tournament === null || tournament === undefined) {
@@ -174,12 +168,12 @@ export class TournamentService {
       });
     }
 
-    // validation
-    for (let i = 0; i < unsavedMatch.players.length; i += 1) {
-      if (!tournament.players.includes(unsavedMatch.players[i].id)) {
-        const user = await UserModel.findById(
-          unsavedMatch.players[i].id
-        ).exec();
+    for (const player of unsavedMatch.players) {
+      //player.id is a String from the requestBody. conversion is necessary here.
+      const playerId = new Types.ObjectId(player.id);
+
+      if (!tournament.players.includes(playerId)) {
+        const user = await UserModel.findById(playerId).exec();
 
         if (user === null || user === undefined) {
           throw new NotFoundError({
@@ -187,7 +181,7 @@ export class TournamentService {
           });
         }
         throw new BadRequestError({
-          message: `Cannot create the match: ${user.firstName} ${user.lastName} is not registered for this tournament.`
+          message: `Cannot create the match: Player: ${user.firstName} ${user.lastName} is not registered for this tournament.`
         });
       }
     }
@@ -231,17 +225,17 @@ export class TournamentService {
     newPlayer: Types.ObjectId
   ): UnsavedMatch[] {
     const matches: UnsavedMatch[] = [];
-    for (let i = 0; i < playerIds.length; i++) {
-      if (!playerIds[i].equals(newPlayer)) {
+    for (const playerId of playerIds) {
+      if (!playerId.equals(newPlayer)) {
         matches.push({
           players: [
             { id: newPlayer, points: [], color: "red" },
-            { id: playerIds[i], points: [], color: "white" }
+            { id: playerId, points: [], color: "white" }
           ],
           type: "group",
-          admin: null,
           elapsedTime: 0,
-          timerStartedTimestamp: null
+          timerStartedTimestamp: null,
+          tournamentRound: 1,
         });
       }
     }
@@ -280,7 +274,6 @@ export class TournamentService {
           { id: extraPlayers[1], points: [], color: "white" }
         ],
         type: "playoff",
-        admin: null,
         elapsedTime: 0,
         timerStartedTimestamp: null,
         tournamentRound: 1

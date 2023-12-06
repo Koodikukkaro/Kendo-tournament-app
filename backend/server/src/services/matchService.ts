@@ -261,7 +261,6 @@ export class MatchService {
             { id: pairWithWinnerId, points: [], color: "white" }
           ],
           type: "playoff",
-          admin: null,
           elapsedTime: 0,
           timerStartedTimestamp: null,
           tournamentRound: nextRound
@@ -274,9 +273,7 @@ export class MatchService {
 
     // Save the tournament if new matches were added
     if (eligibleWinners.length > 0) {
-      await TournamentModel.findByIdAndUpdate(tournament._id, {
-        matchSchedule: tournament.matchSchedule
-      });
+      await tournament.save();
     }
   }
 }
