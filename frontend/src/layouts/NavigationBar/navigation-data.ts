@@ -33,10 +33,6 @@ export const authenticatedNavItems: NavigationData = baseNavItems.concat([
   {
     text: "Profile",
     link: routePaths.profile
-  },
-  {
-    text: "Tournaments",
-    link: routePaths.tournaments
   }
 ]);
 
