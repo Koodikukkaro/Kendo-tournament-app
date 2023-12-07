@@ -24,11 +24,13 @@ import type * as express from "express";
 
 @Route("tournaments")
 export class TournamentController extends Controller {
-  @Get("{id}")
+  @Get("{tournamentId}")
   @Tags("Tournaments")
-  public async getTournament(@Path() id: ObjectIdString): Promise<Tournament> {
+  public async getTournament(
+    @Path() tournamentId: ObjectIdString
+  ): Promise<Tournament> {
     this.setStatus(200);
-    return await this.service.getTournamentById(id);
+    return await this.service.getTournamentById(tournamentId);
   }
 
   @Get()
@@ -41,7 +43,7 @@ export class TournamentController extends Controller {
   }
 
   @Security("jwt")
-  @Post("create")
+  @Post()
   @Tags("Tournaments")
   public async createTournament(
     @Request() request: express.Request & { user: JwtPayload },
@@ -69,7 +71,7 @@ export class TournamentController extends Controller {
   }
 
   @Security("jwt")
-  @Put("{tournamentId}/manualSchedule")
+  @Put("{tournamentId}/manual-schedule")
   @Tags("Tournaments")
   public async manualSchedule(
     @Path() tournamentId: ObjectIdString,
@@ -79,7 +81,7 @@ export class TournamentController extends Controller {
       tournamentId,
       requestBody
     );
-    this.setStatus(201); // Created status
+    this.setStatus(201);
     return result;
   }
 
