@@ -77,7 +77,10 @@ const CreateTournamentForm: React.FC = () => {
         endDate: data.endDate.toString()
       });
       showToast(`Tournament '${data.name}' created successfully!`, "success");
-      navigate(routePaths.homeRoute, { replace: true });
+      navigate(routePaths.homeRoute, {
+        replace: true,
+        state: { refresh: true }
+      });
     } catch (error) {
       showToast(error, "error");
     }
@@ -163,7 +166,8 @@ const CreateTournamentForm: React.FC = () => {
           validation={{
             validate: (value: number) => {
               return (
-                value >= MIN_PLAYER_AMOUNT || `Minimum amount of players is ${MIN_PLAYER_AMOUNT}`
+                value >= MIN_PLAYER_AMOUNT ||
+                `Minimum amount of players is ${MIN_PLAYER_AMOUNT}`
               );
             }
           }}
