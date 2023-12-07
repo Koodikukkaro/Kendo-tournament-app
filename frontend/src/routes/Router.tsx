@@ -21,7 +21,6 @@ import RootRoute from "./RootRoute";
 import routePaths from "./route-paths";
 import { SocketProvider } from "context/SocketContext";
 
-// TODO
 const routes = createRoutesFromElements(
   <Route element={<RootRoute />}>
     <Route element={<Layout />}>
