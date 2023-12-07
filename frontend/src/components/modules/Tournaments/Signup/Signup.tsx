@@ -50,7 +50,10 @@ const Signup: React.FC = (): ReactElement => {
         `Successfully signed up for tournament: ${tournament.name}`,
         "success"
       );
-      navigate(routePaths.homeRoute, { replace: true });
+      navigate(routePaths.homeRoute, {
+        replace: true,
+        state: { refresh: true }
+      });
     } catch (error) {
       showToast(error, "error");
     }
