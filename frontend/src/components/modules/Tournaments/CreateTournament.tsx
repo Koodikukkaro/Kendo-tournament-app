@@ -31,7 +31,7 @@ import {
 
 import routePaths from "routes/route-paths";
 
-const MAX_PLAYER_AMOUNT = 4;
+const MIN_PLAYER_AMOUNT = 3;
 const now = dayjs();
 
 export interface CreateTournamentFormData {
@@ -54,7 +54,7 @@ const defaultValues: CreateTournamentFormData = {
   endDate: now.add(1, "week"),
   description: "",
   type: "Round Robin",
-  maxPlayers: MAX_PLAYER_AMOUNT,
+  maxPlayers: MIN_PLAYER_AMOUNT,
   differentOrganizer: false
 };
 
@@ -163,7 +163,7 @@ const CreateTournamentForm: React.FC = () => {
           validation={{
             validate: (value: number) => {
               return (
-                value >= MAX_PLAYER_AMOUNT || "Minimum amount of players is 4"
+                value >= MIN_PLAYER_AMOUNT || `Minimum amount of players is ${MIN_PLAYER_AMOUNT}`
               );
             }
           }}
