@@ -22,7 +22,6 @@ import routePaths from "./route-paths";
 import { SocketProvider } from "context/SocketContext";
 import GameInterface from "components/modules/GameInterface/GameInterface";
 
-// TODO
 const routes = createRoutesFromElements(
   <Route element={<RootRoute />}>
     <Route element={<Layout />}>
