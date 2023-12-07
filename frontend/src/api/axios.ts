@@ -81,7 +81,7 @@ const tournaments = {
     });
   },
   createNew: async (body: CreateTournamentRequest) => {
-    return await request.post<Tournament>(`${TOURNAMENTS_API}/create`, body);
+    return await request.post<Tournament>(`${TOURNAMENTS_API}`, body);
   },
   signup: async (tournamentId: string, body: SignupForTournamentRequest) => {
     return await request.put(
