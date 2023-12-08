@@ -59,7 +59,7 @@ const GameInterface: React.FC = () => {
         setHasJoined(false);
       };
     }
-  }, [matchId, hasJoined]);
+  }, [matchId]);
 
   useEffect(() => {
     const getMatchData = async (): Promise<void> => {
@@ -69,10 +69,10 @@ const GameInterface: React.FC = () => {
         let matchWinner: string | undefined;
         let officialId: string[] = [];
         let time: number = 0;
-        
-        const findPlayerName = (playerId: string, index: number) => {
+
+        const findPlayerName = (playerId: string, index: number): void => {
           const player = tournament.players.find((p) => p.id === playerId);
-          if (player) {
+          if (player !== undefined) {
             playersNames[index] = player.firstName;
           }
         };
@@ -83,8 +83,10 @@ const GameInterface: React.FC = () => {
           findPlayerName(matchPlayers[1].id, 1);
 
           if (matchInfoFromSocket.winner !== undefined) {
-            const winner = tournament.players.find((p) => p.id === matchInfoFromSocket.winner);
-            if (winner) {
+            const winner = tournament.players.find(
+              (p) => p.id === matchInfoFromSocket.winner
+            );
+            if (winner !== undefined) {
               matchWinner = winner.firstName;
             }
           }
@@ -101,9 +103,10 @@ const GameInterface: React.FC = () => {
             findPlayerName(matchPlayers[1].id, 1);
 
             if (matchFromApi.winner !== undefined) {
-               const winner = tournament.players.find((p) => p.id === matchFromApi.winner
+              const winner = tournament.players.find(
+                (p) => p.id === matchFromApi.winner
               );
-              if (winner) {
+              if (winner !== undefined) {
                 matchWinner = winner.firstName;
               }
             }
@@ -113,7 +116,6 @@ const GameInterface: React.FC = () => {
             time = 300 - Math.round(matchFromApi.elapsedTime / 1000);
           }
         }
-        console.log(playersNames)
         setMatchInfo({
           timerTime: time,
           players: matchPlayers,
@@ -137,7 +139,7 @@ const GameInterface: React.FC = () => {
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout | null = null;
-  
+
     if (isTimerRunning) {
       intervalId = setInterval(() => {
         setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));
@@ -147,14 +149,13 @@ const GameInterface: React.FC = () => {
         clearInterval(intervalId);
       }
     }
-  
+
     return () => {
       if (intervalId !== null) {
         clearInterval(intervalId);
       }
     };
   }, [isTimerRunning, matchInfo.timerTime]);
-  
 
   const buttonToTypeMap: Record<string, PointType> = {
     M: "men",
@@ -233,57 +234,59 @@ const GameInterface: React.FC = () => {
   return (
     <div className="app-container">
       <main className="main-content">
-      {isLoading && <Loader />}
+        {isLoading && <Loader />}
         {isError && (
           <ErrorModal
             open={isError}
-            onClose={() => setIsError(false)}
+            onClose={() => {
+              setIsError(false);
+            }}
             errorMessage="An unexpected error occurred."
           />
         )}
         {!isLoading && !isError && (
           <>
-        <Box display="flex" gap="20px" justifyContent="center">
-          <Box className="playerBox" bgcolor="white">
-            <Typography variant="h3">{matchInfo.playerNames[0]}</Typography>
-          </Box>
-          <Box className="playerBox" bgcolor="#db4744">
-            <Typography variant="h3">{matchInfo.playerNames[1]}</Typography>
-          </Box>
-        </Box>
-        <Box display="flex" gap="20px" justifyContent="center">
-          <Timer timer={timer} />
-          {userId !== null &&
-            userId !== undefined &&
-            matchInfo.officials.includes(userId) &&
-            matchInfo.winner === undefined && (
-              <TimerButton
-                isTimerRunning={isTimerRunning}
-                handleTimerChange={handleTimerChange}
-              />
+            <Box display="flex" gap="20px" justifyContent="center">
+              <Box className="playerBox" bgcolor="white">
+                <Typography variant="h3">{matchInfo.playerNames[0]}</Typography>
+              </Box>
+              <Box className="playerBox" bgcolor="#db4744">
+                <Typography variant="h3">{matchInfo.playerNames[1]}</Typography>
+              </Box>
+            </Box>
+            <Box display="flex" gap="20px" justifyContent="center">
+              <Timer timer={timer} />
+              {userId !== null &&
+                userId !== undefined &&
+                matchInfo.officials.includes(userId) &&
+                matchInfo.winner === undefined && (
+                  <TimerButton
+                    isTimerRunning={isTimerRunning}
+                    handleTimerChange={handleTimerChange}
+                  />
+                )}
+            </Box>
+            <PointTable matchInfo={matchInfo} />
+            <br></br>
+            {userId !== null &&
+              userId !== undefined &&
+              matchInfo.officials.includes(userId) &&
+              matchInfo.winner === undefined && (
+                <OfficialButtons
+                  open={open}
+                  selectedButton={selectedButton}
+                  handleRadioButtonClick={handleRadioButtonClick}
+                  handlePointShowing={handlePointShowing}
+                  handleOpen={handleOpen}
+                  handleClose={handleClose}
+                />
+              )}
+            {matchInfo.winner !== undefined && (
+              <div>
+                <Typography>{matchInfo.winner} wins!</Typography>
+              </div>
             )}
-        </Box>
-        <PointTable matchInfo={matchInfo} />
-        <br></br>
-        {userId !== null &&
-          userId !== undefined &&
-          matchInfo.officials.includes(userId) &&
-          matchInfo.winner === undefined && (
-            <OfficialButtons
-              open={open}
-              selectedButton={selectedButton}
-              handleRadioButtonClick={handleRadioButtonClick}
-              handlePointShowing={handlePointShowing}
-              handleOpen={handleOpen}
-              handleClose={handleClose}
-            />
-          )}
-        {matchInfo.winner !== undefined && (
-          <div>
-            <Typography>{matchInfo.winner} wins!</Typography>
-          </div>
-        )}
-        </>
+          </>
         )}
       </main>
     </div>

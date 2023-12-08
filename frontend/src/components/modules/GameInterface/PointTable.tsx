@@ -22,8 +22,7 @@ const PointTable: React.FC<TableComponentProps> = ({ matchInfo }) => {
   };
 
   const [cells, setCells] = useState<Cells>(initialCells);
-  let rowCounter = 0;
-  let column = 0;
+  const rowCounter = 0;
   const allPoints: Array<{ color: string; time: Date; value: string }> = [];
 
   const typeToButtonMap: Record<PointType, string> = {
@@ -40,20 +39,20 @@ const PointTable: React.FC<TableComponentProps> = ({ matchInfo }) => {
 
   const goThroughAllPoints = (): void => {
     for (const player of matchInfo.players) {
-      let rowCounter = 0;
       for (const point of player.points) {
         const color: string = player.color;
         const time: Date = point.timestamp;
         const value: string = typeToButtonMap[point.type];
 
-        const isTimeSeen = allPoints.some((existingPoint) => existingPoint.time=== time);
+        const isTimeSeen = allPoints.some(
+          (existingPoint) => existingPoint.time === time
+        );
 
         if (!isTimeSeen) {
           allPoints.push({ color, time, value });
         }
       }
     }
-    console.log(allPoints)
     allPoints.sort((a, b) => (a.time < b.time ? -1 : 1));
     assignCells(rowCounter);
   };
@@ -65,10 +64,8 @@ const PointTable: React.FC<TableComponentProps> = ({ matchInfo }) => {
       rowCounter++;
     }
   };
-  
 
   const updateCell = (row: number, column: number, value: string): void => {
-    console.log(cells)
     setCells((prevCells) => {
       const newRows = [...prevCells.rows];
       newRows[row][column] = value;
