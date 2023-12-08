@@ -2,9 +2,9 @@ import { type ISocketContext } from "context/SocketContext";
 import { type Dispatch, type SetStateAction } from "react";
 import io from "socket.io-client";
 import { socketEvents } from "./events";
+import { API_BASE_URL } from "api/axios";
 
-// TODO: Store the URL as an env variable.
-export const socket = io("http://localhost:8080", {
+export const socket = io(API_BASE_URL, {
   withCredentials: true,
   autoConnect: false
 });

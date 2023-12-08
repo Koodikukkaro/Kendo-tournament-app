@@ -10,7 +10,8 @@ import type {
   PasswordRecoveryRequest
 } from "types/requests";
 
-export const API_BASE_URL = process.env.REACT_APP_API_URL;
+export const API_BASE_URL =
+  process.env.REACT_APP_API_URL ?? "http://localhost:8080";
 export const AUTH_API = "/api/auth";
 export const USER_API = "/api/user";
 export const TOURNAMENTS_API = "/api/tournaments";
