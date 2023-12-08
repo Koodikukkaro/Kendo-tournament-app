@@ -114,16 +114,7 @@ const LoginForm: React.FC = () => {
         <Grid container gap="10px">
           <Grid item xs>
             <Typography variant="body2">
-              <Link
-                component={RouterLink}
-                to={homeRoute}
-                onClick={() => {
-                  showToast(
-                    "Password cannot be changed as of now. :(",
-                    "warning"
-                  );
-                }}
-              >
+              <Link component={RouterLink} to={routePaths.passwordReset}>
                 {"Forgot password?"}
               </Link>
             </Typography>

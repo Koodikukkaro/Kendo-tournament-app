@@ -22,7 +22,7 @@ import {
   isValidPassword,
   isValidPhone,
   isValidUsername
-} from "./registerationValidators";
+} from "utils/form-validators";
 import routePaths from "routes/route-paths";
 
 export interface RegisterFormData {

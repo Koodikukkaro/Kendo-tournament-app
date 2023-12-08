@@ -2,10 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useToast from "hooks/useToast";
 import { useAuth } from "context/AuthContext";
-import {
-  isValidPhone,
-  isValidUsername
-} from "../Registeration/registerationValidators";
+import { isValidPhone, isValidUsername } from "utils/form-validators";
 import api from "api/axios";
 import Loader from "components/common/Loader";
 import ErrorModal from "components/common/ErrorModal";
@@ -47,7 +44,7 @@ const Profile: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-  const [editingEnabled, setEditingEnabled] = useState(false);
+  const [editingEnabled, setEditingEnabled] = useState<boolean>(false);
 
   const formContext = useForm<EditUserRequest>({
     defaultValues,
@@ -61,7 +58,6 @@ const Profile: React.FC = () => {
     const fetchUserData = async (): Promise<void> => {
       try {
         if (userId !== undefined) {
-          console.log("ASD");
           const user = await api.user.details(userId);
           formContext.reset(user);
         }
@@ -240,15 +236,15 @@ const Profile: React.FC = () => {
               formContext.setValue("underage", e.target.checked);
             }}
           />
-            <TextFieldElement
-              required
-              name="guardiansEmail"
-              label="Guardian's Email Address"
-              type="email"
-              fullWidth
-              margin="normal"
-              disabled={!editingEnabled || !Boolean(underage)}
-            />
+          <TextFieldElement
+            required
+            name="guardiansEmail"
+            label="Guardian's Email Address"
+            type="email"
+            fullWidth
+            margin="normal"
+            disabled={!editingEnabled || !(underage as boolean)}
+          />
           <EditButtonRow
             editingEnabled={editingEnabled}
             setEditingEnabled={setEditingEnabled}
