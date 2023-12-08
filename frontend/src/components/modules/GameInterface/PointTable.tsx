@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Table, TableBody, TableRow, TableCell } from "@mui/material";
 import type { PointType } from "types/models";
-import { type matchData } from "./GameInterface";
+import { type MatchData } from "./GameInterface";
 
 interface TableComponentProps {
-  matchInfo: matchData;
+  matchInfo: MatchData;
 }
 interface Cells {
   rows: string[][];

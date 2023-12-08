@@ -12,43 +12,48 @@ import "./GameInterface.css";
 import { useAuth } from "context/AuthContext";
 import { joinMatch, leaveMatch } from "sockets/emit";
 import { useSocket } from "context/SocketContext";
+import useToast from "hooks/useToast";
 
-export interface matchData {
+export interface MatchData {
   timerTime: number;
   players: MatchPlayer[];
   playerNames: string[];
   winner: string | undefined;
-  officials: string;
+  officials: string[];
 }
 
 const GameInterface: React.FC = () => {
-  const [matchInfo, setMatchInfo] = useState<matchData>({
+  const [matchInfo, setMatchInfo] = useState<MatchData>({
     timerTime: 300,
     players: [],
     playerNames: [],
     winner: undefined,
-    officials: ""
+    officials: []
   });
-
-  useEffect(() => {
-    if (matchId !== undefined) {
-      joinMatch(matchId);
-
-      return () => {
-        leaveMatch(matchId);
-      };
-    }
-  }, []);
 
   const [open, setOpen] = useState(false);
   const [selectedButton, setSelectedButton] = useState<string>("");
   const [timer, setTimer] = useState<number>(matchInfo.timerTime);
   const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
   const [playerColor, setPlayerColor] = useState<PlayerColor>("red");
+  const [hasJoined, setHasJoined] = useState(false);
 
   const { matchId } = useParams();
   const { userId } = useAuth();
   const { matchInfo: matchInfoFromSocket } = useSocket();
+  const showToast = useToast();
+
+  useEffect(() => {
+    if (matchId !== undefined && !hasJoined) {
+      joinMatch(matchId);
+      setHasJoined(true);
+
+      return () => {
+        leaveMatch(matchId);
+        setHasJoined(false);
+      };
+    }
+  }, [matchId, hasJoined]);
 
   useEffect(() => {
     const getMatchData = async (): Promise<void> => {
@@ -56,7 +61,7 @@ const GameInterface: React.FC = () => {
         let matchPlayers: MatchPlayer[] = [];
         const playersNames: string[] = [];
         let matchWinner: string | undefined;
-        let officialId: string = "";
+        let officialId: string[] = [];
         let time: number = 0;
         if (matchInfoFromSocket !== undefined) {
           matchPlayers = matchInfoFromSocket.players;
@@ -102,7 +107,7 @@ const GameInterface: React.FC = () => {
           officials: officialId
         });
       } catch (error) {
-        console.error("Data couldn't be fetched", error);
+        showToast(error, "error");
       }
     };
     void getMatchData();
@@ -179,7 +184,7 @@ const GameInterface: React.FC = () => {
     try {
       await api.match.addPoint(matchId, body);
     } catch (error) {
-      console.error("Data couldn't be sent", error);
+      showToast(error, "error");
     }
   };
 
@@ -192,7 +197,7 @@ const GameInterface: React.FC = () => {
         await api.match.stopTimer(matchId);
       }
     } catch (error) {
-      console.error("Data couldn't be sent", error);
+      showToast(error, "error");
     }
   };
 
