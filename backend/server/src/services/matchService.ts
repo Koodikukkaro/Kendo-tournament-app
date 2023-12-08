@@ -267,8 +267,8 @@ export class MatchService {
         // Create a new match.
         const newMatch = {
           players: [
-            { id: winnerId, points: [], color: "red" },
-            { id: pairWithWinnerId, points: [], color: "white" }
+            { id: winnerId, points: [], color: "white" },
+            { id: pairWithWinnerId, points: [], color: "red" }
           ],
           type: "playoff",
           elapsedTime: 0,

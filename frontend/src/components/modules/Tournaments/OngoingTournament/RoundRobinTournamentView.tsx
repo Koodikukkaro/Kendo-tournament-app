@@ -1,4 +1,4 @@
-import React, { useState, useEffect, type ReactNode, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Tabs,
   Tab,
@@ -11,10 +11,10 @@ import {
   Paper,
   Typography,
   Button,
-  type ButtonProps
+  ButtonProps,
 } from "@mui/material";
 import "react-tabs/style/react-tabs.css";
-import { type User, type Match } from "types/models";
+import { User, Match } from "types/models";
 import { useNavigate } from "react-router-dom";
 import { useTournament } from "context/TournamentContext";
 
@@ -26,24 +26,91 @@ interface TournamentPlayer {
   points: number;
 }
 
+const Scoreboard: React.FC<{ players: TournamentPlayer[] }> = ({ players }) => {
+  const generateTableCells = (player: TournamentPlayer): React.ReactNode[] => {
+    return Object.values(player).map((value, index) => {
+      if (index === 0) {
+        // If we want to skip the ID property
+        return null;
+      }
+
+      return (
+        <TableCell key={index}>
+          <Typography>{value}</Typography>
+        </TableCell>
+      );
+    });
+  };
+
+  const generateTable = (): React.ReactNode => {
+    const sortedPlayers = [...players].sort((a, b) => b.points - a.points);
+
+    const tableHeaders = ["Name", "Wins", "Losses", "Points"];
+    return (
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {tableHeaders.map((header, index) => (
+                <TableCell key={index}>{header}</TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {sortedPlayers.map((player, index) => (
+              <TableRow key={index}>{generateTableCells(player)}</TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  };
+
+  return <div>{generateTable()}</div>;
+};
+
+const Matches: React.FC<{
+  ongoingMatchElements: React.ReactNode[];
+  upcomingMatchElements: React.ReactNode[];
+  pastMatchElements: React.ReactNode[];
+}> = ({ ongoingMatchElements, upcomingMatchElements, pastMatchElements }) => {
+  return (
+    <div>
+      <div>
+        <Typography variant="h5">Ongoing matches:</Typography>
+      </div>
+      <div>{ongoingMatchElements}</div>
+
+      <div>
+        <Typography variant="h5">Upcoming matches:</Typography>
+      </div>
+      <div>{upcomingMatchElements}</div>
+      <div>
+        <Typography variant="h5">Past matches:</Typography>
+      </div>
+      <div>{pastMatchElements}</div>
+    </div>
+  );
+};
+
 const RoundRobinTournamentView: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState("scoreboard");
-  const [ongoingMatchElements, setOngoingMatchElements] = useState<ReactNode[]>(
+  const [players, setPlayers] = useState<TournamentPlayer[]>([]);
+  const [ongoingMatchElements, setOngoingMatchElements] = useState<React.ReactNode[]>(
     []
   );
   const [upcomingMatchElements, setUpcomingMatchElements] = useState<
-    ReactNode[]
+    React.ReactNode[]
   >([]);
-  const [pastMatchElements, setPastMatchElements] = useState<ReactNode[]>([]);
+  const [pastMatchElements, setPastMatchElements] = useState<React.ReactNode[]>([]);
 
   const tournament = useTournament();
-  const [players, setPlayers] = useState<TournamentPlayer[]>([]);
+  const navigate = useNavigate();
+  const initialRender = useRef(true);
+
   let ongoingMatches: Match[] = [];
   let upcomingMatches: Match[] = [];
   let pastMatches: Match[] = [];
-
-  const navigate = useNavigate();
-  const initialRender = useRef(true);
 
   useEffect(() => {
     getPlayerNames();
@@ -114,19 +181,19 @@ const RoundRobinTournamentView: React.FC = () => {
     const createMatchButton = (
       match: Match,
       props: ButtonProps
-    ): JSX.Element => {
+    ): React.ReactNode => {
       const player1 = players.find(
         (player) => player.id === match.players[0].id
       )?.name;
       const player2 = players.find(
         (player) => player.id === match.players[1].id
       )?.name;
-
+  
       return (
-        <div style={{ marginBottom: "10px" }}>
+        <div style={{ marginBottom: "10px" }} key={match.id}>
           <Button
             onClick={() => {
-              navigate(`/matches/${match.id}`);
+              navigate(`match/${match.id}`);
             }}
             {...props}
           >
@@ -135,30 +202,31 @@ const RoundRobinTournamentView: React.FC = () => {
         </div>
       );
     };
-
-    const ongoingElements = ongoingMatches.map((match, index) =>
+  
+    const ongoingElements = ongoingMatches.map((match) =>
       createMatchButton(match, {
-        variant: "contained"
+        variant: "contained",
       })
     );
-    const upcomingElements = upcomingMatches.map((match, index) =>
+    const upcomingElements = upcomingMatches.map((match) =>
       createMatchButton(match, {
         disabled: true,
-        variant: "contained"
+        variant: "contained",
       })
     );
-    const pastElements = pastMatches.map((match, index) =>
+    const pastElements = pastMatches.map((match) =>
       createMatchButton(match, {
         disabled: false,
         variant: "contained",
-        color: "secondary"
+        color: "secondary",
       })
     );
-
-    setOngoingMatchElements(ongoingElements);
-    setUpcomingMatchElements(upcomingElements);
-    setPastMatchElements(pastElements);
+  
+    setOngoingMatchElements([...ongoingElements]);
+    setUpcomingMatchElements([...upcomingElements]);
+    setPastMatchElements([...pastElements]);
   };
+  
 
   const updatePlayerStats = (): void => {
     const processedMatches = new Set<string>();
@@ -199,74 +267,24 @@ const RoundRobinTournamentView: React.FC = () => {
     });
   };
 
-  const generateTableCells = (player: TournamentPlayer): ReactNode[] => {
-    return Object.values(player).map((value, index) => {
-      if (index === 0) {
-        // If we want to skip the ID property
-        return null;
-      }
-
-      return (
-        <TableCell key={index}>
-          <Typography>{value}</Typography>
-        </TableCell>
-      );
-    });
-  };
-
-  const generateTable = (): ReactNode => {
-    const sortedPlayers = [...players].sort((a, b) => b.points - a.points);
-
-    const tableHeaders = ["Name", "Wins", "Losses", "Points"];
-    return (
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              {tableHeaders.map((header, index) => (
-                <TableCell key={index}>{header}</TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sortedPlayers.map((player, index) => (
-              <TableRow key={index}>{generateTableCells(player)}</TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  };
-
   return (
     <>
       <Tabs
         value={selectedTab}
-        onChange={(event, newValue) => {
+        onChange={(_, newValue) => {
           setSelectedTab(newValue);
         }}
       >
         <Tab label="Scoreboard" value="scoreboard" />
         <Tab label="Matches" value="matches" />
       </Tabs>
-      {selectedTab === "scoreboard" && <div>{generateTable()}</div>}
-
+      {selectedTab === "scoreboard" && <Scoreboard players={players} />}
       {selectedTab === "matches" && (
-        <div>
-          <div>
-            <Typography variant="h5">Ongoing matches:</Typography>
-          </div>
-          <div>{ongoingMatchElements}</div>
-
-          <div>
-            <Typography variant="h5">Upcoming matches:</Typography>
-          </div>
-          <div>{upcomingMatchElements}</div>
-          <div>
-            <Typography variant="h5">Past matches:</Typography>
-          </div>
-          <div>{pastMatchElements}</div>
-        </div>
+        <Matches
+          ongoingMatchElements={ongoingMatchElements}
+          upcomingMatchElements={upcomingMatchElements}
+          pastMatchElements={pastMatchElements}
+        />
       )}
     </>
   );

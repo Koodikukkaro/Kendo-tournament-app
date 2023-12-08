@@ -238,8 +238,8 @@ export class TournamentService {
       if (!playerId.equals(newPlayer)) {
         matches.push({
           players: [
-            { id: newPlayer, points: [], color: "red" },
-            { id: playerId, points: [], color: "white" }
+            { id: newPlayer, points: [], color: "white" },
+            { id: playerId, points: [], color: "red" }
           ],
           type: "group",
           elapsedTime: 0,
@@ -283,8 +283,8 @@ export class TournamentService {
     if (extraPlayers.length === 2) {
       matches.push({
         players: [
-          { id: extraPlayers[0], points: [], color: "red" },
-          { id: extraPlayers[1], points: [], color: "white" }
+          { id: extraPlayers[0], points: [], color: "white" },
+          { id: extraPlayers[1], points: [], color: "red" }
         ],
         type: "playoff",
         elapsedTime: 0,

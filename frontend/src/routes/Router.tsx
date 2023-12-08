@@ -19,6 +19,8 @@ import { TournamentsProvider } from "context/TournamentsContext";
 import { TournamentProvider } from "context/TournamentContext";
 import RootRoute from "./RootRoute";
 import routePaths from "./route-paths";
+import { SocketProvider } from "context/SocketContext";
+import GameInterface from "components/modules/GameInterface/GameInterface";
 
 // TODO
 const routes = createRoutesFromElements(
@@ -33,14 +35,13 @@ const routes = createRoutesFromElements(
 
         <Route path=":id" element={<TournamentProvider />}>
           <Route index element={<TournamentDetails />} />
-          <Route
-            path="sign-up"
-            element={
-              <AuthenticationGuard>
-                <Signup />
-              </AuthenticationGuard>
-            }
-          />
+          <Route element={<AuthenticationGuard />}>
+            <Route path="sign-up" element={<Signup />} />
+            <Route
+              path="match/:matchId"
+              element={<SocketProvider>{<GameInterface />}</SocketProvider>}
+            ></Route>
+          </Route>
         </Route>
       </Route>
 
