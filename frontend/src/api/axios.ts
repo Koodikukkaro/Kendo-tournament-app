@@ -5,7 +5,8 @@ import type {
   CreateTournamentRequest,
   LoginRequest,
   RegisterRequest,
-  EditUserRequest
+  EditUserRequest,
+  PasswordResetRequest
 } from "types/requests";
 
 export const API_BASE_URL = process.env.REACT_APP_API_URL;
@@ -88,6 +89,10 @@ const auth = {
 
   checkAuth: async () => {
     return await request.get<{ userId: string }>(`${AUTH_API}/check-auth`);
+  },
+
+  resetPassword: async (body: PasswordResetRequest) => {
+    await request.post(`${AUTH_API}/reset-password`, body);
   }
 };
 

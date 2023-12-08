@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
-import { isValidPhone } from "../Registeration/registerationValidators";
+import { isValidPhone } from "utils/form-validators";
 import api from "api/axios";
 import useToast from "hooks/useToast";
 import { useNavigate } from "react-router-dom";

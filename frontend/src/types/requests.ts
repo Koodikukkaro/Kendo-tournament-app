@@ -31,3 +31,7 @@ export interface SignupForTournamentRequest {
 }
 
 export type EditUserRequest = Omit<User, "password" | "id">;
+
+export interface PasswordResetRequest {
+  email: string;
+}

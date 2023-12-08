@@ -9,8 +9,7 @@ import useToast from "hooks/useToast";
 import { useAuth } from "context/AuthContext";
 import api from "api/axios";
 import ConfirmUserDeletionModal from "./ConfirmUserDeleteModal";
-import { Link as RouterLink } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 const ProfileHeader: React.FC = () => {
   const showToast = useToast();
@@ -56,13 +55,7 @@ const ProfileHeader: React.FC = () => {
         </Typography>
 
         <Typography variant="body2">
-          <Link
-            component={RouterLink}
-            to={routePaths.homeRoute}
-            onClick={() => {
-              showToast("Password cannot be changed as of now. :(", "warning");
-            }}
-          >
+          <Link component={RouterLink} to={routePaths.passwordReset}>
             Change password
           </Link>
         </Typography>
@@ -76,7 +69,7 @@ const ProfileHeader: React.FC = () => {
         onClick={() => {
           setConfirmationDialogOpen(true);
         }}
-        sx={{alignSelf: "flex-end"}}
+        sx={{ alignSelf: "flex-end" }}
       >
         Delete account
       </Button>
