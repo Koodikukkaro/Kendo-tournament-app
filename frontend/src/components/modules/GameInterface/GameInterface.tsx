@@ -255,7 +255,7 @@ const GameInterface: React.FC = () => {
           <Timer timer={timer} />
           {userId !== null &&
             userId !== undefined &&
-            
+            matchInfo.officials.includes(userId) &&
             matchInfo.winner === undefined && (
               <TimerButton
                 isTimerRunning={isTimerRunning}
@@ -267,7 +267,7 @@ const GameInterface: React.FC = () => {
         <br></br>
         {userId !== null &&
           userId !== undefined &&
-          
+          matchInfo.officials.includes(userId) &&
           matchInfo.winner === undefined && (
             <OfficialButtons
               open={open}
