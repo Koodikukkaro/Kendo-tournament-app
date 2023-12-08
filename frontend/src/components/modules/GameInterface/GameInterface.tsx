@@ -13,6 +13,9 @@ import { useAuth } from "context/AuthContext";
 import { joinMatch, leaveMatch } from "sockets/emit";
 import { useSocket } from "context/SocketContext";
 import useToast from "hooks/useToast";
+import { useTournament } from "context/TournamentContext";
+import Loader from "components/common/Loader";
+import ErrorModal from "components/common/ErrorModal";
 
 export interface MatchData {
   timerTime: number;
@@ -42,6 +45,9 @@ const GameInterface: React.FC = () => {
   const { userId } = useAuth();
   const { matchInfo: matchInfoFromSocket } = useSocket();
   const showToast = useToast();
+  const tournament = useTournament();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isError, setIsError] = useState<boolean>(false);
 
   useEffect(() => {
     if (matchId !== undefined && !hasJoined) {
@@ -63,17 +69,24 @@ const GameInterface: React.FC = () => {
         let matchWinner: string | undefined;
         let officialId: string[] = [];
         let time: number = 0;
+        
+        const findPlayerName = (playerId: string, index: number) => {
+          const player = tournament.players.find((p) => p.id === playerId);
+          if (player) {
+            playersNames[index] = player.firstName;
+          }
+        };
+
         if (matchInfoFromSocket !== undefined) {
           matchPlayers = matchInfoFromSocket.players;
-          playersNames[0] = (
-            await api.user.details(matchInfoFromSocket.players[0].id)
-          ).firstName;
-          playersNames[1] = (
-            await api.user.details(matchInfoFromSocket.players[1].id)
-          ).firstName;
+          findPlayerName(matchPlayers[0].id, 0);
+          findPlayerName(matchPlayers[1].id, 1);
+
           if (matchInfoFromSocket.winner !== undefined) {
-            matchWinner = (await api.user.details(matchInfoFromSocket.winner))
-              .firstName;
+            const winner = tournament.players.find((p) => p.id === matchInfoFromSocket.winner);
+            if (winner) {
+              matchWinner = winner.firstName;
+            }
           }
           if (matchInfoFromSocket.officials !== undefined) {
             officialId = matchInfoFromSocket.officials;
@@ -81,17 +94,18 @@ const GameInterface: React.FC = () => {
           time = 300 - Math.round(matchInfoFromSocket.elapsedTime / 1000);
         } else if (matchId !== undefined) {
           const matchFromApi: Match = await api.match.info(matchId);
+
           if (matchFromApi !== undefined) {
             matchPlayers = matchFromApi.players;
-            playersNames[0] = (
-              await api.user.details(matchFromApi.players[0].id)
-            ).firstName;
-            playersNames[1] = (
-              await api.user.details(matchFromApi.players[1].id)
-            ).firstName;
+            findPlayerName(matchPlayers[0].id, 0);
+            findPlayerName(matchPlayers[1].id, 1);
+
             if (matchFromApi.winner !== undefined) {
-              matchWinner = (await api.user.details(matchFromApi.winner))
-                .firstName;
+               const winner = tournament.players.find((p) => p.id === matchFromApi.winner
+              );
+              if (winner) {
+                matchWinner = winner.firstName;
+              }
             }
             if (matchFromApi.officials !== undefined) {
               officialId = matchFromApi.officials;
@@ -99,6 +113,7 @@ const GameInterface: React.FC = () => {
             time = 300 - Math.round(matchFromApi.elapsedTime / 1000);
           }
         }
+        console.log(playersNames)
         setMatchInfo({
           timerTime: time,
           players: matchPlayers,
@@ -107,11 +122,14 @@ const GameInterface: React.FC = () => {
           officials: officialId
         });
       } catch (error) {
+        setIsError(true);
         showToast(error, "error");
+      } finally {
+        setIsLoading(false);
       }
     };
     void getMatchData();
-  }, [matchInfo, matchInfoFromSocket]);
+  }, [isLoading]);
 
   useEffect(() => {
     setTimer(matchInfo.timerTime);
@@ -215,6 +233,16 @@ const GameInterface: React.FC = () => {
   return (
     <div className="app-container">
       <main className="main-content">
+      {isLoading && <Loader />}
+        {isError && (
+          <ErrorModal
+            open={isError}
+            onClose={() => setIsError(false)}
+            errorMessage="An unexpected error occurred."
+          />
+        )}
+        {!isLoading && !isError && (
+          <>
         <Box display="flex" gap="20px" justifyContent="center">
           <Box className="playerBox" bgcolor="white">
             <Typography variant="h3">{matchInfo.playerNames[0]}</Typography>
@@ -227,7 +255,7 @@ const GameInterface: React.FC = () => {
           <Timer timer={timer} />
           {userId !== null &&
             userId !== undefined &&
-            matchInfo.officials.includes(userId) &&
+            
             matchInfo.winner === undefined && (
               <TimerButton
                 isTimerRunning={isTimerRunning}
@@ -239,7 +267,7 @@ const GameInterface: React.FC = () => {
         <br></br>
         {userId !== null &&
           userId !== undefined &&
-          matchInfo.officials.includes(userId) &&
+          
           matchInfo.winner === undefined && (
             <OfficialButtons
               open={open}
@@ -254,6 +282,8 @@ const GameInterface: React.FC = () => {
           <div>
             <Typography>{matchInfo.winner} wins!</Typography>
           </div>
+        )}
+        </>
         )}
       </main>
     </div>
