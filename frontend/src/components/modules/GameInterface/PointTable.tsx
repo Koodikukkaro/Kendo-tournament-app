@@ -35,7 +35,7 @@ const PointTable: React.FC<TableComponentProps> = ({ matchInfo }) => {
 
   useEffect(() => {
     goThroughAllPoints();
-  }, []);
+  }, [matchInfo]);
 
   const goThroughAllPoints = (): void => {
     for (const player of matchInfo.players) {
