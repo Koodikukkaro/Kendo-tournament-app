@@ -113,7 +113,7 @@ const GameInterface: React.FC = () => {
             if (matchFromApi.officials !== undefined) {
               officialId = matchFromApi.officials;
             }
-            time = 300 - Math.round(matchFromApi.elapsedTime / 1000);
+            time = 300 - Math.ceil(matchFromApi.elapsedTime / 1000);
           }
         }
         setMatchInfo({
@@ -131,11 +131,11 @@ const GameInterface: React.FC = () => {
       }
     };
     void getMatchData();
-  }, [isLoading]);
+  }, [isLoading, matchInfoFromSocket]);
 
   useEffect(() => {
-    setTimer(matchInfo.timerTime);
-  }, [matchInfo.timerTime]);
+    setTimer(matchInfo.timerTime)
+  }, [matchInfo]);
 
   useEffect(() => {
     let intervalId: NodeJS.Timeout | null = null;
@@ -211,7 +211,6 @@ const GameInterface: React.FC = () => {
     try {
       if (!isTimerRunning) {
         await api.match.startTimer(matchId);
-        setTimer(matchInfo.timerTime);
       } else {
         await api.match.stopTimer(matchId);
       }
@@ -258,7 +257,6 @@ const GameInterface: React.FC = () => {
               <Timer timer={timer} />
               {userId !== null &&
                 userId !== undefined &&
-                matchInfo.officials.includes(userId) &&
                 matchInfo.winner === undefined && (
                   <TimerButton
                     isTimerRunning={isTimerRunning}
@@ -270,7 +268,6 @@ const GameInterface: React.FC = () => {
             <br></br>
             {userId !== null &&
               userId !== undefined &&
-              matchInfo.officials.includes(userId) &&
               matchInfo.winner === undefined && (
                 <OfficialButtons
                   open={open}
