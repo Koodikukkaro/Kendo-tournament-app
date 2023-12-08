@@ -11,6 +11,8 @@ const PlayoffTournamentView: React.FC = () => {
   const matchSchedule: Match[] = tournament.matchSchedule;
   const players: User[] = tournament.players;
 
+  const totalRounds = Math.ceil(Math.log2(players.length));
+
   // Group matches by tournamentRound
   const rounds: Rounds = matchSchedule.reduce<Rounds>((acc, match) => {
     const round = match.tournamentRound;
@@ -20,10 +22,6 @@ const PlayoffTournamentView: React.FC = () => {
     acc[round].push(match);
     return acc;
   }, {});
-
-  const sortedRoundNumbers = Object.keys(rounds)
-    .map(Number)
-    .sort((a, b) => a - b);
 
   return (
     <Box
@@ -38,29 +36,30 @@ const PlayoffTournamentView: React.FC = () => {
         justifyContent="flex-start"
         alignItems="flex-start"
       >
-        {sortedRoundNumbers.map((roundNumber, index) => (
+        {Object.entries(rounds).map(([roundNumber, matches], index) => (
           <React.Fragment key={roundNumber}>
-            {index > 0 && (
-              <Divider
-                orientation="vertical"
-                flexItem
-                sx={{ borderColor: "black" }}
-              />
-            )}
+            {index > 0 && <Divider orientation="vertical" flexItem />}
             <Grid item>
               <Box
                 sx={{
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  minWidth: 300 // Ensures the box has a minimum width
+                  minWidth: 300
                 }}
               >
                 <Typography
-                  variant="h5"
-                  sx={{ marginBottom: 2, textAlign: "center" }}
-                >{`Round ${roundNumber}`}</Typography>
-                {rounds[roundNumber].map((match: Match) => {
+                  sx={{
+                    marginBottom: 2,
+                    textAlign: "center",
+                    textDecoration: "underline"
+                  }}
+                >
+                  {parseInt(roundNumber) === totalRounds
+                    ? "Final"
+                    : `Round ${roundNumber}`}
+                </Typography>
+                {matches.map((match: Match) => {
                   const tempPlayers: User[] = match.players.map(
                     (matchPlayer) => {
                       const player = players.find(
