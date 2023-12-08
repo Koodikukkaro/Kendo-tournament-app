@@ -1,7 +1,21 @@
-import { Route, Controller, Get, Path, Tags, Security, Body, Post } from "tsoa";
+import {
+  Route,
+  Controller,
+  Get,
+  Path,
+  Tags,
+  Security,
+  Body,
+  Post,
+  Put
+} from "tsoa";
 import { type User } from "../models/userModel.js";
 import { UserService } from "../services/userService.js";
-import { ObjectIdString, RegisterRequest } from "../models/requestModel.js";
+import {
+  EditUserRequest,
+  ObjectIdString,
+  RegisterRequest
+} from "../models/requestModel.js";
 
 @Route("user")
 export class UserController extends Controller {
@@ -21,6 +35,17 @@ export class UserController extends Controller {
     this.setStatus(201);
 
     await this.service.registerUser(requestBody);
+  }
+
+  @Put("{id}")
+  @Tags("User")
+  public async editUser(
+    @Path() id: ObjectIdString,
+    @Body() requestBody: EditUserRequest
+  ): Promise<void> {
+    this.setStatus(204);
+
+    await this.service.updateUserById(id, requestBody);
   }
 
   private get service(): UserService {

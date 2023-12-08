@@ -116,3 +116,6 @@ export type CreateTournamentRequest = Pick<
 export interface SignupForTournamentRequest {
   playerId: ObjectIdString;
 }
+
+/* Note that we get the data validations from the registerRequest interface also */
+export type EditUserRequest = Omit<RegisterRequest, "password">;

@@ -34,23 +34,24 @@ export class TournamentService {
   }
 
   public async getAllTournaments(limit: number): Promise<Tournament[]> {
-    const tournaments = await TournamentModel.find().limit(limit)
-    .populate<{ creator: User }>({ path: "creator", model: "User" })
-    .populate<{ players: User[] }>({ path: "players", model: "User" })
-    .populate<{
-      matchSchedule: Match[];
-    }>({
-      path: "matchSchedule",
-       model: "Match"
-    })
-    .exec();
+    const tournaments = await TournamentModel.find()
+      .limit(limit)
+      .populate<{ creator: User }>({ path: "creator", model: "User" })
+      .populate<{ players: User[] }>({ path: "players", model: "User" })
+      .populate<{
+        matchSchedule: Match[];
+      }>({
+        path: "matchSchedule",
+        model: "Match"
+      })
+      .exec();
 
     if (tournaments === null || tournaments === undefined) {
       throw new NotFoundError({
         message: "No tournaments found"
       });
     }
-    
+
     return tournaments.map((tournament) => tournament.toObject());
   }
 
