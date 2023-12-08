@@ -1,4 +1,5 @@
 import MatchModel, {
+  type MatchPlayer,
   type Match,
   type MatchPoint,
   type PlayerColor
@@ -9,6 +10,8 @@ import {
   type CreateMatchRequest,
   type AddPointRequest
 } from "../models/requestModel.js";
+import { type Types } from "mongoose";
+import { TournamentModel, TournamentType } from "../models/tournamentModel.js";
 
 // Note by Samuel:
 // There's something missing about mongoose validation if using update.
@@ -20,7 +23,6 @@ export class MatchService {
     const newMatch = await MatchModel.create({
       type: requestBody.matchType,
       players: requestBody.players,
-      admin: requestBody.admin,
       comment: requestBody.comment,
       officials: requestBody.officials
     });
@@ -150,7 +152,7 @@ export class MatchService {
 
     this.assignPoint(match, newPoint, pointColor);
 
-    this.checkMatchOutcome(match);
+    await this.checkMatchOutcome(match);
 
     await match.save();
 
@@ -162,16 +164,18 @@ export class MatchService {
     point: MatchPoint,
     pointColor: PlayerColor
   ): void {
-    const [player1, player2] = match.players;
+    const player1: MatchPlayer = match.players[0] as MatchPlayer;
+    const player2: MatchPlayer = match.players[1] as MatchPlayer;
     const pointWinner = player1.color === pointColor ? player1 : player2;
     pointWinner.points.push(point);
   }
 
-  private checkMatchOutcome(match: Match): void {
+  private async checkMatchOutcome(match: Match): Promise<void> {
     const MAXIMUM_POINTS = 2;
-    const [player1, player2] = match.players;
     let player1Points = 0;
     let player2Points = 0;
+    const player1: MatchPlayer = match.players[0] as MatchPlayer;
+    const player2: MatchPlayer = match.players[1] as MatchPlayer;
 
     player1.points.forEach((point: MatchPoint) => {
       if (point.type === "hansoku") {
@@ -194,9 +198,92 @@ export class MatchService {
     if (player1Points >= MAXIMUM_POINTS) {
       match.winner = player1.id;
       match.endTimestamp = new Date();
+      await this.createPlayoffSchedule(match.id, player1.id);
     } else if (player2Points >= MAXIMUM_POINTS) {
       match.winner = player2.id;
       match.endTimestamp = new Date();
+      await this.createPlayoffSchedule(match.id, player2.id);
+    }
+  }
+
+  private async createPlayoffSchedule(
+    matchId: Types.ObjectId,
+    winnerId: Types.ObjectId
+  ): Promise<void> {
+    const tournament = await TournamentModel.findOne({
+      matchSchedule: matchId
+    })
+      .populate<{
+        matchSchedule: Match[];
+      }>({
+        path: "matchSchedule",
+        model: "Match"
+      })
+      .exec();
+
+    if (tournament?.type !== TournamentType.Playoff) {
+      return;
+    }
+
+    const playedMatches = tournament.matchSchedule;
+
+    const currentMatch = playedMatches.find(
+      (match) => match.id.toString() === matchId.toString()
+    );
+    if (currentMatch === null || currentMatch === undefined) {
+      throw new NotFoundError({
+        message: "Match not found in tournament schedule"
+      });
+    }
+    const currentRound = currentMatch.tournamentRound;
+    const nextRound = currentRound + 1;
+
+    const winners = playedMatches
+      .filter((match) => match.tournamentRound === currentRound && match.winner)
+      .map((match) => match.winner)
+      .filter((winner): winner is Types.ObjectId => winner != null);
+
+    // Find eligible winners who don't have a match in the next round
+    const eligibleWinners = winners.filter((winner) => {
+      if (winner === null || winner === undefined) {
+        return false;
+      }
+      return !playedMatches.some(
+        (match) =>
+          match.tournamentRound === nextRound &&
+          match.players.some(
+            (player) => player.id.toString() === winner.toString()
+          )
+      );
+    });
+
+    // Pair current winner with eligible winners for the next round
+    for (const pairWithWinnerId of eligibleWinners) {
+      if (
+        pairWithWinnerId !== null &&
+        pairWithWinnerId !== undefined &&
+        !pairWithWinnerId.equals(winnerId)
+      ) {
+        // Create a new match.
+        const newMatch = {
+          players: [
+            { id: winnerId, points: [], color: "red" },
+            { id: pairWithWinnerId, points: [], color: "white" }
+          ],
+          type: "playoff",
+          elapsedTime: 0,
+          timerStartedTimestamp: null,
+          tournamentRound: nextRound
+        };
+
+        const matchDocuments = await MatchModel.create(newMatch);
+        tournament.matchSchedule.push(matchDocuments.id);
+      }
+    }
+
+    // Save the tournament if new matches were added
+    if (eligibleWinners.length > 0) {
+      await tournament.save();
     }
   }
 }

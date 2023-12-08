@@ -23,6 +23,7 @@ import LogoButton from "./LogoButton";
 // -,- in the menu and the corresponding link
 
 import type { NavigationData, NavigationItem } from "./navigation-bar";
+import routePaths from "routes/route-paths";
 import { useAuth } from "context/AuthContext";
 
 interface Props {
@@ -31,11 +32,11 @@ interface Props {
   navigationItems: NavigationData;
 }
 
-const businessName = "KendoApp";
+const APP_NAME = "KendoApp";
 
 const NavigationBar: React.FC<Props> = (props) => {
   const { window, navigationItems } = props;
-  const { logout } = useAuth();
+  const { isAuthenticated, logout } = useAuth();
   const navigate = useNavigate();
 
   const container =
@@ -49,7 +50,7 @@ const NavigationBar: React.FC<Props> = (props) => {
   const handleButtonClick = async (
     navigationItem: NavigationItem
   ): Promise<void> => {
-    if (navigationItem.link === "/logout") {
+    if (navigationItem.link === routePaths.logout) {
       await logout();
     }
 
@@ -89,8 +90,10 @@ const NavigationBar: React.FC<Props> = (props) => {
                   </Button>
                 ))}
               </Box>
-              <LogoButton logoName={businessName} />
-              <NavigationUserMenu settings={props.settings} />
+              <LogoButton logoName={APP_NAME} />
+              {isAuthenticated ? (
+                <NavigationUserMenu settings={props.settings} />
+              ) : null}
             </Toolbar>
           </Container>
         </AppBar>
@@ -101,7 +104,7 @@ const NavigationBar: React.FC<Props> = (props) => {
         toggleDrawer={toggleDrawer}
         drawerIsOpen={openDrawer}
         navigationItems={navigationItems}
-        drawerTitle={businessName}
+        drawerTitle={APP_NAME}
       />
     </>
   );

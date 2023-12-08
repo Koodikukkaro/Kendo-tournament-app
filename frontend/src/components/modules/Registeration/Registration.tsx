@@ -5,6 +5,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+
 import api from "api/axios";
 import { type RegisterRequest } from "types/requests";
 import useToast from "hooks/useToast";
@@ -22,6 +23,7 @@ import {
   isValidPhone,
   isValidUsername
 } from "./registerationValidators";
+import routePaths from "routes/route-paths";
 
 export interface RegisterFormData {
   firstName: string;
@@ -70,7 +72,7 @@ const RegisterForm: React.FC = () => {
       const { passwordConfirmation, ...requestBody } = data;
       await api.user.register(requestBody as RegisterRequest);
       showToast("Registration successful!", "success");
-      navigate("/login", { replace: true });
+      navigate(routePaths.login, { replace: true });
     } catch (error) {
       showToast(error, "error");
     }
@@ -90,7 +92,7 @@ const RegisterForm: React.FC = () => {
           </Typography>
           <Typography variant="body1">
             {"Already have an account? "}
-            <Link component={RouterLink} to="/login">
+            <Link component={RouterLink} to={routePaths.login}>
               {"Sign In"}
             </Link>
           </Typography>

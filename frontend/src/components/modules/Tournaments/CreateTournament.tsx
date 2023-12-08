@@ -29,6 +29,8 @@ import {
   useWatch
 } from "react-hook-form-mui";
 
+import routePaths from "routes/route-paths";
+
 const MAX_PLAYER_AMOUNT = 4;
 const now = dayjs();
 
@@ -75,7 +77,7 @@ const CreateTournamentForm: React.FC = () => {
         endDate: data.endDate.toString()
       });
       showToast(`Tournament '${data.name}' created successfully!`, "success");
-      navigate("/", { replace: true });
+      navigate(routePaths.homeRoute, { replace: true });
     } catch (error) {
       showToast(error, "error");
     }
