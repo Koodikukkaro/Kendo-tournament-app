@@ -1,4 +1,4 @@
-import type { Tournament } from "./models";
+import type { Tournament, User } from "./models";
 
 export interface LoginRequest {
   email: string;
@@ -29,3 +29,5 @@ export type CreateTournamentRequest = Omit<
 export interface SignupForTournamentRequest {
   playerId: string;
 }
+
+export type EditUserRequest = Omit<User, "password" | "id">;
