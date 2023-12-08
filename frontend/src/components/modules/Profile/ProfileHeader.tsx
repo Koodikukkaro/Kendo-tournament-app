@@ -55,7 +55,7 @@ const ProfileHeader: React.FC = () => {
         </Typography>
 
         <Typography variant="body2">
-          <Link component={RouterLink} to={routePaths.passwordReset}>
+          <Link component={RouterLink} to={routePaths.passwordRecovery}>
             Change password
           </Link>
         </Typography>

@@ -114,7 +114,7 @@ const LoginForm: React.FC = () => {
         <Grid container gap="10px">
           <Grid item xs>
             <Typography variant="body2">
-              <Link component={RouterLink} to={routePaths.passwordReset}>
+              <Link component={RouterLink} to={routePaths.passwordRecovery}>
                 {"Forgot password?"}
               </Link>
             </Typography>
