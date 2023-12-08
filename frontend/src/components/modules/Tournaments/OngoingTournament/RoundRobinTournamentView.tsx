@@ -10,14 +10,15 @@ import {
   TableRow,
   Paper,
   Typography,
-  Button
+  Button,
+  type ButtonProps
 } from "@mui/material";
 import "react-tabs/style/react-tabs.css";
 import { type User, type Match } from "types/models";
 import { useNavigate } from "react-router-dom";
 import { useTournament } from "context/TournamentContext";
 
-interface tournamentPlayer {
+interface TournamentPlayer {
   id: string;
   name: string;
   wins: number;
@@ -36,7 +37,7 @@ const RoundRobinTournamentView: React.FC = () => {
   const [pastMatchElements, setPastMatchElements] = useState<ReactNode[]>([]);
 
   const tournament = useTournament();
-  const [players, setPlayers] = useState<tournamentPlayer[]>([]);
+  const [players, setPlayers] = useState<TournamentPlayer[]>([]);
   let ongoingMatches: Match[] = [];
   let upcomingMatches: Match[] = [];
   let pastMatches: Match[] = [];
@@ -112,9 +113,7 @@ const RoundRobinTournamentView: React.FC = () => {
   const createMatchButtons = (): void => {
     const createMatchButton = (
       match: Match,
-      variant: "contained" | "contained" | "contained",
-      disabled?: boolean,
-      color?: "secondary"
+      props: ButtonProps
     ): JSX.Element => {
       const player1 = players.find(
         (player) => player.id === match.players[0].id
@@ -126,12 +125,10 @@ const RoundRobinTournamentView: React.FC = () => {
       return (
         <div style={{ marginBottom: "10px" }}>
           <Button
-            variant={variant}
             onClick={() => {
               navigate(`/matches/${match.id}`);
             }}
-            disabled={disabled}
-            color={color}
+            {...props}
           >
             {`${player1} - ${player2}`}
           </Button>
@@ -140,13 +137,22 @@ const RoundRobinTournamentView: React.FC = () => {
     };
 
     const ongoingElements = ongoingMatches.map((match, index) =>
-      createMatchButton(match, "contained")
+      createMatchButton(match, {
+        variant: "contained"
+      })
     );
     const upcomingElements = upcomingMatches.map((match, index) =>
-      createMatchButton(match, "contained", true)
+      createMatchButton(match, {
+        disabled: true,
+        variant: "contained"
+      })
     );
     const pastElements = pastMatches.map((match, index) =>
-      createMatchButton(match, "contained", false, "secondary")
+      createMatchButton(match, {
+        disabled: false,
+        variant: "contained",
+        color: "secondary"
+      })
     );
 
     setOngoingMatchElements(ongoingElements);
@@ -193,21 +199,19 @@ const RoundRobinTournamentView: React.FC = () => {
     });
   };
 
-  const generateTableCells = (player: tournamentPlayer): ReactNode[] => {
-    return [
-      <TableCell key={0}>
-        <Typography>{player.name}</Typography>
-      </TableCell>,
-      <TableCell key={1}>
-        <Typography>{player.wins}</Typography>
-      </TableCell>,
-      <TableCell key={2}>
-        <Typography>{player.losses}</Typography>
-      </TableCell>,
-      <TableCell key={3}>
-        <Typography>{player.points}</Typography>
-      </TableCell>
-    ];
+  const generateTableCells = (player: TournamentPlayer): ReactNode[] => {
+    return Object.values(player).map((value, index) => {
+      if (index === 0) {
+        // If we want to skip the ID property
+        return null;
+      }
+
+      return (
+        <TableCell key={index}>
+          <Typography>{value}</Typography>
+        </TableCell>
+      );
+    });
   };
 
   const generateTable = (): ReactNode => {
