@@ -36,32 +36,39 @@ const PointTable: React.FC<TableComponentProps> = ({ matchInfo }) => {
 
   useEffect(() => {
     goThroughAllPoints();
-  }, [matchInfo]);
+  }, []);
 
   const goThroughAllPoints = (): void => {
     for (const player of matchInfo.players) {
+      let rowCounter = 0;
       for (const point of player.points) {
         const color: string = player.color;
         const time: Date = point.timestamp;
         const value: string = typeToButtonMap[point.type];
 
-        allPoints.push({ color, time, value });
+        const isTimeSeen = allPoints.some((existingPoint) => existingPoint.time=== time);
+
+        if (!isTimeSeen) {
+          allPoints.push({ color, time, value });
+        }
       }
     }
-
+    console.log(allPoints)
     allPoints.sort((a, b) => (a.time < b.time ? -1 : 1));
-    assignCells();
+    assignCells(rowCounter);
   };
 
-  const assignCells = (): void => {
+  const assignCells = (rowCounter: number): void => {
     for (const point of allPoints) {
-      column = point.color === "white" ? 0 : 1;
+      const column = point.color === "white" ? 0 : 1;
       updateCell(rowCounter, column, point.value);
       rowCounter++;
     }
   };
+  
 
   const updateCell = (row: number, column: number, value: string): void => {
+    console.log(cells)
     setCells((prevCells) => {
       const newRows = [...prevCells.rows];
       newRows[row][column] = value;
