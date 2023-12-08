@@ -1,8 +1,6 @@
 import { type Socket, Server } from "socket.io";
 import type http from "http";
 
-let isTimerRunning = false;
-
 export const io = new Server();
 
 export function initSocket(server: http.Server): Server {
