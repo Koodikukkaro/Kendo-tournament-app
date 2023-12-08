@@ -11,10 +11,10 @@ import {
   Paper,
   Typography,
   Button,
-  ButtonProps,
+  type ButtonProps
 } from "@mui/material";
 import "react-tabs/style/react-tabs.css";
-import { User, Match } from "types/models";
+import { type User, type Match } from "types/models";
 import { useNavigate } from "react-router-dom";
 import { useTournament } from "context/TournamentContext";
 
@@ -96,13 +96,15 @@ const Matches: React.FC<{
 const RoundRobinTournamentView: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState("scoreboard");
   const [players, setPlayers] = useState<TournamentPlayer[]>([]);
-  const [ongoingMatchElements, setOngoingMatchElements] = useState<React.ReactNode[]>(
-    []
-  );
+  const [ongoingMatchElements, setOngoingMatchElements] = useState<
+    React.ReactNode[]
+  >([]);
   const [upcomingMatchElements, setUpcomingMatchElements] = useState<
     React.ReactNode[]
   >([]);
-  const [pastMatchElements, setPastMatchElements] = useState<React.ReactNode[]>([]);
+  const [pastMatchElements, setPastMatchElements] = useState<React.ReactNode[]>(
+    []
+  );
 
   const tournament = useTournament();
   const navigate = useNavigate();
@@ -188,7 +190,7 @@ const RoundRobinTournamentView: React.FC = () => {
       const player2 = players.find(
         (player) => player.id === match.players[1].id
       )?.name;
-  
+
       return (
         <div style={{ marginBottom: "10px" }} key={match.id}>
           <Button
@@ -202,31 +204,30 @@ const RoundRobinTournamentView: React.FC = () => {
         </div>
       );
     };
-  
+
     const ongoingElements = ongoingMatches.map((match) =>
       createMatchButton(match, {
-        variant: "contained",
+        variant: "contained"
       })
     );
     const upcomingElements = upcomingMatches.map((match) =>
       createMatchButton(match, {
         disabled: true,
-        variant: "contained",
+        variant: "contained"
       })
     );
     const pastElements = pastMatches.map((match) =>
       createMatchButton(match, {
         disabled: false,
         variant: "contained",
-        color: "secondary",
+        color: "secondary"
       })
     );
-  
+
     setOngoingMatchElements([...ongoingElements]);
     setUpcomingMatchElements([...upcomingElements]);
     setPastMatchElements([...pastElements]);
   };
-  
 
   const updatePlayerStats = (): void => {
     const processedMatches = new Set<string>();
