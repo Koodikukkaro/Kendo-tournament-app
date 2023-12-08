@@ -23,14 +23,12 @@ const Bracket: React.FC<BracketProps> = ({ match, players }) => {
   const player1Name = `${player1.firstName} ${player1.lastName}`;
   const player2Name = `${player2.firstName} ${player2.lastName}`;
 
-  let player1BgColor = "white";
-  let player2BgColor = "white";
-  let fontColor = "black";
+  let player1Color = "black";
+  let player2Color = "black";
 
   if (isWinnerDeclared) {
-    player1BgColor = winner === player1.id ? "#f44336" : "#666666";
-    player2BgColor = winner === player2.id ? "#f44336" : "#666666";
-    fontColor = "white";
+    player1Color = winner === player1.id ? "#f44336" : "#666666";
+    player2Color = winner === player2.id ? "#f44336" : "#666666";
   }
 
   return (
@@ -42,21 +40,15 @@ const Bracket: React.FC<BracketProps> = ({ match, players }) => {
         marginBottom: 5
       }}
     >
-      <Card
-        variant="outlined"
-        sx={{ mb: 1, backgroundColor: player1BgColor, color: fontColor }}
-      >
+      <Card variant="outlined" sx={{ mb: 1 }}>
         <CardContent>
-          <Typography textAlign="center">{player1Name}</Typography>
-        </CardContent>
-      </Card>
-      <Typography>VS</Typography>
-      <Card
-        variant="outlined"
-        sx={{ mt: 1, backgroundColor: player2BgColor, color: fontColor }}
-      >
-        <CardContent>
-          <Typography textAlign="center">{player2Name}</Typography>
+          <Typography textAlign="center" style={{ color: player1Color }}>
+            {player1Name}
+          </Typography>
+          <Typography textAlign="center"> vs</Typography>
+          <Typography textAlign="center" style={{ color: player2Color }}>
+            {player2Name}
+          </Typography>
         </CardContent>
       </Card>
     </Box>

@@ -11,6 +11,7 @@ const PlayoffTournamentView: React.FC = () => {
   const matchSchedule: Match[] = tournament.matchSchedule;
   const players: User[] = tournament.players;
 
+  // Calculate the total number of rounds, assuming it's a single-elimination tournament
   const totalRounds = Math.ceil(Math.log2(players.length));
 
   // Group matches by tournamentRound
@@ -49,6 +50,7 @@ const PlayoffTournamentView: React.FC = () => {
                 }}
               >
                 <Typography
+                  variant="h6"
                   sx={{
                     marginBottom: 2,
                     textAlign: "center",
