@@ -106,13 +106,13 @@ const match = {
     return await request.get<Match>(`${MATCH_API}/${matchId}`);
   },
   addPoint: async (matchId: string, body: AddPointRequest) => {
-    return await request.patch(`${MATCH_API}/${matchId}/points`, body);
+    await request.patch(`${MATCH_API}/${matchId}/points`, body);
   },
   startTimer: async (matchId: string) => {
-    return await request.patch(`${MATCH_API}/${matchId}/start-timer`);
+    await request.patch(`${MATCH_API}/${matchId}/start-timer`);
   },
   stopTimer: async (matchId: string) => {
-    return await request.patch(`${MATCH_API}/${matchId}/stop-timer`);
+    await request.patch(`${MATCH_API}/${matchId}/stop-timer`);
   }
 };
 
