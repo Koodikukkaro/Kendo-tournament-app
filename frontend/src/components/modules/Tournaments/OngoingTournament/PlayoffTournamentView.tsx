@@ -1,5 +1,5 @@
 import React from "react";
-import Bracket from "./TournamentBracketNew";
+import Bracket from "./TournamentBracket";
 import { type User, type Match } from "types/models";
 import { useTournament } from "context/TournamentContext";
 import { Typography, Box, Grid } from "@mui/material";
