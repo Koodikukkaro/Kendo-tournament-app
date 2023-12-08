@@ -42,7 +42,7 @@ export interface Match {
   winner?: string;
   comment?: string;
   admin: string;
-  officials?: string;
+  officials?: string[];
 }
 
 export interface Tournament {
