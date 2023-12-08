@@ -16,6 +16,11 @@ FROM mongo:latest
 # (ADD vs COPY: https://phoenixnap.com/kb/docker-add-vs-copy )
 #COPY ./uninplemented-init.js /docker-entrypoint-initdb.d/
 
+# TODO/FIXME: For some reason, rs.initiate doesn't work here or isn't
+# executed properly.
+COPY ./rs-initiate.js /docker-entrypoint-initdb.d/
+RUN ["chmod", "+x", "/docker-entrypoint-initdb.d/rs-initiate.js"]
+
 # Credentials should not be committed into the repository.
 # Probably entirely useless environment variables (not used):
 #ENV MONGO_INITDB_ROOT_USERNAME=root

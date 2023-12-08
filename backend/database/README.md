@@ -24,6 +24,12 @@ so it is ideal for development.
     and by running mongosh
 - You can read the Dockerfile comments for tips.
 
+### Replica set usage
+
+- docker compose --file mongo.yaml up
+- docker exec -it mongo1 mongosh /docker-entrypoint-initdb.d/rs-initiate.js
+- Check in mongosh with rs.status()
+
 ## Contributing
 
 The database implementation is subject to change. No changes

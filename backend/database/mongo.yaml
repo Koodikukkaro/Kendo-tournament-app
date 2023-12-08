@@ -1,0 +1,64 @@
+# https://docs.docker.com/compose/compose-file/compose-file-v3/
+
+# docker compose --file mongo.yaml up
+# docker compose exec mongo1 bash`
+# docker compose down`
+# docker compose rm -sf <service>
+# up, start, stop, down, exec
+
+# Access mongo (regardless of replica) on port 27017: "MongoDB server
+# in the image listens on the standard MongoDB port, 27017"
+
+version: "3"
+
+services:
+  # docker compose exec <service> <command>
+  # <command>: bash | mongosh
+  # mongosh: help
+  # use <db>
+  # db.<collection>.find().pretty()
+  # mongo1: &rs-node
+  mongo1:
+    image: koodikukkaro/database/v1
+    container_name: mongo1
+    build:
+      dockerfile: Dockerfile
+      context: .
+
+    command: ["--replSet", "rs"]
+    restart: unless-stopped
+    # volumes:
+      # "/data/db inside the container, where MongoDB by default
+      # will write its data files"
+      # - koodikukkaro_volume:/data/db
+    networks:
+      - backend
+  mongo2:
+    image: mongo:latest
+    container_name: mongo2
+    command: ["--replSet", "rs"]
+    restart: unless-stopped
+    # volumes:
+    networks:
+      - backend
+    # <<: *rs-node
+  mongo3:
+    image: mongo:latest
+    container_name: mongo3
+    command: ["--replSet", "rs"]
+    restart: unless-stopped
+    # volumes:
+    networks:
+      - backend
+    # <<: *rs-node
+
+networks:
+  backend:
+
+# Documentation: https://docs.docker.com/storage/volumes/
+# Look at the database image's Dockerfile in Docker Hub to see
+# which directory it uses to store data.
+# "if you want to reuse a volume across multiple services,
+# then define a named volume in" this "top-level volumes key"
+# volumes:
+#   koodikukkaro_volume:
