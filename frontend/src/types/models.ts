@@ -57,7 +57,7 @@ export interface Tournament {
   creator: string;
   organizerEmail?: string;
   organizerPhone?: string;
-  players: string[];
+  players: User[];
   matchSchedule: Match[];
 }
 

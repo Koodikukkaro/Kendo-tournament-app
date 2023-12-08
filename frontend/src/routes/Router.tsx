@@ -20,6 +20,7 @@ import { TournamentProvider } from "context/TournamentContext";
 import RootRoute from "./RootRoute";
 import routePaths from "./route-paths";
 import { SocketProvider } from "context/SocketContext";
+import GameInterface from "components/modules/GameInterface/GameInterface";
 
 // TODO
 const routes = createRoutesFromElements(
@@ -38,9 +39,7 @@ const routes = createRoutesFromElements(
             <Route path="sign-up" element={<Signup />} />
             <Route
               path="match/:matchId"
-              element={
-                <SocketProvider>{/* <GameInterface /> */}</SocketProvider>
-              }
+              element={<SocketProvider>{<GameInterface />}</SocketProvider>}
             ></Route>
           </Route>
         </Route>

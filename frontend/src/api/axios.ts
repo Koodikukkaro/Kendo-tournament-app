@@ -1,16 +1,18 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
-import type { Tournament, User } from "types/models";
+import type { Tournament, User, Match } from "types/models";
 import {
   type SignupForTournamentRequest,
   type CreateTournamentRequest,
   type LoginRequest,
-  type RegisterRequest
+  type RegisterRequest,
+  type AddPointRequest
 } from "types/requests";
 
 export const API_BASE_URL = process.env.REACT_APP_API_URL;
 export const AUTH_API = "/api/auth";
 export const USER_API = "/api/user";
 export const TOURNAMENTS_API = "/api/tournaments";
+export const MATCH_API = "/api/match";
 
 export const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -49,6 +51,14 @@ const request = {
     requestConfig?: AxiosRequestConfig
   ) => {
     const response = await axiosInstance.put<T>(url, body, requestConfig);
+    return responseBody(response);
+  },
+  patch: async <T>(
+    url: string,
+    body?: unknown,
+    requestConfig?: AxiosRequestConfig
+  ) => {
+    const response = await axiosInstance.patch<T>(url, body, requestConfig);
     return responseBody(response);
   }
 };
@@ -91,10 +101,26 @@ const tournaments = {
   }
 };
 
+const match = {
+  info: async (matchId: string) => {
+    return await request.get<Match>(`${MATCH_API}/${matchId}`);
+  },
+  addPoint: async (matchId: string, body: AddPointRequest) => {
+    await request.patch(`${MATCH_API}/${matchId}/points`, body);
+  },
+  startTimer: async (matchId: string) => {
+    await request.patch(`${MATCH_API}/${matchId}/start-timer`);
+  },
+  stopTimer: async (matchId: string) => {
+    await request.patch(`${MATCH_API}/${matchId}/stop-timer`);
+  }
+};
+
 const api = {
   auth,
   user,
-  tournaments
+  tournaments,
+  match
 };
 
 export default api;

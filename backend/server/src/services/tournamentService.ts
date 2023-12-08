@@ -34,14 +34,23 @@ export class TournamentService {
   }
 
   public async getAllTournaments(limit: number): Promise<Tournament[]> {
-    const tournaments = await TournamentModel.find().limit(limit).exec();
+    const tournaments = await TournamentModel.find().limit(limit)
+    .populate<{ creator: User }>({ path: "creator", model: "User" })
+    .populate<{ players: User[] }>({ path: "players", model: "User" })
+    .populate<{
+      matchSchedule: Match[];
+    }>({
+      path: "matchSchedule",
+       model: "Match"
+    })
+    .exec();
 
     if (tournaments === null || tournaments === undefined) {
       throw new NotFoundError({
         message: "No tournaments found"
       });
     }
-
+    
     return tournaments.map((tournament) => tournament.toObject());
   }
 
@@ -229,8 +238,8 @@ export class TournamentService {
       if (!playerId.equals(newPlayer)) {
         matches.push({
           players: [
-            { id: newPlayer, points: [], color: "red" },
-            { id: playerId, points: [], color: "white" }
+            { id: newPlayer, points: [], color: "white" },
+            { id: playerId, points: [], color: "red" }
           ],
           type: "group",
           elapsedTime: 0,
@@ -274,8 +283,8 @@ export class TournamentService {
     if (extraPlayers.length === 2) {
       matches.push({
         players: [
-          { id: extraPlayers[0], points: [], color: "red" },
-          { id: extraPlayers[1], points: [], color: "white" }
+          { id: extraPlayers[0], points: [], color: "white" },
+          { id: extraPlayers[1], points: [], color: "red" }
         ],
         type: "playoff",
         elapsedTime: 0,
