@@ -78,7 +78,8 @@ const UpcomingTournamentView: React.FC = () => {
 
           {tournament.players.map((player, index) => (
             <Typography key={index} variant="body1" className="subtext">
-              {player.firstName} {player.lastName}
+              Name: {player.firstName} {player.lastName}, Rank: {player.danRank}
+              , Club: {player.clubName}
             </Typography>
           ))}
         </>
