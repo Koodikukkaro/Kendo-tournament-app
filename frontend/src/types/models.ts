@@ -43,6 +43,7 @@ export interface Match {
   comment?: string;
   tournamentId: string;
   officials: string[];
+  tournamentRound: number;
 }
 
 export interface Tournament {
