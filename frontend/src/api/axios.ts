@@ -1,10 +1,11 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 import type { Tournament, User } from "types/models";
-import {
-  type SignupForTournamentRequest,
-  type CreateTournamentRequest,
-  type LoginRequest,
-  type RegisterRequest
+import type {
+  SignupForTournamentRequest,
+  CreateTournamentRequest,
+  LoginRequest,
+  RegisterRequest,
+  EditUserRequest
 } from "types/requests";
 
 export const API_BASE_URL = process.env.REACT_APP_API_URL;
@@ -35,6 +36,12 @@ const request = {
     const response = await axiosInstance.get<T>(url, requestConfig);
     return responseBody(response);
   },
+
+  delete: async <T>(url: string, requestConfig?: AxiosRequestConfig) => {
+    const response = await axiosInstance.delete<T>(url, requestConfig);
+    return responseBody(response);
+  },
+
   post: async <T>(
     url: string,
     body: unknown,
@@ -43,6 +50,7 @@ const request = {
     const response = await axiosInstance.post<T>(url, body, requestConfig);
     return responseBody(response);
   },
+
   put: async <T>(
     url: string,
     body: unknown,
@@ -55,20 +63,29 @@ const request = {
 
 const user = {
   details: async (id: string) => await request.get<User>(`${USER_API}/${id}`),
+
   register: async (body: RegisterRequest) =>
-    await request.post(`${USER_API}/register`, body)
+    await request.post(`${USER_API}/register`, body),
+
+  update: async (id: string, body: EditUserRequest) =>
+    await request.put<User>(`${USER_API}/${id}`, body),
+
+  delete: async (id: string) => await request.delete(`${USER_API}/${id}`)
 };
 
 const auth = {
   login: async (body: LoginRequest) => {
     return await request.post<{ userId: string }>(`${AUTH_API}/login`, body);
   },
+
   logout: async () => {
     await request.post(`${AUTH_API}/logout`, {});
   },
+
   refresh: async () => {
     await request.get(`${AUTH_API}/refresh`);
   },
+
   checkAuth: async () => {
     return await request.get<{ userId: string }>(`${AUTH_API}/check-auth`);
   }
@@ -80,9 +97,11 @@ const tournaments = {
       params: limit
     });
   },
+
   createNew: async (body: CreateTournamentRequest) => {
     return await request.post<Tournament>(`${TOURNAMENTS_API}`, body);
   },
+
   signup: async (tournamentId: string, body: SignupForTournamentRequest) => {
     return await request.put(
       `${TOURNAMENTS_API}/${tournamentId}/sign-up`,
