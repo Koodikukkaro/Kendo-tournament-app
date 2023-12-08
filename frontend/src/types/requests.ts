@@ -1,4 +1,4 @@
-import type { Tournament, PointType, PlayerColor } from "./models";
+import type { Tournament, PointType, PlayerColor, User } from "./models";
 
 export interface LoginRequest {
   email: string;
@@ -35,3 +35,5 @@ export interface AddPointRequest {
   pointColor: PlayerColor;
   comment?: string;
 }
+
+export type EditUserRequest = Omit<User, "password" | "id">;
