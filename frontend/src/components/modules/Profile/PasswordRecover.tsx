@@ -9,16 +9,16 @@ import useToast from "hooks/useToast";
 import { FormContainer, TextFieldElement } from "react-hook-form-mui";
 import { useNavigate } from "react-router-dom";
 import routePaths from "routes/route-paths";
-import type { PasswordResetRequest } from "types/requests";
+import type { PasswordRecoveryRequest } from "types/requests";
 import api from "api/axios";
 
-const PasswordResetForm: React.FC = () => {
+const PasswordRecoveryForm: React.FC = () => {
   const showToast = useToast();
   const navigate = useNavigate();
 
-  const onSubmit = async (data: PasswordResetRequest): Promise<void> => {
+  const onSubmit = async (data: PasswordRecoveryRequest): Promise<void> => {
     try {
-      await api.auth.resetPassword(data);
+      await api.auth.recoverPassword(data);
       navigate(routePaths.login, { replace: true });
       showToast(
         "Instructions to reset your password will be sent to you shortly. Please check your email.",
@@ -55,12 +55,12 @@ const PasswordResetForm: React.FC = () => {
           <Box textAlign="center">
             <Button
               type="submit"
-              id="btn-retrieve-pwd"
+              id="recover-password-button"
               variant="contained"
               color="primary"
               sx={{ mt: 3, mb: 2 }}
             >
-              Retrieve Password
+              Recover Password
             </Button>
           </Box>
         </FormContainer>
@@ -69,4 +69,4 @@ const PasswordResetForm: React.FC = () => {
   );
 };
 
-export default PasswordResetForm;
+export default PasswordRecoveryForm;
