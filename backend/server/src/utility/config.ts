@@ -34,11 +34,23 @@ const REFRESH_JWT_SECRET = ensureEnvVariable(
   process.env.JWT_SECRET
 );
 
+const EMAIL_USERNAME = ensureEnvVariable(
+  "EMAIL_USERNAME",
+  process.env.EMAIL_USERNAME
+);
+
+const EMAIL_PASSWORD = ensureEnvVariable(
+  "EMAIL_PASSWORD",
+  process.env.EMAIL_PASSWORD
+);
+
 export default {
+  MONGO_URL,
+  PORT,
   SERVER_HOST,
   CLIENT_HOST,
+  EMAIL_USERNAME,
+  EMAIL_PASSWORD,
   ACCESS_JWT_SECRET,
-  REFRESH_JWT_SECRET,
-  MONGO_URL,
-  PORT
+  REFRESH_JWT_SECRET
 };

@@ -74,6 +74,22 @@ export class AuthController extends Controller {
     return { userId: request.user.id };
   }
 
+  @Get("recover")
+  @Tags("Auth")
+  public async recoverPassword(@Path() email: string): Promise<void> {
+    this.setStatus(204);
+
+    await this.service.sendPasswordRecoveryMail(email);
+  }
+  @Tags("Auth")
+  public async recoverPassword(
+    @Body() requestBody: { email: string }
+  ): Promise<void> {
+    this.setStatus(204);
+
+    await this.service.sendPasswordRecoveryMail(requestBody.email);
+  }
+
   private get service(): AuthService {
     return new AuthService();
   }
