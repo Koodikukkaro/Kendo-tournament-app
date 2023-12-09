@@ -9,17 +9,29 @@ import useToast from "hooks/useToast";
 import { FormContainer, TextFieldElement } from "react-hook-form-mui";
 import { useNavigate } from "react-router-dom";
 import routePaths from "routes/route-paths";
-import type { PasswordRecoveryRequest } from "types/requests";
 import api from "api/axios";
+import { useAuth } from "context/AuthContext";
+
+interface PasswordRecoveryFormData {
+  email: string;
+}
 
 const PasswordRecoveryForm: React.FC = () => {
   const showToast = useToast();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
-  const onSubmit = async (data: PasswordRecoveryRequest): Promise<void> => {
+  const onSubmit = async ({
+    email
+  }: PasswordRecoveryFormData): Promise<void> => {
     try {
-      await api.auth.recoverPassword(data);
-      navigate(routePaths.login, { replace: true });
+      await api.auth.recoverPassword(email);
+
+      const navigateTo = isAuthenticated
+        ? routePaths.homeRoute
+        : routePaths.login;
+
+      navigate(navigateTo, { replace: true });
       showToast(
         "Instructions to reset your password will be sent to you shortly. Please check your email.",
         "success"

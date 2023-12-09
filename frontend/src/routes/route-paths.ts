@@ -7,7 +7,7 @@ const routePaths = {
   privacy: "/privacy",
   register: "/register",
   tournaments: "/tournaments",
-  passwordRecovery: "/password-reset"
-};
+  passwordReset: "/password-reset"
+} as const;
 
 export default routePaths;

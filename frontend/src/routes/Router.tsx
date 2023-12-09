@@ -21,7 +21,7 @@ import RootRoute from "./RootRoute";
 import routePaths from "./route-paths";
 import { SocketProvider } from "context/SocketContext";
 import GameInterface from "components/modules/GameInterface/GameInterface";
-import PasswordRecoveryForm from "components/modules/Profile/PasswordRecover";
+import PasswordControl from "components/modules/PasswordControl/PasswordControl";
 
 const routes = createRoutesFromElements(
   <Route element={<RootRoute />}>
@@ -57,10 +57,8 @@ const routes = createRoutesFromElements(
         <Route path={routePaths.profile} element={<Profile />} />
       </Route>
 
-      <Route
-        path={routePaths.passwordRecovery}
-        element={<PasswordRecoveryForm />}
-      />
+      <Route path={routePaths.passwordReset} element={<PasswordControl />} />
+
       {/* Redirect from other routes */}
       <Route
         path="*"

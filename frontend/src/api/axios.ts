@@ -7,7 +7,7 @@ import type {
   RegisterRequest,
   AddPointRequest,
   EditUserRequest,
-  PasswordRecoveryRequest
+  ResetPasswordRequest
 } from "types/requests";
 
 export const API_BASE_URL =
@@ -102,15 +102,19 @@ const auth = {
     return await request.get<{ userId: string }>(`${AUTH_API}/check-auth`);
   },
 
-  recoverPassword: async (body: PasswordRecoveryRequest) => {
-    await request.post(`${AUTH_API}/recover-password`, body);
+  recoverPassword: async (email: string) => {
+    await request.post(`${AUTH_API}/recover`, {}, { params: { email } });
+  },
+
+  resetPassword: async (body: ResetPasswordRequest) => {
+    await request.patch(`${AUTH_API}/reset`, body);
   }
 };
 
 const tournaments = {
   getAll: async (limit?: number) => {
     return await request.get<Tournament[]>(`${TOURNAMENTS_API}`, {
-      params: limit
+      params: { limit }
     });
   },
 

@@ -38,6 +38,6 @@ export interface AddPointRequest {
 
 export type EditUserRequest = Omit<RegisterRequest, "password">;
 
-export interface PasswordRecoveryRequest {
-  email: string;
-}
+export type ResetPasswordRequest = Pick<RegisterRequest, "password"> & {
+  token: string;
+};
