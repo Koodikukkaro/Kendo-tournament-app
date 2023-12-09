@@ -134,7 +134,7 @@ const GameInterface: React.FC = () => {
   }, [isLoading, matchInfoFromSocket]);
 
   useEffect(() => {
-    setTimer(matchInfo.timerTime)
+    setTimer(matchInfo.timerTime);
   }, [matchInfo]);
 
   useEffect(() => {

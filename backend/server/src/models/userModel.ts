@@ -24,6 +24,9 @@ interface UserMethods {
   checkPassword: (password: string) => Promise<boolean>;
 }
 
+const omitEmptyString = (attribute: string): string | undefined =>
+  attribute === "" ? undefined : attribute;
+
 type UserModelType = mongoose.Model<User, Record<string, unknown>, UserMethods>;
 
 const schema = new Schema<User, UserMethods>(
@@ -41,14 +44,14 @@ const schema = new Schema<User, UserMethods>(
     userName: { type: String },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    nationality: { type: String },
-    suomisportId: { type: String },
-    inNationalTeam: { type: Boolean, default: false },
     phoneNumber: { type: String, required: true },
-    clubName: { type: String },
-    danRank: { type: String },
+    inNationalTeam: { type: Boolean, default: false },
+    nationality: { type: String, set: omitEmptyString },
+    suomisportId: { type: String, set: omitEmptyString },
+    clubName: { type: String, set: omitEmptyString },
+    danRank: { type: String, set: omitEmptyString },
     underage: { type: Boolean, default: false },
-    guardiansEmail: { type: String },
+    guardiansEmail: { type: String, set: omitEmptyString },
     refreshToken: { type: String, required: false, select: false }
   },
   {
