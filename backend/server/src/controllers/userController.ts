@@ -7,7 +7,8 @@ import {
   Security,
   Body,
   Post,
-  Put
+  Put,
+  Delete
 } from "tsoa";
 import { type User } from "../models/userModel.js";
 import { UserService } from "../services/userService.js";
@@ -24,6 +25,7 @@ export class UserController extends Controller {
   @Tags("User")
   public async getUser(@Path() id: ObjectIdString): Promise<User> {
     this.setStatus(200);
+
     return await this.service.getUserById(id);
   }
 
@@ -46,6 +48,14 @@ export class UserController extends Controller {
     this.setStatus(204);
 
     await this.service.updateUserById(id, requestBody);
+  }
+
+  @Delete("{id}")
+  @Tags("User")
+  public async deleteUser(@Path() id: ObjectIdString): Promise<void> {
+    this.setStatus(204);
+
+    await this.service.deleteUserById(id);
   }
 
   private get service(): UserService {

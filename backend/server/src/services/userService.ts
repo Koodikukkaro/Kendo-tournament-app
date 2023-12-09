@@ -1,4 +1,4 @@
-import { type HydratedDocument } from "mongoose";
+import { Types, type HydratedDocument } from "mongoose";
 import BadRequestError from "../errors/BadRequestError.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import type {
@@ -42,7 +42,8 @@ export class UserService {
 
     if (
       requestBody.underage &&
-      (requestBody.guardiansEmail === undefined || requestBody.guardiansEmail === "")
+      (requestBody.guardiansEmail === undefined ||
+        requestBody.guardiansEmail === "")
     ) {
       throw new BadRequestError({
         message: "Guardian's email is required for underage users"
@@ -65,6 +66,34 @@ export class UserService {
     userDoc.set(requestBody);
 
     await userDoc.save();
+  }
+
+  /*
+   * Overwrites the user's personal information, but for the time being,
+   * we must preserve the user document in the database to avoid breaking existing functionalities.
+   * */
+  public async deleteUserById(id: string): Promise<void> {
+    const userDoc = await this.getUserDocumentById(id);
+
+    /* Will be displayed as deleted_user_randomId in tournaments, matches, etc.
+     * Most important thing is that we remove all of the user's personal data.
+     */
+    const deletedUser: User = {
+      id: userDoc.id,
+      email: " ",
+      password: " ",
+      userName: `deleted_user_${new Types.ObjectId().toHexString()}`,
+      phoneNumber: " ",
+      firstName: " ",
+      lastName: " ",
+      inNationalTeam: false,
+      underage: false
+    };
+
+    /* Overwrite all values in the document */
+    const newDoc = userDoc.overwrite(deletedUser);
+
+    await newDoc.save();
   }
 
   private async getUserDocumentById(
