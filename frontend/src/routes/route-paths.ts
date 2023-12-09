@@ -6,7 +6,8 @@ const routePaths = {
   profile: "/profile",
   privacy: "/privacy",
   register: "/register",
-  tournaments: "/tournaments"
-};
+  tournaments: "/tournaments",
+  passwordReset: "/password-reset"
+} as const;
 
 export default routePaths;

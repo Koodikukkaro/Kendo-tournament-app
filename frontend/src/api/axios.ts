@@ -1,14 +1,17 @@
 import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 import type { Tournament, User, Match } from "types/models";
-import {
-  type SignupForTournamentRequest,
-  type CreateTournamentRequest,
-  type LoginRequest,
-  type RegisterRequest,
-  type AddPointRequest
+import type {
+  SignupForTournamentRequest,
+  CreateTournamentRequest,
+  LoginRequest,
+  RegisterRequest,
+  AddPointRequest,
+  EditUserRequest,
+  ResetPasswordRequest
 } from "types/requests";
 
-export const API_BASE_URL = process.env.REACT_APP_API_URL;
+export const API_BASE_URL =
+  process.env.REACT_APP_API_URL ?? "http://localhost:8080";
 export const AUTH_API = "/api/auth";
 export const USER_API = "/api/user";
 export const TOURNAMENTS_API = "/api/tournaments";
@@ -37,6 +40,12 @@ const request = {
     const response = await axiosInstance.get<T>(url, requestConfig);
     return responseBody(response);
   },
+
+  delete: async <T>(url: string, requestConfig?: AxiosRequestConfig) => {
+    const response = await axiosInstance.delete<T>(url, requestConfig);
+    return responseBody(response);
+  },
+
   post: async <T>(
     url: string,
     body: unknown,
@@ -45,6 +54,7 @@ const request = {
     const response = await axiosInstance.post<T>(url, body, requestConfig);
     return responseBody(response);
   },
+
   put: async <T>(
     url: string,
     body: unknown,
@@ -65,34 +75,53 @@ const request = {
 
 const user = {
   details: async (id: string) => await request.get<User>(`${USER_API}/${id}`),
+
   register: async (body: RegisterRequest) =>
-    await request.post(`${USER_API}/register`, body)
+    await request.post(`${USER_API}/register`, body),
+
+  update: async (id: string, body: EditUserRequest) =>
+    await request.put<User>(`${USER_API}/${id}`, body),
+
+  delete: async (id: string) => await request.delete(`${USER_API}/${id}`)
 };
 
 const auth = {
   login: async (body: LoginRequest) => {
     return await request.post<{ userId: string }>(`${AUTH_API}/login`, body);
   },
+
   logout: async () => {
     await request.post(`${AUTH_API}/logout`, {});
   },
+
   refresh: async () => {
     await request.get(`${AUTH_API}/refresh`);
   },
+
   checkAuth: async () => {
     return await request.get<{ userId: string }>(`${AUTH_API}/check-auth`);
+  },
+
+  recoverPassword: async (email: string) => {
+    await request.post(`${AUTH_API}/recover`, {}, { params: { email } });
+  },
+
+  resetPassword: async (body: ResetPasswordRequest) => {
+    await request.patch(`${AUTH_API}/reset`, body);
   }
 };
 
 const tournaments = {
   getAll: async (limit?: number) => {
     return await request.get<Tournament[]>(`${TOURNAMENTS_API}`, {
-      params: limit
+      params: { limit }
     });
   },
+
   createNew: async (body: CreateTournamentRequest) => {
     return await request.post<Tournament>(`${TOURNAMENTS_API}`, body);
   },
+
   signup: async (tournamentId: string, body: SignupForTournamentRequest) => {
     return await request.put(
       `${TOURNAMENTS_API}/${tournamentId}/sign-up`,

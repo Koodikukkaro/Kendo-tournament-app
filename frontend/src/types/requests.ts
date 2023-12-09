@@ -35,3 +35,9 @@ export interface AddPointRequest {
   pointColor: PlayerColor;
   comment?: string;
 }
+
+export type EditUserRequest = Omit<RegisterRequest, "password">;
+
+export type ResetPasswordRequest = Pick<RegisterRequest, "password"> & {
+  token: string;
+};
