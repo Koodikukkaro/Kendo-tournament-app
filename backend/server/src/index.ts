@@ -9,6 +9,7 @@ import { initSocket } from "./socket.js";
 await connectDB();
 
 const port = config.PORT;
+const baseURL = config.SERVER_HOST;
 
 const app = CreateApp();
 
@@ -17,5 +18,5 @@ const server = http.createServer(app);
 initSocket(server);
 
 server.listen(port, () => {
-  console.log(`Server is Fire at http://localhost:${port}`);
+  console.log(`Server is Fire at ${baseURL}:${port}`);
 });

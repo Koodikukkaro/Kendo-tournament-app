@@ -4,7 +4,6 @@ import bcrypt from "bcryptjs";
 export interface User {
   id: Types.ObjectId;
   email: string;
-  password: string;
   userName?: string;
   phoneNumber: string;
   firstName: string;
@@ -16,12 +15,19 @@ export interface User {
   danRank?: string;
   underage: boolean;
   guardiansEmail?: string;
+
+  /* Internal properties */
+  password: string;
   refreshToken?: string;
+  resetPasswordToken?: string;
+  resetPasswordExpires?: number;
 }
 
 interface UserMethods {
   setPassword: (password: string) => Promise<void>;
   checkPassword: (password: string) => Promise<boolean>;
+  generatePasswordRecoveryToken: () => Promise<void>;
+  isPasswordResetTokenExpired: () => boolean;
 }
 
 const omitEmptyString = (attribute: string): string | undefined =>
@@ -40,8 +46,7 @@ const schema = new Schema<User, UserMethods>(
         collation: { locale: "en", strength: 2 }
       }
     },
-    password: { type: String, required: true, select: false },
-    userName: { type: String },
+    userName: { type: String, set: omitEmptyString },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     phoneNumber: { type: String, required: true },
@@ -52,7 +57,12 @@ const schema = new Schema<User, UserMethods>(
     danRank: { type: String, set: omitEmptyString },
     underage: { type: Boolean, default: false },
     guardiansEmail: { type: String, set: omitEmptyString },
-    refreshToken: { type: String, required: false, select: false }
+
+    /* Internal properties */
+    password: { type: String, required: true, select: false },
+    refreshToken: { type: String, required: false, select: false },
+    resetPasswordToken: { type: String, required: false, select: false },
+    resetPasswordExpires: { type: Date, required: false, select: false }
   },
   {
     timestamps: true
@@ -88,9 +98,17 @@ schema.pre("save", async function (next) {
   }
 });
 
-// Method to compare passwords
 schema.methods.checkPassword = async function (candidatePassword: string) {
   return await bcrypt.compare(candidatePassword, this.password);
+};
+
+schema.methods.generatePasswordRecoveryToken = async function () {
+  this.resetPasswordToken = await bcrypt.hash(Date.now().toString(), 10);
+  this.resetPasswordExpires = Date.now() + 3600000; // expires in an hour
+};
+
+schema.methods.isPasswordResetTokenExpired = function () {
+  return Date.now() > this.resetPasswordExpires;
 };
 
 const UserModel = mongoose.model<User, UserModelType>("User", schema);

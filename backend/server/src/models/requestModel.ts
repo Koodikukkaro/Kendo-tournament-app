@@ -119,3 +119,7 @@ export interface SignupForTournamentRequest {
 
 /* Note that we get the data validations from the registerRequest interface also */
 export type EditUserRequest = Omit<RegisterRequest, "password">;
+
+export type ResetPasswordRequest = Pick<RegisterRequest, "password"> & {
+  token: string;
+};
