@@ -1,5 +1,8 @@
 import nodemailer from "nodemailer";
-import { type LoginRequest } from "../models/requestModel.js";
+import type {
+  ResetPasswordRequest,
+  LoginRequest
+} from "../models/requestModel.js";
 import BadRequestError from "../errors/BadRequestError.js";
 import UnauthorizedError from "../errors/UnauthorizedError.js";
 import UserModel from "../models/userModel.js";
@@ -148,5 +151,28 @@ export class AuthService {
       );
     }
   }
+
+  public async resetPassword({
+    token,
+    password
+  }: ResetPasswordRequest): Promise<void> {
+    const userDoc = await UserModel.findOne({
+      resetPasswordToken: token
+    }).exec();
+
+    if (
+      userDoc === null ||
+      userDoc === undefined ||
+      userDoc.isPasswordResetTokenExpired()
+    ) {
+      throw new BadRequestError({ message: "Invalid or expired reset token." });
+    }
+
+    /* Password is automatically hashed before save */
+    userDoc.password = password;
+    userDoc.resetPasswordToken = undefined;
+    userDoc.resetPasswordExpires = undefined;
+
+    await userDoc.save();
   }
 }

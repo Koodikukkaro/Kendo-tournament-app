@@ -27,6 +27,7 @@ interface UserMethods {
   setPassword: (password: string) => Promise<void>;
   checkPassword: (password: string) => Promise<boolean>;
   generatePasswordRecoveryToken: () => Promise<void>;
+  isPasswordResetTokenExpired: () => boolean;
 }
 
 const omitEmptyString = (attribute: string): string | undefined =>
@@ -45,7 +46,7 @@ const schema = new Schema<User, UserMethods>(
         collation: { locale: "en", strength: 2 }
       }
     },
-    userName: { type: String },
+    userName: { type: String, set: omitEmptyString },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     phoneNumber: { type: String, required: true },
@@ -104,6 +105,10 @@ schema.methods.checkPassword = async function (candidatePassword: string) {
 schema.methods.generatePasswordRecoveryToken = async function () {
   this.resetPasswordToken = await bcrypt.hash(Date.now().toString(), 10);
   this.resetPasswordExpires = Date.now() + 3600000; // expires in an hour
+};
+
+schema.methods.isPasswordResetTokenExpired = function () {
+  return Date.now() > this.resetPasswordExpires;
 };
 
 const UserModel = mongoose.model<User, UserModelType>("User", schema);

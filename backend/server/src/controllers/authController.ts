@@ -6,9 +6,11 @@ import {
   Body,
   Request,
   Get,
-  Security
+  Security,
+  Patch,
+  Query
 } from "tsoa";
-import { LoginRequest } from "../models/requestModel.js";
+import { LoginRequest, ResetPasswordRequest } from "../models/requestModel.js";
 import { AuthService } from "../services/authService.js";
 import { type JwtPayload } from "jsonwebtoken";
 import * as express from "express";
@@ -74,20 +76,22 @@ export class AuthController extends Controller {
     return { userId: request.user.id };
   }
 
-  @Get("recover")
+  @Post("recover")
   @Tags("Auth")
-  public async recoverPassword(@Path() email: string): Promise<void> {
+  public async recoverPassword(@Query() email: string): Promise<void> {
     this.setStatus(204);
 
     await this.service.sendPasswordRecoveryMail(email);
   }
+
+  @Patch("reset")
   @Tags("Auth")
-  public async recoverPassword(
-    @Body() requestBody: { email: string }
+  public async resetPassword(
+    @Body() requestBody: ResetPasswordRequest
   ): Promise<void> {
     this.setStatus(204);
 
-    await this.service.sendPasswordRecoveryMail(requestBody.email);
+    await this.service.resetPassword(requestBody);
   }
 
   private get service(): AuthService {
