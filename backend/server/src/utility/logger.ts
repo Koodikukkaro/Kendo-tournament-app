@@ -9,8 +9,8 @@ const consoleFormat = format.combine(
 const fileFormat = format.combine(format.timestamp(), format.json());
 
 const logger = createLogger({
-  // level: "debug",
-  level: "http",
+  level: "debug",
+  // level: "http",
   // https://github.com/winstonjs/winston/blob/HEAD/docs/transports.md#file-transport
   transports: [
     new transports.Console({ format: consoleFormat }),
@@ -24,14 +24,6 @@ const logger = createLogger({
       maxFiles: 5
     })
   ]
-  // handleExceptions: true,
-  // exceptionHandlers: [new winston.transports.Console()],
-  // format.errors({ stack: true })
-  // Winston will exit after logging an uncaughtException, unless
-  // exitOnError: false,
-  // rejectionHandlers: [new winston.transports.Console()],
-  // format: consoleFormat
-  // format: fileFormat
 });
 
 export default logger;
