@@ -78,11 +78,12 @@ export class UserService {
     /* Will be displayed as deleted_user_randomId in tournaments, matches, etc.
      * Most important thing is that we remove all of the user's personal data.
      */
+    const deletedUserTag = `deleted_user_${new Types.ObjectId().toHexString()}`;
     const deletedUser: User = {
       id: userDoc.id,
-      email: " ",
+      email: deletedUserTag,
       password: " ",
-      userName: `deleted_user_${new Types.ObjectId().toHexString()}`,
+      userName: deletedUserTag,
       phoneNumber: " ",
       firstName: " ",
       lastName: " ",

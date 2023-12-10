@@ -13,7 +13,6 @@ import {
   Button,
   type ButtonProps
 } from "@mui/material";
-import "react-tabs/style/react-tabs.css";
 import { type User, type Match } from "types/models";
 import { useNavigate } from "react-router-dom";
 import { useTournament } from "context/TournamentContext";
