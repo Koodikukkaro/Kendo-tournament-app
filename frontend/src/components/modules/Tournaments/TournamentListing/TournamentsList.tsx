@@ -12,8 +12,9 @@ import SpeedDialAction from "@mui/material/SpeedDialAction";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import EventIcon from "@mui/icons-material/Event";
 import Container from "@mui/material/Container";
+import type { Tournament } from "types/models";
 
-const tabTypes = ["ongoing", "upcoming"] as const;
+const tabTypes = ["past", "ongoing", "upcoming"] as const;
 const defaultTab = "ongoing";
 
 // SpeedDial actions
@@ -21,7 +22,7 @@ const actions = [{ icon: <EventIcon />, name: "Create Tournament" }];
 
 const TournamentList: React.FC = () => {
   const navigate = useNavigate();
-  const { upcoming, ongoing } = useTournaments();
+  const { past, upcoming, ongoing } = useTournaments();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentTab = searchParams.get("tab") ?? defaultTab;
 
@@ -34,7 +35,18 @@ const TournamentList: React.FC = () => {
     }
   }, [currentTab]);
 
-  const tournamentsToRender = currentTab === defaultTab ? ongoing : upcoming;
+  const tournamentsToRender = (): Tournament[] => {
+    switch (currentTab) {
+      case "past":
+        return past;
+      case "ongoing":
+        return ongoing;
+      case "upcoming":
+        return upcoming;
+      default:
+        return ongoing;
+    }
+  };
 
   const handleTabChange = (tab: string): void => {
     setSearchParams((params) => {
@@ -83,11 +95,12 @@ const TournamentList: React.FC = () => {
         >
           <Tab label="Ongoing Tournaments" value={"ongoing"}></Tab>
           <Tab label="Upcoming Tournaments" value={"upcoming"}></Tab>
+          <Tab label="Past Tournaments" value={"past"}></Tab>
         </Tabs>
       </Box>
       <Grid container spacing={2} direction="row" alignItems="stretch">
-        {tournamentsToRender.length > 0 ? (
-          tournamentsToRender.map((tournament, key) => (
+        {tournamentsToRender().length > 0 ? (
+          tournamentsToRender().map((tournament, key) => (
             <Grid item xs={12} md={6} key={tournament.id + key}>
               <TournamentCard tournament={tournament} type={currentTab} />
             </Grid>

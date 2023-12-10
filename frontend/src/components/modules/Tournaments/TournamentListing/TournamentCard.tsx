@@ -7,6 +7,7 @@ import CardHeader from "@mui/material/CardHeader";
 import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 import Card from "@mui/material/Card";
+import { useAuth } from "context/AuthContext";
 
 interface TournamentCardProps {
   tournament: Tournament;
@@ -18,6 +19,10 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
   type
 }) => {
   const navigate = useNavigate();
+  const { userId } = useAuth();
+  const userAlreadySigned = tournament.players.some(
+    (player) => player.id === userId
+  );
 
   return (
     <Card component="main" sx={{ position: "relative" }}>
@@ -45,6 +50,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
         <Button
           color="primary"
           variant="outlined"
+          disabled={userAlreadySigned}
           onClick={() => {
             navigate(`${tournament.id}/sign-up`);
           }}

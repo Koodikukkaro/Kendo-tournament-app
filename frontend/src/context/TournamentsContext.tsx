@@ -14,6 +14,7 @@ import { type LocationState } from "types/global";
 interface ITournamentsContext {
   isLoading: boolean;
   isError: boolean;
+  past: Tournament[];
   ongoing: Tournament[];
   upcoming: Tournament[];
 }
@@ -21,11 +22,18 @@ interface ITournamentsContext {
 const initialContextValue: ITournamentsContext = {
   isLoading: true,
   isError: false,
+  past: [],
   ongoing: [],
   upcoming: []
 };
 
-const getTournamentsTuple = async (): Promise<Tournament[][]> => {
+interface SortedTournaments {
+  readonly past: Tournament[];
+  readonly ongoing: Tournament[];
+  readonly upcoming: Tournament[];
+}
+
+const getSortedTournaments = async (): Promise<SortedTournaments> => {
   const tournaments = await api.tournaments.getAll();
   const currentDate = new Date();
 
@@ -46,7 +54,11 @@ const getTournamentsTuple = async (): Promise<Tournament[][]> => {
     (tournament) => new Date(tournament.startDate) > currentDate
   );
 
-  return [ongoing, upcoming];
+  const past = sortedTournaments.filter(
+    (tournament) => new Date(tournament.endDate) <= currentDate
+  );
+
+  return { past, ongoing, upcoming } as const;
 };
 
 export const TournamentsProvider = (): ReactElement => {
@@ -68,12 +80,13 @@ export const TournamentsProvider = (): ReactElement => {
   useEffect(() => {
     const getAllTournaments = async (): Promise<void> => {
       try {
-        const tournaments = await getTournamentsTuple();
+        const { past, ongoing, upcoming } = await getSortedTournaments();
         setValue((prevValue) => ({
           ...prevValue,
           isLoading: false,
-          ongoing: tournaments[0],
-          upcoming: tournaments[1]
+          past,
+          ongoing,
+          upcoming
         }));
       } catch (error) {
         showToast("Could not fetch any tournaments", "error");
