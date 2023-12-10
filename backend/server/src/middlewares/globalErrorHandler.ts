@@ -1,52 +1,58 @@
+/* Log errors and send a response
+
+*/
+
 import { type NextFunction, type Request, type Response } from "express";
-import { CustomError } from "../errors/CustomError.js";
 import { ValidateError } from "tsoa";
 
+import { CustomError } from "../errors/CustomError.js";
+import logger from "../utility/logger";
+
 export const globalErrorHandlerMiddleware = (
-  err: Error,
+  error: Error,
   req: Request,
   res: Response,
   _next: NextFunction
 ): Response<any, Record<string, any>> => {
-  if (err instanceof CustomError) {
-    const { statusCode, errors, logging } = err;
+  // logger.debug(error.name, {
+  //   error,
+  //   requestPath: req.path,
+  //   stack: error.stack
+  // });
+  const basicErrorLog = { error, requestPath: req.path };
+
+  if (error instanceof CustomError) {
+    const { statusCode, errors, logging } = error;
+
     if (logging) {
-      console.error(
-        JSON.stringify(
-          {
-            code: err.statusCode,
-            errors: err.errors,
-            stack: err.stack
-          },
-          null,
-          2
-        )
-      );
+      // logger.error(error.name, basicErrorLog);
+      logger.error(error.name, {
+        code: error.statusCode,
+        errors: error.errors,
+        stack: error.stack
+      });
     }
 
     return res.status(statusCode).send({ errors });
   }
 
-  if (err instanceof ValidateError) {
-    const { fields } = err;
-    console.warn(`Caught Validation Error for ${req.path}:`, err.fields);
+  if (error instanceof ValidateError) {
+    logger.warn(error.name, basicErrorLog);
+
+    const { fields } = error;
     return res
       .status(400)
       .send({ errors: [{ message: "Validation error", context: fields }] });
   }
 
   // Unhandled errors
-  console.error(
-    JSON.stringify(
-      {
-        code: 500,
-        message: err.message,
-        stack: err.stack
-      },
-      null,
-      2
-    )
-  );
+  // logger.error(error.name, basicErrorLog);
+  logger.error(error.name, {
+    code: 500,
+    message: error.message,
+    stack: error.stack
+  });
+
   return res
     .status(500)
     .send({ errors: [{ message: "Something went wrong" }] });
