@@ -9,8 +9,9 @@ const consoleFormat = format.combine(
 const fileFormat = format.combine(format.timestamp(), format.json());
 
 const logger = createLogger({
-  level: "debug",
+  // level: "debug",
   // level: "http",
+  level: "info",
   // https://github.com/winstonjs/winston/blob/HEAD/docs/transports.md#file-transport
   transports: [
     new transports.Console({ format: consoleFormat }),

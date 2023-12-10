@@ -1,6 +1,7 @@
 /* Log errors and send a response
 
 */
+
 import { type NextFunction, type Request, type Response } from "express";
 import { ValidateError } from "tsoa";
 
@@ -23,7 +24,6 @@ export const globalErrorHandlerMiddleware = (
   if (error instanceof CustomError) {
     const { statusCode, errors, logging } = error;
 
-    // What is "logging"?
     if (logging) {
       // logger.error(error.name, basicErrorLog);
       logger.error(error.name, {
