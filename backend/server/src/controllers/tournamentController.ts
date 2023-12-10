@@ -42,9 +42,9 @@ export class TournamentController extends Controller {
     return await this.service.getAllTournaments(limit);
   }
 
-  @Security("jwt")
   @Post()
   @Tags("Tournaments")
+  @Security("jwt")
   public async createTournament(
     @Request() request: express.Request & { user: JwtPayload },
     @Body() tournamentData: CreateTournamentRequest
@@ -56,9 +56,9 @@ export class TournamentController extends Controller {
     return await this.service.createTournament(tournamentData, creator);
   }
 
-  @Security("jwt")
   @Put("{tournamentId}/sign-up")
   @Tags("Tournaments")
+  @Security("jwt")
   public async signUpForTournament(
     @Path() tournamentId: ObjectIdString,
     @Body() requestBody: SignupForTournamentRequest
@@ -70,9 +70,9 @@ export class TournamentController extends Controller {
     );
   }
 
-  @Security("jwt")
   @Put("{tournamentId}/manual-schedule")
   @Tags("Tournaments")
+  @Security("jwt")
   public async manualSchedule(
     @Path() tournamentId: ObjectIdString,
     @Body() requestBody: UnsavedMatch
