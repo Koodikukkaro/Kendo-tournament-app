@@ -2,28 +2,27 @@ import React, { useEffect, useState, type ReactElement } from "react";
 import { type Tournament } from "types/models";
 import useToast from "hooks/useToast";
 import api from "api/axios";
-import { Outlet, useOutletContext } from "react-router-dom";
+import {
+  Outlet,
+  useLocation,
+  useNavigate,
+  useOutletContext
+} from "react-router-dom";
 import Loader from "components/common/Loader";
-
-export type TabType = "ongoing" | "upcoming";
+import { type LocationState } from "types/global";
 
 interface ITournamentsContext {
   isLoading: boolean;
   isError: boolean;
   ongoing: Tournament[];
   upcoming: Tournament[];
-  // For perserving the state of the selected tab in the tournamentsList component
-  currentTab: TabType;
-  setCurrentTab: (tab: TabType) => void;
 }
 
 const initialContextValue: ITournamentsContext = {
   isLoading: true,
   isError: false,
   ongoing: [],
-  upcoming: [],
-  currentTab: "ongoing",
-  setCurrentTab: (_tab: TabType) => {}
+  upcoming: []
 };
 
 const getTournamentsTuple = async (): Promise<Tournament[][]> => {
@@ -51,8 +50,20 @@ const getTournamentsTuple = async (): Promise<Tournament[][]> => {
 };
 
 export const TournamentsProvider = (): ReactElement => {
+  const navigate = useNavigate();
   const showToast = useToast();
   const [value, setValue] = useState<ITournamentsContext>(initialContextValue);
+  const location = useLocation() as LocationState;
+  const shouldRefresh: boolean = location.state?.refresh ?? false;
+
+  /* Refresh the page.
+   * Needed to retrigger any queries to the server.
+   * */
+  useEffect(() => {
+    if (shouldRefresh) {
+      navigate(".", { replace: true });
+    }
+  }, [shouldRefresh]);
 
   useEffect(() => {
     const getAllTournaments = async (): Promise<void> => {
@@ -77,18 +88,11 @@ export const TournamentsProvider = (): ReactElement => {
     void getAllTournaments();
   }, []);
 
-  const setCurrentTab = (tab: TabType): void => {
-    setValue((prevValue) => ({
-      ...prevValue,
-      currentTab: tab
-    }));
-  };
-
   if (value.isLoading) {
     return <Loader />;
   }
 
-  return <Outlet context={{ ...value, setCurrentTab }} />;
+  return <Outlet context={value} />;
 };
 
 export const useTournaments = (): ITournamentsContext =>

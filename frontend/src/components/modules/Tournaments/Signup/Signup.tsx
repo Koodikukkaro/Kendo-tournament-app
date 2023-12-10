@@ -11,7 +11,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
-import { homeRoute } from "routes/Router";
+import routePaths from "routes/route-paths";
 import Link from "@mui/material/Link";
 import Loader from "components/common/Loader";
 import UserInfoTable from "./UserInfoTable";
@@ -50,7 +50,10 @@ const Signup: React.FC = (): ReactElement => {
         `Successfully signed up for tournament: ${tournament.name}`,
         "success"
       );
-      navigate(homeRoute, { replace: true });
+      navigate(routePaths.homeRoute, {
+        replace: true,
+        state: { refresh: true }
+      });
     } catch (error) {
       showToast(error, "error");
     }
@@ -82,7 +85,10 @@ const Signup: React.FC = (): ReactElement => {
       <Box className="sign-up-body">
         <Typography variant="body1" className="subtext">
           Want more information on this tournament?{" "}
-          <Link component={RouterLink} to={`${homeRoute}/${tournament.id}`}>
+          <Link
+            component={RouterLink}
+            to={`${routePaths.homeRoute}/${tournament.id}`}
+          >
             Click here
           </Link>
         </Typography>

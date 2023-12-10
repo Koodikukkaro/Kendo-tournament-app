@@ -1,15 +1,18 @@
 import React from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import routePaths from "routes/route-paths";
 
 export type ProtectedRouteProps = { children?: React.ReactElement } & {
   isAllowed: boolean;
   redirectPath?: string;
+  context?: unknown;
 };
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   isAllowed,
   children,
-  redirectPath = "/"
+  context,
+  redirectPath = routePaths.homeRoute
 }) => {
   const location = useLocation();
 
@@ -24,5 +27,5 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   // Children is used when the ProtectedRoute is not used as Layout component
-  return children ?? <Outlet />;
+  return children ?? <Outlet context={context} />;
 };

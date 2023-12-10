@@ -29,7 +29,9 @@ const useToast = (): ShowToastHook => {
 
   return (error, severity): void => {
     if (isAxiosError<ApiErrorResponse>(error)) {
-      const errors = error.response?.data.errors ?? [];
+      const errors = error.response?.data.errors ?? [
+        { message: error.message }
+      ];
 
       errors.forEach((error) => {
         const messages =

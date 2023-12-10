@@ -86,8 +86,8 @@ export interface CreateMatchRequest {
    * @maxItems 2 Two players are required
    */
   players: MatchPlayerPayload[];
-  admin: ObjectIdString;
-  officials: ObjectIdString[];
+  tournamentId: ObjectIdString;
+  officials?: ObjectIdString[];
   matchType: MatchType;
   comment?: string;
 }
@@ -98,9 +98,28 @@ export interface AddPointRequest {
   comment?: string;
 }
 
-export type CreateTournamentRequest = Omit<
+export type CreateTournamentRequest = Pick<
   Tournament,
-  "id" | "creator" | "players"
+  | "name"
+  | "location"
+  | "startDate"
+  | "endDate"
+  | "type"
+  | "maxPlayers"
+  | "organizerEmail"
+  | "organizerPhone"
+  | "description"
 > & {
   differentOrganizer: boolean;
+};
+
+export interface SignupForTournamentRequest {
+  playerId: ObjectIdString;
+}
+
+/* Note that we get the data validations from the registerRequest interface also */
+export type EditUserRequest = Omit<RegisterRequest, "password">;
+
+export type ResetPasswordRequest = Pick<RegisterRequest, "password"> & {
+  token: string;
 };

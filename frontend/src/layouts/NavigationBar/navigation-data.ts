@@ -4,37 +4,45 @@
 */
 
 import { type NavigationData } from "./navigation-bar";
+import routePaths from "routes/route-paths";
 
 // Text to display and the corresponding link
-export const unAuthenticatedNavItems: NavigationData = [
+
+export const baseNavItems: NavigationData = [
+  {
+    text: "Home",
+    link: routePaths.homeRoute
+  }
+];
+
+export const signupData: NavigationData = [
   {
     text: "Login",
-    link: "/login"
+    link: routePaths.login
   },
   {
     text: "Register",
-    link: "/register"
+    link: routePaths.register
   }
 ];
 
-export const authenticatedNavItems: NavigationData = [
+export const unAuthenticatedNavItems: NavigationData =
+  baseNavItems.concat(signupData);
+
+export const authenticatedNavItems: NavigationData = baseNavItems.concat([
   {
     text: "Profile",
-    link: "/profile"
-  },
-  {
-    text: "Tournaments",
-    link: "/tournaments"
+    link: routePaths.profile
   }
-];
+]);
 
 export const settings: NavigationData = [
   {
     text: "Profile",
-    link: "/profile"
+    link: routePaths.profile
   },
   {
     text: "Logout",
-    link: "/"
+    link: routePaths.logout
   }
 ];

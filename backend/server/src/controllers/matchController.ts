@@ -24,9 +24,9 @@ export class MatchController extends Controller {
   /*
    * Create a new Kendo match.
    */
-  @Security("jwt", ["official"])
   @Post()
   @Tags("Match")
+  @Security("jwt")
   public async createMatch(
     @Body() requestBody: CreateMatchRequest
   ): Promise<Match> {
@@ -47,9 +47,9 @@ export class MatchController extends Controller {
   /*
    * Delete a Kendo match.
    */
-  @Security("jwt", ["official"])
   @Delete("{matchId}")
   @Tags("Match")
+  @Security("jwt")
   public async deleteMatch(@Path() matchId: ObjectIdString): Promise<void> {
     this.setStatus(204);
     await this.service.deleteMatchById(matchId);
@@ -58,9 +58,9 @@ export class MatchController extends Controller {
   /*
    * Start the timer for the specified Kendo match.
    */
-  @Security("jwt", ["official"])
   @Patch("{matchId}/start-timer")
   @Tags("Match")
+  @Security("jwt")
   public async startTimer(@Path() matchId: ObjectIdString): Promise<void> {
     this.setStatus(204);
 
@@ -72,9 +72,9 @@ export class MatchController extends Controller {
   /*
    * Stop the timer for the specified Kendo match.
    */
-  @Security("jwt", ["official"])
   @Patch("{matchId}/stop-timer")
   @Tags("Match")
+  @Security("jwt")
   public async stopTimer(@Path() matchId: ObjectIdString): Promise<void> {
     this.setStatus(204);
 
@@ -86,9 +86,9 @@ export class MatchController extends Controller {
   /*
    * Add a point to the specified Kendo match.
    */
-  @Security("jwt", ["official"])
   @Patch("{matchId}/points")
   @Tags("Match")
+  @Security("jwt")
   public async addPoint(
     @Path() matchId: ObjectIdString,
     @Body() updateMatchRequest: AddPointRequest

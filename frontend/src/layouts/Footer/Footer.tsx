@@ -4,6 +4,7 @@ import Box from "@mui/material/Box";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import "./footer.css";
+import routePaths from "routes/route-paths";
 
 const Footer: React.FC = () => {
   return (
@@ -11,13 +12,13 @@ const Footer: React.FC = () => {
       <Container maxWidth="lg">
         <Box className="footer-links">
           <Link
-            href="https://www.kendoseinajoki.fi/"
+            href={routePaths.kendoseinajoki}
             target="_blank"
             color="inherit"
           >
             About
           </Link>
-          <Link href="/privacy" target="_blank" color="inherit">
+          <Link href={routePaths.privacy} target="_blank" color="inherit">
             Privacy Policy
           </Link>
         </Box>

@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import TournamentCard from "./TournamentCard";
-import { useNavigate } from "react-router-dom";
-import { type TabType, useTournaments } from "context/TournamentsContext";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTournaments } from "context/TournamentsContext";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
@@ -13,28 +13,34 @@ import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import EventIcon from "@mui/icons-material/Event";
 import Container from "@mui/material/Container";
 
+const tabTypes = ["ongoing", "upcoming"] as const;
+const defaultTab = "ongoing";
+
 // SpeedDial actions
 const actions = [{ icon: <EventIcon />, name: "Create Tournament" }];
 
 const TournamentList: React.FC = () => {
   const navigate = useNavigate();
-  const { upcoming, ongoing, setCurrentTab, currentTab } = useTournaments();
+  const { upcoming, ongoing } = useTournaments();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentTab = searchParams.get("tab") ?? defaultTab;
 
-  const tournamentsToRender = currentTab === "ongoing" ? ongoing : upcoming;
-
-  const handleTabChange = (
-    _event: React.SyntheticEvent<Element, Event>,
-    tab: TabType
-  ): void => {
-    setCurrentTab(tab);
-    // Check the current scroll position
-    const scrollPosition = window.scrollY;
-    const scrollTreshold = 300;
-
-    // Scroll to the top only if the scroll position is below a certain threshold
-    if (scrollPosition > scrollTreshold) {
-      window.scrollTo({ top: 0, behavior: "smooth" });
+  useEffect(() => {
+    if (currentTab === null || !tabTypes.some((tab) => tab === currentTab)) {
+      setSearchParams((params) => {
+        params.set("tab", defaultTab);
+        return params;
+      });
     }
+  }, [currentTab]);
+
+  const tournamentsToRender = currentTab === defaultTab ? ongoing : upcoming;
+
+  const handleTabChange = (tab: string): void => {
+    setSearchParams((params) => {
+      params.set("tab", tab);
+      return params;
+    });
   };
 
   return (
@@ -64,7 +70,9 @@ const TournamentList: React.FC = () => {
       >
         <Tabs
           value={currentTab}
-          onChange={handleTabChange}
+          onChange={(_, value) => {
+            handleTabChange(value);
+          }}
           variant="scrollable"
           sx={{
             position: "sticky",

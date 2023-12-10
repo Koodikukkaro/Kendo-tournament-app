@@ -1,13 +1,12 @@
-import { red, blue } from "@mui/material/colors";
 import { createTheme } from "@mui/material/styles";
 
 const theme = createTheme({
   palette: {
     primary: {
-      main: red[500]
+      main: "#db4744"
     },
     secondary: {
-      main: blue[500]
+      main: "#9b9484"
     }
   },
   typography: {

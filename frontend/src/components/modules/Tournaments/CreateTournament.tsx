@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
-import { isValidPhone } from "../Registeration/registerationValidators";
+import { isValidPhone } from "utils/form-validators";
 import api from "api/axios";
 import useToast from "hooks/useToast";
 import { useNavigate } from "react-router-dom";
@@ -29,7 +29,9 @@ import {
   useWatch
 } from "react-hook-form-mui";
 
-const MAX_PLAYER_AMOUNT = 4;
+import routePaths from "routes/route-paths";
+
+const MIN_PLAYER_AMOUNT = 3;
 const now = dayjs();
 
 export interface CreateTournamentFormData {
@@ -52,7 +54,7 @@ const defaultValues: CreateTournamentFormData = {
   endDate: now.add(1, "week"),
   description: "",
   type: "Round Robin",
-  maxPlayers: MAX_PLAYER_AMOUNT,
+  maxPlayers: MIN_PLAYER_AMOUNT,
   differentOrganizer: false
 };
 
@@ -75,7 +77,10 @@ const CreateTournamentForm: React.FC = () => {
         endDate: data.endDate.toString()
       });
       showToast(`Tournament '${data.name}' created successfully!`, "success");
-      navigate("/", { replace: true });
+      navigate(routePaths.homeRoute, {
+        replace: true,
+        state: { refresh: true }
+      });
     } catch (error) {
       showToast(error, "error");
     }
@@ -161,7 +166,8 @@ const CreateTournamentForm: React.FC = () => {
           validation={{
             validate: (value: number) => {
               return (
-                value >= MAX_PLAYER_AMOUNT || "Minimum amount of players is 4"
+                value >= MIN_PLAYER_AMOUNT ||
+                `Minimum amount of players is ${MIN_PLAYER_AMOUNT}`
               );
             }
           }}

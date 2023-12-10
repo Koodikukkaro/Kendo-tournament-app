@@ -11,6 +11,8 @@ import swaggerDocument from "../../build/swagger.json";
 import { globalErrorHandlerMiddleware } from "../middlewares/globalErrorHandler";
 import { httpLogger } from "../middlewares/logger";
 import { RegisterRoutes } from "../../build/routes";
+import config from "./config";
+
 
 export function CreateApp(): Application {
   const app = express();
@@ -24,7 +26,7 @@ export function CreateApp(): Application {
   app.use(cookieParser());
   app.use(
     cors({
-      origin: "http://localhost:3000",
+      origin: config.CLIENT_HOST,
       credentials: true
     })
   );

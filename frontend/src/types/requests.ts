@@ -1,4 +1,4 @@
-import type { Tournament } from "./models";
+import type { Tournament, PointType, PlayerColor } from "./models";
 
 export interface LoginRequest {
   email: string;
@@ -29,3 +29,15 @@ export type CreateTournamentRequest = Omit<
 export interface SignupForTournamentRequest {
   playerId: string;
 }
+
+export interface AddPointRequest {
+  pointType: PointType;
+  pointColor: PlayerColor;
+  comment?: string;
+}
+
+export type EditUserRequest = Omit<RegisterRequest, "password">;
+
+export type ResetPasswordRequest = Pick<RegisterRequest, "password"> & {
+  token: string;
+};

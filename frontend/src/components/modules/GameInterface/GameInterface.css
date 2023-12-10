@@ -1,0 +1,30 @@
+.playerBox {
+  display: inline-block;
+  padding: 8px;
+  border: 1px solid black;
+  border-radius: 20px;
+  margin-right: 16px;
+  text-align: center;
+  width: 40%;
+  height: 100px;
+}
+
+.tableContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+table {
+  border-collapse: collapse;
+  margin-top: 10px;
+  width: 400px;
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+  height: 20px;
+  width: 80px;
+}

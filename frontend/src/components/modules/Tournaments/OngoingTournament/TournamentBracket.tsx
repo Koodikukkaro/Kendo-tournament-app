@@ -1,113 +1,58 @@
-/* TODO: 
-Get the match winner from match data and add it
-to the next round's players. 
-Right now isRoundFinished is controlled by a button for testing reasons.
-It is set to true when all the matches of the round are finished to generate the next round.
-This should be changed to happen automatically.
-It would be nice to have all rounds visible from the start and have placeholders 
-(like Player 1/Player 2 vs Player 3/Player 4) for every round
-and then add the winner's names when isRoundFinished changes. 
-The matchup buttons should lead to the specific match's page.
- */
+import React from "react";
+import { Card, CardContent, Typography, Box } from "@mui/material";
+import { type Match, type User } from "types/models";
 
-import React, { useState, useEffect } from "react";
-import { Paper, Typography, Grid, Button } from "@mui/material";
-
-import "./PlayoffTournamentView.css";
-
-interface TournamentBracketProps {
-  players: string[];
-  initialWinners: string[];
+interface BracketProps {
+  match: Match;
+  players: User[];
 }
 
-interface Match {
-  players: string[];
-  winners: string[];
-}
+const Bracket: React.FC<BracketProps> = ({ match, players }) => {
+  // Find the players in the players array using their IDs
+  const player1 = players.find(
+    (player) => player.id === match.players[0].id
+  ) as User;
+  const player2 = players.find(
+    (player) => player.id === match.players[1].id
+  ) as User;
 
-const TournamentBracket: React.FC<TournamentBracketProps> = ({
-  players,
-  initialWinners
-}) => {
-  const [rounds, setRounds] = useState<Match[][]>([]);
-  const [winners, setWinners] = useState<string[]>(initialWinners);
-  const [roundNumber, setRoundNumber] = useState<number>(1);
-  const [isRoundFinished, setIsRoundFinished] = useState<boolean>(false);
+  const winner = match.winner;
+  const isWinnerDeclared = winner !== undefined;
 
-  useEffect(() => {
-    if (isRoundFinished) {
-      const roundPlayers = roundNumber === 1 ? players : winners;
-      const newRound: Match[] = generateMatches(roundPlayers);
-      setRounds((prevRounds) => [...prevRounds, newRound]);
-      setWinners(newRound.flatMap((match) => match.winners));
-      setRoundNumber((prevRoundNumber) => prevRoundNumber + 1);
-      setIsRoundFinished(false);
-    }
-  }, [isRoundFinished, winners, players, roundNumber]);
+  // Get the names of the players
+  const player1Name = `${player1.firstName} ${player1.lastName}`;
+  const player2Name = `${player2.firstName} ${player2.lastName}`;
 
-  const generateMatches = (roundPlayers: string[]): Match[] => {
-    const matches: Match[] = [];
+  let player1Color = "black";
+  let player2Color = "black";
 
-    for (let i = 0; i < roundPlayers.length; i += 2) {
-      const matchWinner = roundPlayers[i]; // Winner is the left player for simplicity
-
-      const match: Match = {
-        players: [roundPlayers[i], roundPlayers[i + 1]],
-        winners: [matchWinner]
-      };
-
-      matches.push(match);
-    }
-
-    return matches;
-  };
-
-  const handleNextRound = (): void => {
-    setIsRoundFinished(true);
-  };
+  if (isWinnerDeclared) {
+    player1Color = winner === player1.id ? "#f44336" : "#666666";
+    player2Color = winner === player2.id ? "#f44336" : "#666666";
+  }
 
   return (
-    <Paper className="tournamentBracketRoot" elevation={3}>
-      <Typography variant="h5" gutterBottom>
-        Tournament name
-      </Typography>
-      {rounds.map((round, roundIndex) => (
-        <div key={roundIndex}>
-          <Typography variant="subtitle1">Round {roundIndex + 1}</Typography>
-          <Grid container spacing={2} className="bracketContainer">
-            {round.map((match, matchIndex) => (
-              <Grid
-                key={matchIndex}
-                item
-                xs={6}
-                sm={4}
-                md={3}
-                lg={2}
-                className="matchGridItem"
-              >
-                <div className="matchContainer">
-                  <Button>
-                    {match.players[0]} vs {match.players[1]}
-                    <br></br>
-                    Winner: {match.winners[0]}{" "}
-                    {/* We can print the winner like this or bold the name etc. */}
-                  </Button>
-                </div>
-              </Grid>
-            ))}
-          </Grid>
-        </div>
-      ))}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleNextRound}
-        disabled={isRoundFinished}
-      >
-        Generate Next Round
-      </Button>
-    </Paper>
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        marginBottom: 5
+      }}
+    >
+      <Card variant="outlined" sx={{ mb: 1 }}>
+        <CardContent>
+          <Typography textAlign="center" style={{ color: player1Color }}>
+            {player1Name}
+          </Typography>
+          <Typography textAlign="center"> vs</Typography>
+          <Typography textAlign="center" style={{ color: player2Color }}>
+            {player2Name}
+          </Typography>
+        </CardContent>
+      </Card>
+    </Box>
   );
 };
 
-export default TournamentBracket;
+export default Bracket;

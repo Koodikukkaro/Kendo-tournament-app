@@ -1,314 +1,256 @@
 import React, { useState, useEffect } from "react";
-import {
-  TextField,
-  Checkbox,
-  Button,
-  FormControlLabel,
-  Container,
-  Typography
-} from "@mui/material";
-import "./profile.css";
+import { useNavigate } from "react-router-dom";
+import useToast from "hooks/useToast";
+import { useAuth } from "context/AuthContext";
+import { isValidPhone, isValidUsername } from "utils/form-validators";
+import api from "api/axios";
+import Loader from "components/common/Loader";
+import ErrorModal from "components/common/ErrorModal";
+import EditButtonRow from "./EditInfoButtonRow";
+import ProfileHeader from "./ProfileHeader";
+import type { EditUserRequest } from "types/requests";
+import routePaths from "routes/route-paths";
 
-interface UserProfile {
-  firstname: string;
-  lastname: string;
-  email: string;
-  username: string;
-  tel: string;
-  nationality: string;
-  inNationalTeam: boolean;
-  club: string;
-  rank: string;
-  suomisport: string;
-}
-interface Password {
-  password: string;
-  oldPassword: string;
-  newPassword: string;
-  newPasswordConfirmation: string;
-}
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+
+import {
+  CheckboxElement,
+  FormContainer,
+  TextFieldElement,
+  useForm,
+  useWatch
+} from "react-hook-form-mui";
+
+const defaultValues: EditUserRequest = {
+  firstName: "",
+  lastName: "",
+  userName: "",
+  email: "",
+  phoneNumber: "",
+  nationality: "",
+  inNationalTeam: false,
+  suomisportId: "",
+  clubName: "",
+  danRank: "",
+  underage: false,
+  guardiansEmail: ""
+};
 
 const Profile: React.FC = () => {
-  const [userProfile, setUserProfile] = useState<UserProfile>({
-    /* fetch calls for info, just now some example data */
-    firstname: "",
-    lastname: "",
-    email: "",
-    username: "",
-    tel: "",
-    nationality: "",
-    inNationalTeam: false,
-    club: "",
-    rank: "",
-    suomisport: ""
+  const navigate = useNavigate();
+  const showToast = useToast();
+  const { userId } = useAuth();
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+  const [editingEnabled, setEditingEnabled] = useState<boolean>(false);
+
+  const formContext = useForm<EditUserRequest>({
+    defaultValues,
+    mode: "onBlur",
+    disabled: !editingEnabled
   });
 
-  const [userPassword, setUserPassword] = useState<Password>({
-    password: "Foobar123",
-    oldPassword: "",
-    newPassword: "",
-    newPasswordConfirmation: ""
-  });
+  const { underage } = useWatch<EditUserRequest>(formContext);
 
   useEffect(() => {
     const fetchUserData = async (): Promise<void> => {
       try {
-        /*
-        const userId = "123";
-        const userData = await UserService.getUserById(userId);
-
-        const mappedUserData: UserProfile = {
-          firstname: userData.firstName,
-          lastname: userData.lastName,
-          email: userData.email,
-          username: userData.userName,
-          tel: userData.phoneNumber,
-          nationality: userData.nationality,
-          inNationalTeam: userData.inNationalTeam,
-          club: userData.clubName,
-          rank: userData.danRank,
-          suomisport: userData.suomisport
-        };
-        */
-
-        const mappedUserData: UserProfile = {
-          firstname: "John",
-          lastname: "Doe",
-          email: "john.doe@gmail.com",
-          username: "KendoMaster123",
-          tel: "0401234567",
-          nationality: "FIN",
-          inNationalTeam: true,
-          club: "Seinäjoki Kendo Club",
-          rank: "someRank",
-          suomisport: "1234567"
-        };
-
-        setUserProfile(mappedUserData);
+        if (userId !== undefined) {
+          const user = await api.user.details(userId);
+          formContext.reset(user);
+        }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        setIsError(true);
+        showToast(error, "error");
+      } finally {
+        setIsLoading(false);
       }
     };
 
     void fetchUserData();
-  }, []);
+  }, [userId, formContext.reset]);
 
-  const handleInputChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    fieldName: string
-  ): void => {
-    const target = event.target as HTMLInputElement;
-    const value = target.type === "checkbox" ? target.checked : target.value;
-    if (
-      value === "oldPassword" ||
-      value === "newPassword" ||
-      value === "newPasswordConfirmation"
-    ) {
-      setUserPassword((prevData) => ({
-        ...prevData,
-        [fieldName]: value
-      }));
-    } else {
-      setUserProfile((prevData) => ({
-        ...prevData,
-        [fieldName]: value
-      }));
+  if (isLoading || userId === undefined) {
+    return <Loader />;
+  }
+
+  // Redirect the user back in case of an error
+  if (isError) {
+    return (
+      <ErrorModal
+        open={true}
+        onClose={() => {
+          navigate(routePaths.homeRoute);
+        }}
+        errorMessage={
+          "There was an error retrieveing your information. Close this to go back to the previous view."
+        }
+      />
+    );
+  }
+
+  const onSubmit = async (data: EditUserRequest): Promise<void> => {
+    try {
+      await api.user.update(userId, data);
+      showToast(
+        "Your information has been updated successfully! Please refresh the page to see the changes.",
+        "success"
+      );
+    } catch (error) {
+      showToast(error, "error");
     }
   };
 
-  const handlePasswordChange = (): void => {
-    /* TODO:
-    -check if newPassword and newPasswordConfirmation match
-    -check if oldPassword and user password match
-    -error message if not all fields filled
-    -saving newPassword to users password field */
-  };
-
-  const handleSavingProfile = (): void => {
-    /* update user info */
-  };
-
-  const handleGoBack = (): void => {
-    /* go back to the previous page */
-    /* TODO: add a question if really want to leave for a case where changed data but click back */
-  };
-
   return (
-    <Container component="main" maxWidth="xs">
-      <form id="profileForm" className="form">
-        <Typography variant="h5" className="header" fontWeight="bold">
-          Edit your info
-        </Typography>
-        <div>
-          <TextField
-            label="First Name"
-            fullWidth
-            variant="outlined"
-            margin="normal"
-            value={userProfile.firstname}
-            onChange={(e) => {
-              handleInputChange(e, "firstname");
-            }}
-          />
-          <br />
-          <TextField
-            label="Last Name"
-            fullWidth
-            variant="outlined"
-            margin="normal"
-            value={userProfile.lastname}
-            onChange={(e) => {
-              handleInputChange(e, "lastname");
-            }}
-          />
-          <br />
-          <TextField
-            label="Username"
-            fullWidth
-            variant="outlined"
-            margin="normal"
-            value={userProfile.username}
-            onChange={(e) => {
-              handleInputChange(e, "username");
-            }}
-          />
-          <br />
-          <TextField
-            label="Email"
+    <Box display="flex" justifyContent="center">
+      {/* Form for editing user info */}
+      <Box
+        sx={{
+          padding: "1em",
+          width: "500px"
+        }}
+      >
+        <ProfileHeader />
+        <FormContainer
+          defaultValues={defaultValues}
+          formContext={formContext}
+          onSuccess={onSubmit}
+        >
+          {/* Container for first and last name */}
+          <Grid container columnSpacing={2}>
+            <Grid item xs={12} md={6}>
+              <TextFieldElement
+                required
+                fullWidth
+                name="firstName"
+                label="First Name"
+                margin="normal"
+                disabled={!editingEnabled}
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <TextFieldElement
+                required
+                fullWidth
+                name="lastName"
+                label="Last Name"
+                margin="normal"
+                disabled={!editingEnabled}
+              />
+            </Grid>
+          </Grid>
+
+          <TextFieldElement
+            required
+            name="email"
+            label="Email Address"
             type="email"
             fullWidth
-            variant="outlined"
             margin="normal"
-            value={userProfile.email}
-            onChange={(e) => {
-              handleInputChange(e, "email");
-            }}
+            disabled={!editingEnabled}
           />
-          <br />
-          <TextField
-            label="Tel"
+
+          <TextFieldElement
+            required
+            name="phoneNumber"
+            label="Phone Number"
             type="tel"
             fullWidth
-            variant="outlined"
             margin="normal"
-            value={userProfile.tel}
-            onChange={(e) => {
-              handleInputChange(e, "tel");
+            disabled={!editingEnabled}
+            validation={{
+              validate: (value: string) => {
+                return (
+                  isValidPhone(value) || "Please enter a valid phone number"
+                );
+              }
             }}
           />
-          <br />
-          <TextField
+
+          <TextFieldElement
+            name="userName"
+            label="Username"
+            fullWidth
+            margin="normal"
+            disabled={!editingEnabled}
+            validation={{
+              validate: (value: string) => {
+                return (
+                  isValidUsername(value) ||
+                  "Username must be 4-20 characters long, start and end with a letter or number, and contain only letters, numbers, dots, or underscores with no consecutive dots or underscores."
+                );
+              }
+            }}
+          />
+
+          <TextFieldElement
+            name="nationality"
             label="Nationality"
             fullWidth
-            variant="outlined"
             margin="normal"
-            value={userProfile.nationality}
-            onChange={(e) => {
-              handleInputChange(e, "nationality");
-            }}
+            disabled={!editingEnabled}
           />
-          <br />
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={userProfile.inNationalTeam}
-                onChange={(e) => {
-                  handleInputChange(e, "inNationalTeam");
-                }}
-                name="inNationalTeam"
-                id="inNationalTeam"
-              />
-            }
-            label="I'm in the maajoukkuerinki"
+
+          <CheckboxElement
+            name="inNationalTeam"
+            label="I'm in the national team ring"
+            disabled={!editingEnabled}
           />
-          <br />
-          <TextField
+
+          <TextFieldElement
+            name="rank"
+            label="Dan Rank"
+            fullWidth
+            margin="normal"
+            disabled={!editingEnabled}
+          />
+
+          <TextFieldElement
+            name="club"
             label="Club"
             fullWidth
-            variant="outlined"
             margin="normal"
-            value={userProfile.club}
-            onChange={(e) => {
-              handleInputChange(e, "club");
-            }}
+            disabled={!editingEnabled}
           />
-          <br />
-          <TextField
-            label="Rank"
-            fullWidth
-            variant="outlined"
-            margin="normal"
-            value={userProfile.rank}
-            onChange={(e) => {
-              handleInputChange(e, "rank");
-            }}
-          />
-          <br />
-          <TextField
+
+          <TextFieldElement
+            name="suomisport"
             label="Suomisport ID"
             fullWidth
-            variant="outlined"
             margin="normal"
-            value={userProfile.suomisport}
+            disabled={!editingEnabled}
+          />
+
+          <CheckboxElement
+            name="underage"
+            label="I'm underage"
+            disabled={!editingEnabled}
             onChange={(e) => {
-              handleInputChange(e, "suomisport");
+              formContext.resetField("guardiansEmail");
+              formContext.setValue("underage", e.target.checked);
             }}
           />
-          <br />
-          <Button id="button" variant="contained" onClick={handleGoBack}>
-            Back
-          </Button>
-          <Button id="button" variant="contained" onClick={handleSavingProfile}>
-            Save changes
-          </Button>
-        </div>
-        <br />
-        <p className="subtext">Change password</p>
-        <div>
-          <TextField
-            label="Old Password"
-            type="password"
-            fullWidth
-            variant="outlined"
-            margin="normal"
-            value={userPassword.oldPassword}
-            required
-            onChange={(e) => {
-              handleInputChange(e, "oldPassword");
-            }}
+          {(underage as boolean) && (
+            <TextFieldElement
+              required
+              name="guardiansEmail"
+              label="Guardian's Email Address"
+              type="email"
+              fullWidth
+              margin="normal"
+              disabled={!editingEnabled}
+            />
+          )}
+          <EditButtonRow
+            editingEnabled={editingEnabled}
+            setEditingEnabled={setEditingEnabled}
+            formContext={formContext}
           />
-          <br />
-          <TextField
-            label="New Password"
-            type="password"
-            value={userPassword.newPassword}
-            required
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            onChange={(e) => {
-              handleInputChange(e, "newPassword");
-            }}
-          />
-          <br />
-          <TextField
-            label="Confirm New Password"
-            type="password"
-            value={userPassword.newPasswordConfirmation}
-            required
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            onChange={(e) => {
-              handleInputChange(e, "newPasswordConfirmation");
-            }}
-          />
-        </div>
-        <Button id="buttonpw" onClick={handlePasswordChange}>
-          Change password
-        </Button>
-      </form>
-    </Container>
+        </FormContainer>
+      </Box>
+    </Box>
   );
 };
 
