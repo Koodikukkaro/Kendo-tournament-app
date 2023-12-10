@@ -1,4 +1,4 @@
-import React, { useEffect, useState, type ReactElement } from "react";
+import React, { useEffect, useState, type ReactElement, useRef } from "react";
 import { type Tournament } from "types/models";
 import useToast from "hooks/useToast";
 import api from "api/axios";
@@ -67,10 +67,9 @@ export const TournamentsProvider = (): ReactElement => {
   const [value, setValue] = useState<ITournamentsContext>(initialContextValue);
   const location = useLocation() as LocationState;
   const shouldRefresh: boolean = location.state?.refresh ?? false;
+  const isInitialRender = useRef(true);
 
-  /* Refresh the page.
-   * Needed to retrigger any queries to the server.
-   * */
+  /* Indicates that reload should take place */
   useEffect(() => {
     if (shouldRefresh) {
       navigate(".", { replace: true });
@@ -98,8 +97,12 @@ export const TournamentsProvider = (): ReactElement => {
       }
     };
 
-    void getAllTournaments();
-  }, []);
+    // Fetch tournaments on initial render or when shouldRefresh is true
+    if (isInitialRender.current || shouldRefresh) {
+      void getAllTournaments();
+      isInitialRender.current = false;
+    }
+  }, [shouldRefresh]);
 
   if (value.isLoading) {
     return <Loader />;
