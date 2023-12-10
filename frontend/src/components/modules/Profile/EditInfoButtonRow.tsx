@@ -54,7 +54,7 @@ const EditButtonRow: React.FC<EditButtonRowProps> = ({
         type="submit"
         variant="contained"
         color="primary"
-        disabled={!editingEnabled || !formContext.formState.isValid}
+        disabled={!editingEnabled || !formContext.formState.isDirty}
         sx={{ mt: 3, mb: 2 }}
       >
         Save info

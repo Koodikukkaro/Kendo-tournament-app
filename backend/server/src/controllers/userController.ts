@@ -20,8 +20,8 @@ import {
 
 @Route("user")
 export class UserController extends Controller {
-  @Security("jwt")
   @Get("{id}")
+  @Security("jwt")
   @Tags("User")
   public async getUser(@Path() id: ObjectIdString): Promise<User> {
     this.setStatus(200);
@@ -40,6 +40,7 @@ export class UserController extends Controller {
   }
 
   @Put("{id}")
+  @Security("jwt")
   @Tags("User")
   public async editUser(
     @Path() id: ObjectIdString,
@@ -51,6 +52,7 @@ export class UserController extends Controller {
   }
 
   @Delete("{id}")
+  @Security("jwt")
   @Tags("User")
   public async deleteUser(@Path() id: ObjectIdString): Promise<void> {
     this.setStatus(204);
