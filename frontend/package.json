@@ -71,7 +71,6 @@
     "react-hook-form": "^7.48.2",
     "react-hook-form-mui": "^6.7.1",
     "react-router-dom": "^6.17.0",
-    "react-tabs": "^6.0.2",
     "socket.io-client": "^4.7.2"
   }
 }
