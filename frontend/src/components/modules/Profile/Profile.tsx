@@ -232,15 +232,17 @@ const Profile: React.FC = () => {
               formContext.setValue("underage", e.target.checked);
             }}
           />
-          <TextFieldElement
-            required
-            name="guardiansEmail"
-            label="Guardian's Email Address"
-            type="email"
-            fullWidth
-            margin="normal"
-            disabled={!editingEnabled || !(underage as boolean)}
-          />
+          {(underage as boolean) && (
+            <TextFieldElement
+              required
+              name="guardiansEmail"
+              label="Guardian's Email Address"
+              type="email"
+              fullWidth
+              margin="normal"
+              disabled={!editingEnabled}
+            />
+          )}
           <EditButtonRow
             editingEnabled={editingEnabled}
             setEditingEnabled={setEditingEnabled}
