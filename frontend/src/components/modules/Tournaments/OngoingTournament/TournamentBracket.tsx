@@ -17,7 +17,7 @@ const Bracket: React.FC<BracketProps> = ({ match, players }) => {
   ) as User;
 
   const winner = match.winner;
-  const isWinnerDeclared = winner !== null && winner !== undefined;
+  const isWinnerDeclared = winner !== undefined;
 
   // Get the names of the players
   const player1Name = `${player1.firstName} ${player1.lastName}`;
