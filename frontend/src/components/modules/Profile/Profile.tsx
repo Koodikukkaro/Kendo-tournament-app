@@ -40,7 +40,7 @@ const defaultValues: EditUserRequest = {
 const Profile: React.FC = () => {
   const navigate = useNavigate();
   const showToast = useToast();
-  const { userId, logout } = useAuth();
+  const { userId } = useAuth();
 
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -94,14 +94,10 @@ const Profile: React.FC = () => {
   const onSubmit = async (data: EditUserRequest): Promise<void> => {
     try {
       await api.user.update(userId, data);
-      await logout();
       showToast(
-        "Your information has been updated successfully! Please log in again to see the changes.",
+        "Your information has been updated successfully! Please refresh the page to see the changes.",
         "success"
       );
-      navigate(routePaths.login, {
-        replace: true
-      });
     } catch (error) {
       showToast(error, "error");
     }
