@@ -79,7 +79,6 @@ const Matches: React.FC<{
         <Typography variant="h5">Ongoing matches:</Typography>
       </div>
       <div>{ongoingMatchElements}</div>
-
       <div>
         <Typography variant="h5">Upcoming matches:</Typography>
       </div>
@@ -211,8 +210,9 @@ const RoundRobinTournamentView: React.FC = () => {
     );
     const upcomingElements = upcomingMatches.map((match) =>
       createMatchButton(match, {
-        disabled: true,
-        variant: "contained"
+        disabled: false,
+        variant: "contained",
+        color: "info"
       })
     );
     const pastElements = pastMatches.map((match) =>
