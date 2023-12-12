@@ -45,9 +45,10 @@ const getSortedTournaments = async (): Promise<SortedTournaments> => {
     return dateB.getTime() - dateA.getTime();
   });
 
-  // Sort tournaments into ongoing and upcoming
   const ongoing = sortedTournaments.filter(
-    (tournament) => new Date(tournament.startDate) <= currentDate
+    (tournament) =>
+      new Date(tournament.startDate) <= currentDate &&
+      new Date(tournament.endDate) > currentDate
   );
 
   const upcoming = sortedTournaments.filter(
