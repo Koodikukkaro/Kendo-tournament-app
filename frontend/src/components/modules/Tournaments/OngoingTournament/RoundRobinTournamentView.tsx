@@ -93,38 +93,27 @@ const Matches: React.FC<{
 };
 
 const RoundRobinTournamentView: React.FC = () => {
-  const [selectedTab, setSelectedTab] = useState("scoreboard");
-  const [players, setPlayers] = useState<TournamentPlayer[]>([]);
-  const [ongoingMatchElements, setOngoingMatchElements] = useState<
-    React.ReactNode[]
-  >([]);
-  const [upcomingMatchElements, setUpcomingMatchElements] = useState<
-    React.ReactNode[]
-  >([]);
-  const [pastMatchElements, setPastMatchElements] = useState<React.ReactNode[]>(
-    []
-  );
-
   const tournament = useTournament();
   const navigate = useNavigate();
-  const initialRender = useRef(true);
 
-  let ongoingMatches: Match[] = [];
-  let upcomingMatches: Match[] = [];
-  let pastMatches: Match[] = [];
+  const initialRender = useRef(true);
+  const [selectedTab, setSelectedTab] = useState("scoreboard");
+  const [players, setPlayers] = useState<TournamentPlayer[]>([]);
+  const [ongoingMatches, setOngoingMatches] = useState<Match[]>([]);
+  const [upcomingMatches, setUpcomingMatches] = useState<Match[]>([]);
+  const [pastMatches, setPastMatches] = useState<Match[]>([]);
 
   useEffect(() => {
     getPlayerNames();
     sortMatches();
-    createMatchButtons();
   }, [tournament]);
 
   useEffect(() => {
-    if (initialRender.current) {
+    if (initialRender.current && players.length > 0) {
       initialRender.current = false;
       updatePlayerStats();
     }
-  }, []);
+  }, [players, tournament]);
 
   const getPlayerNames = (): void => {
     setPlayers((prevPlayers) => {
@@ -153,79 +142,26 @@ const RoundRobinTournamentView: React.FC = () => {
   const sortMatches = (): void => {
     const matches: Match[] = tournament.matchSchedule;
     if (matches.length > 0) {
-      const sortedMatches = matches
-        .filter((match) => match.elapsedTime !== undefined)
-        .sort((a, b) => {
-          return b.elapsedTime - a.elapsedTime;
-        });
-      ongoingMatches = sortedMatches.filter(
-        (match) =>
-          match.elapsedTime !== null &&
-          match.elapsedTime > 0 &&
-          match.winner === undefined
+      const sortedMatches = matches.sort((a, b) => {
+        return b.elapsedTime - a.elapsedTime;
+      });
+
+      setOngoingMatches(
+        sortedMatches.filter(
+          (match) => match.elapsedTime > 0 && match.winner === undefined
+        )
       );
-      upcomingMatches = sortedMatches.filter(
-        (match) =>
-          (match.elapsedTime === null || match.elapsedTime <= 0) &&
-          match.winner === undefined
+      setUpcomingMatches(
+        sortedMatches.filter(
+          (match) => match.elapsedTime <= 0 && match.winner === undefined
+        )
       );
-      pastMatches = sortedMatches.filter(
-        (match) =>
-          match.elapsedTime !== null &&
-          match.elapsedTime > 0 &&
-          match.winner !== undefined
+      setPastMatches(
+        sortedMatches.filter(
+          (match) => match.elapsedTime > 0 && match.winner !== undefined
+        )
       );
     }
-  };
-
-  const createMatchButtons = (): void => {
-    const createMatchButton = (
-      match: Match,
-      props: ButtonProps
-    ): React.ReactNode => {
-      const player1 = players.find(
-        (player) => player.id === match.players[0].id
-      )?.name;
-      const player2 = players.find(
-        (player) => player.id === match.players[1].id
-      )?.name;
-
-      return (
-        <div style={{ marginBottom: "10px" }} key={match.id}>
-          <Button
-            onClick={() => {
-              navigate(`match/${match.id}`);
-            }}
-            {...props}
-          >
-            {`${player1} - ${player2}`}
-          </Button>
-        </div>
-      );
-    };
-
-    const ongoingElements = ongoingMatches.map((match) =>
-      createMatchButton(match, {
-        variant: "contained"
-      })
-    );
-    const upcomingElements = upcomingMatches.map((match) =>
-      createMatchButton(match, {
-        disabled: true,
-        variant: "contained"
-      })
-    );
-    const pastElements = pastMatches.map((match) =>
-      createMatchButton(match, {
-        disabled: false,
-        variant: "contained",
-        color: "secondary"
-      })
-    );
-
-    setOngoingMatchElements([...ongoingElements]);
-    setUpcomingMatchElements([...upcomingElements]);
-    setPastMatchElements([...pastElements]);
   };
 
   const updatePlayerStats = (): void => {
@@ -267,6 +203,48 @@ const RoundRobinTournamentView: React.FC = () => {
     });
   };
 
+  const createMatchButton = (
+    match: Match,
+    props: ButtonProps
+  ): React.ReactNode => {
+    const player1 = players.find((player) => player.id === match.players[0].id)
+      ?.name;
+    const player2 = players.find((player) => player.id === match.players[1].id)
+      ?.name;
+
+    return (
+      <div style={{ marginBottom: "10px" }} key={match.id}>
+        <Button
+          onClick={() => {
+            navigate(`match/${match.id}`);
+          }}
+          {...props}
+        >
+          {`${player1} - ${player2}`}
+        </Button>
+      </div>
+    );
+  };
+
+  const ongoingElements = ongoingMatches.map((match) =>
+    createMatchButton(match, {
+      variant: "contained"
+    })
+  );
+  const upcomingElements = upcomingMatches.map((match) =>
+    createMatchButton(match, {
+      disabled: true,
+      variant: "contained"
+    })
+  );
+  const pastElements = pastMatches.map((match) =>
+    createMatchButton(match, {
+      disabled: false,
+      variant: "contained",
+      color: "secondary"
+    })
+  );
+
   return (
     <>
       <Tabs
@@ -281,9 +259,9 @@ const RoundRobinTournamentView: React.FC = () => {
       {selectedTab === "scoreboard" && <Scoreboard players={players} />}
       {selectedTab === "matches" && (
         <Matches
-          ongoingMatchElements={ongoingMatchElements}
-          upcomingMatchElements={upcomingMatchElements}
-          pastMatchElements={pastMatchElements}
+          ongoingMatchElements={ongoingElements}
+          upcomingMatchElements={upcomingElements}
+          pastMatchElements={pastElements}
         />
       )}
     </>
