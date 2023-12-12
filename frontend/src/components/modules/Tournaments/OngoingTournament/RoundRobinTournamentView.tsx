@@ -233,13 +233,12 @@ const RoundRobinTournamentView: React.FC = () => {
   );
   const upcomingElements = upcomingMatches.map((match) =>
     createMatchButton(match, {
-      disabled: true,
-      variant: "contained"
+      variant: "contained",
+      color: "info"
     })
   );
   const pastElements = pastMatches.map((match) =>
     createMatchButton(match, {
-      disabled: false,
       variant: "contained",
       color: "secondary"
     })

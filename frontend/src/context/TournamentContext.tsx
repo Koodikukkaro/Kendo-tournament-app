@@ -19,16 +19,18 @@ import routePaths from "routes/route-paths";
 export const TournamentProvider = (): ReactElement => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { upcoming, ongoing, isLoading, isError } = useTournaments();
+  const { upcoming, ongoing, past, isLoading, isError } = useTournaments();
   const [value, setValue] = useState<Tournament | undefined>();
   const [isInitialRender, setIsInitialRender] = useState(true);
 
   useEffect(() => {
     setValue(
-      upcoming.find((x) => x.id === id) ?? ongoing.find((x) => x.id === id)
+      upcoming.find((x) => x.id === id) ??
+        ongoing.find((x) => x.id === id) ??
+        past.find((x) => x.id === id)
     );
     setIsInitialRender(false);
-  }, [isLoading, upcoming, ongoing, id]);
+  }, [isLoading, upcoming, ongoing, past, id]);
 
   if (isLoading || isInitialRender) {
     return <Loader />;
