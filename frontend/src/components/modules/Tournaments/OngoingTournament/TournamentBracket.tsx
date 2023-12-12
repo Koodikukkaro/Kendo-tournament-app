@@ -1,6 +1,13 @@
 import React from "react";
-import { Card, CardContent, Typography, Box } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  CardActionArea
+} from "@mui/material";
 import { type Match, type User } from "types/models";
+import { useNavigate } from "react-router-dom";
 
 interface BracketProps {
   match: Match;
@@ -8,6 +15,7 @@ interface BracketProps {
 }
 
 const Bracket: React.FC<BracketProps> = ({ match, players }) => {
+  const navigate = useNavigate();
   // Find the players in the players array using their IDs
   const player1 = players.find(
     (player) => player.id === match.players[0].id
@@ -41,15 +49,21 @@ const Bracket: React.FC<BracketProps> = ({ match, players }) => {
       }}
     >
       <Card variant="outlined" sx={{ mb: 1 }}>
-        <CardContent>
-          <Typography textAlign="center" style={{ color: player1Color }}>
-            {player1Name}
-          </Typography>
-          <Typography textAlign="center"> vs</Typography>
-          <Typography textAlign="center" style={{ color: player2Color }}>
-            {player2Name}
-          </Typography>
-        </CardContent>
+        <CardActionArea
+          onClick={() => {
+            navigate(`match/${match.id}`);
+          }}
+        >
+          <CardContent>
+            <Typography textAlign="center" style={{ color: player1Color }}>
+              {player1Name}
+            </Typography>
+            <Typography textAlign="center"> vs</Typography>
+            <Typography textAlign="center" style={{ color: player2Color }}>
+              {player2Name}
+            </Typography>
+          </CardContent>
+        </CardActionArea>
       </Card>
     </Box>
   );
