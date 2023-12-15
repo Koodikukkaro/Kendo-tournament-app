@@ -1,0 +1,19 @@
+{
+  "entryFile": "src/index.ts",
+  "noImplicitAdditionalProperties": "silently-remove-extras",
+  "controllerPathGlobs": [
+    "src/controllers/**/*Controller.ts"
+  ],
+  "spec": {
+    "outputDirectory": "build",
+    "specVersion": 3,
+    "basePath": "/api"
+  },
+  "routes": {
+    "basePath": "/api",
+    "routesDir": "build",
+    "esm": true,
+    "middleware": "express",
+    "authenticationModule": "src/middlewares/authentication.ts"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "extension": [
+    "ts",
+    "tsx"
+  ],
+  "spec": "test/**/*.test.{ts,tsx}",
+  "require": [
+    "mocha.cjs",
+    "ts-node/register"
+  ],
+  "recursive": true
+}

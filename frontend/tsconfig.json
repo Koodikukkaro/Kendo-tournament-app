@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "jsx": "react",
+    "module": "esnext",
+    "moduleResolution": "node",
+    "lib": [
+      "dom",
+      "esnext"
+    ],
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "sourceMap": true,
+    "target": "esnext",
+    "baseUrl": "src"
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
+  "exclude": [
+    "node_modules"
+  ],
+  "include": [
+    "src",
+    "webpack.config.ts"
+  ]
+}
