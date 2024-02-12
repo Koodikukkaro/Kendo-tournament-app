@@ -163,20 +163,8 @@ export class MatchService {
     return await match.toObject();
   }
 
-  // Add assigned point to the correct player
-  private assignPoint(
-    match: Match,
-    point: MatchPoint,
-    pointColor: PlayerColor
-  ): void {
-    const player1: MatchPlayer = match.players[0] as MatchPlayer;
-    const player2: MatchPlayer = match.players[1] as MatchPlayer;
-    const pointWinner = player1.color === pointColor ? player1 : player2;
-    pointWinner.points.push(point);
-  }
-
   // Determines if the match is finished
-  private async checkMatchOutcome(match: Match): Promise<void> {
+  public async checkMatchOutcome(match: Match): Promise<void> {
     const MAXIMUM_POINTS = 2;
     const MATCH_TIME = 300;
     let player1Points = 0;
@@ -228,8 +216,21 @@ export class MatchService {
         match.winner = player2.id;
       }
       // If the points are the same, it's a tie (in round robin)
-
+      // TODO: should this be marked somewhere?
+      // TODO: playoff needs overtime
     }
+  }
+
+  // Add assigned point to the correct player
+  private assignPoint(
+    match: Match,
+    point: MatchPoint,
+    pointColor: PlayerColor
+  ): void {
+    const player1: MatchPlayer = match.players[0] as MatchPlayer;
+    const player2: MatchPlayer = match.players[1] as MatchPlayer;
+    const pointWinner = player1.color === pointColor ? player1 : player2;
+    pointWinner.points.push(point);
   }
 
   private async createPlayoffSchedule(
