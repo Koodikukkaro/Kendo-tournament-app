@@ -55,6 +55,7 @@ export class MatchService {
 
   public async startTimer(id: string): Promise<Match> {
     const match = await MatchModel.findById(id).exec();
+    const MATCH_TIME = 300;
 
     if (match === null) {
       throw new NotFoundError({
@@ -62,7 +63,7 @@ export class MatchService {
       });
     }
 
-    if (match.winner !== undefined) {
+    if (match.winner !== undefined || match.elapsedTime === MATCH_TIME) {
       throw new BadRequestError({
         message: "Finished matches cannot be edited"
       });
@@ -125,6 +126,9 @@ export class MatchService {
     return await match.toObject();
   }
 
+  // Every time adding point is done in frontend, this function handles it
+  // It adds the point to a match, adds the point to a player, 
+  // checks if the match is finished and saves the match
   public async addPointToMatchById(
     id: string,
     requestBody: AddPointRequest
@@ -159,6 +163,7 @@ export class MatchService {
     return await match.toObject();
   }
 
+  // Add assigned point to the correct player
   private assignPoint(
     match: Match,
     point: MatchPoint,
@@ -170,12 +175,15 @@ export class MatchService {
     pointWinner.points.push(point);
   }
 
+  // Determines if the match is finished
   private async checkMatchOutcome(match: Match): Promise<void> {
     const MAXIMUM_POINTS = 2;
+    const MATCH_TIME = 300;
     let player1Points = 0;
     let player2Points = 0;
     const player1: MatchPlayer = match.players[0] as MatchPlayer;
     const player2: MatchPlayer = match.players[1] as MatchPlayer;
+    const matchIdAsString: string = match.id.toString();
 
     player1.points.forEach((point: MatchPoint) => {
       if (point.type === "hansoku") {
@@ -195,14 +203,32 @@ export class MatchService {
       }
     });
 
+    // Check if player 1 or 2 has 2 points and wins
     if (player1Points >= MAXIMUM_POINTS) {
       match.winner = player1.id;
       match.endTimestamp = new Date();
       await this.createPlayoffSchedule(match.id, player1.id);
-    } else if (player2Points >= MAXIMUM_POINTS) {
+      this.stopTimer(matchIdAsString);
+    } 
+    else if (player2Points >= MAXIMUM_POINTS) {
       match.winner = player2.id;
       match.endTimestamp = new Date();
       await this.createPlayoffSchedule(match.id, player2.id);
+      this.stopTimer(matchIdAsString);
+    }
+    // Check if time has ended 
+    else if (match.elapsedTime === MATCH_TIME) {
+      match.endTimestamp = new Date();
+      this.stopTimer(matchIdAsString);
+      // When time ends, the player with more points wins
+      if (player1Points > player2Points) {
+        match.winner = player1.id;
+      }
+      else if (player2Points > player1Points) {
+        match.winner = player2.id;
+      }
+      // If the points are the same, it's a tie (in round robin)
+
     }
   }
 
