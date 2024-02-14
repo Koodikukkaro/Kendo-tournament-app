@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Node10",
+    "moduleResolution": "node",
     "rootDir": ".",
     "outDir": "build",
     "esModuleInterop": true,
