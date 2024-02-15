@@ -9,8 +9,8 @@
     "start": "tsx src/index.ts",
     "dev": "concurrently \"nodemon\" \"nodemon -x tsoa spec-and-routes\"",
     "test": "mocha ./**/*.test.[jt]s?(x)",
-    "lint": "eslint ./src/**/*.ts --cache --cache-strategy content ",
-    "lint:fix": "eslint --fix ./src/**/*.ts"
+    "lint": "eslint './src/**/*.ts' --cache --cache-strategy content ",
+    "lint:fix": "eslint --fix './src/**/*.ts'"
   },
   "keywords": [],
   "author": "",
