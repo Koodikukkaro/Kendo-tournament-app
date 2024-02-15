@@ -1,14 +1,14 @@
 import { expect } from 'chai';
 import { MatchService } from '../src/services/matchService'; 
 import { Match, MatchPlayer, MatchPoint } from '../src/models/matchModel'; 
-import { ObjectId } from 'mongodb';
+import { Types } from "mongoose";
 
 
 describe('checkMatchOutcome', () => {
   it('should declare player 1 as winner when player 1 gets MAXIMUM_POINTS', async () => {
-    const p1ObjectId = new ObjectId();
-    const p2ObjectId = new ObjectId();
-    const MatchObjectId = new ObjectId();
+    const p1ObjectId = new Types.ObjectId();
+    const p2ObjectId = new Types.ObjectId();
+    const MatchObjectId = new Types.ObjectId();
     const match: Match = {
         players: [
             { id: p1ObjectId, points: [{ type: 'men' }, { type: 'do' }], color: 'red' } as MatchPlayer,
@@ -18,7 +18,7 @@ describe('checkMatchOutcome', () => {
         id: MatchObjectId,
         timerStartedTimestamp: null,
         type: 'group',
-        tournamentId: new ObjectId,
+        tournamentId: new Types.ObjectId,
         officials: [],
         tournamentRound: 0
     };
@@ -32,9 +32,9 @@ describe('checkMatchOutcome', () => {
   });
 
   it('should end the game when elapsedTime is MATCH_TIME', async () => {
-    const p1ObjectId = new ObjectId();
-    const p2ObjectId = new ObjectId();
-    const MatchObjectId = new ObjectId();
+    const p1ObjectId = new Types.ObjectId();
+    const p2ObjectId = new Types.ObjectId();
+    const MatchObjectId = new Types.ObjectId();
     const match: Match = {
         players: [
             { id: p1ObjectId, points: [{ type: 'men' }], color: 'red' } as MatchPlayer,
@@ -44,7 +44,7 @@ describe('checkMatchOutcome', () => {
         id: MatchObjectId,
         timerStartedTimestamp: null,
         type: 'group',
-        tournamentId: new ObjectId,
+        tournamentId: new Types.ObjectId,
         officials: [],
         tournamentRound: 0
     };
