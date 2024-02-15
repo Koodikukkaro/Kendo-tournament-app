@@ -19,6 +19,9 @@ import { TournamentModel, TournamentType } from "../models/tournamentModel.js";
 // the DB has been configured for a replica set, testing transactions
 // is not possible. The transactions have been commented out in the code.
 export class MatchService {
+  static checkMatchOutcome(match: Match) {
+      throw new Error("Method not implemented.");
+  }
   public async createMatch(requestBody: CreateMatchRequest): Promise<Match> {
     const newMatch = await MatchModel.create({
       type: requestBody.matchType,
@@ -196,28 +199,42 @@ export class MatchService {
       match.winner = player1.id;
       match.endTimestamp = new Date();
       await this.createPlayoffSchedule(match.id, player1.id);
-      this.stopTimer(matchIdAsString);
-    } 
-    else if (player2Points >= MAXIMUM_POINTS) {
+      await this.stopTimer(matchIdAsString);
+    } else if (player2Points >= MAXIMUM_POINTS) {
       match.winner = player2.id;
       match.endTimestamp = new Date();
       await this.createPlayoffSchedule(match.id, player2.id);
-      this.stopTimer(matchIdAsString);
+      await this.stopTimer(matchIdAsString);
     }
     // Check if time has ended 
-    else if (match.elapsedTime === MATCH_TIME) {
-      match.endTimestamp = new Date();
-      this.stopTimer(matchIdAsString);
-      // When time ends, the player with more points wins
-      if (player1Points > player2Points) {
+    // TODO: Is there a better way to check this?
+    else if (match.elapsedTime >= MATCH_TIME) {
+      await this.stopTimer(matchIdAsString);
+      // When time ends, the player with more points wins 
+      // (rounded down because one hansoku doesn't count)
+      if (Math.floor(player1Points) > Math.floor(player2Points)) {
         match.winner = player1.id;
-      }
-      else if (player2Points > player1Points) {
+        match.endTimestamp = new Date();
+        await this.createPlayoffSchedule(match.id, player1.id);
+      } else if (Math.floor(player2Points) > Math.floor(player1Points)) {
         match.winner = player2.id;
+        match.endTimestamp = new Date();
+        await this.createPlayoffSchedule(match.id, player2.id);
       }
+
       // If the points are the same, it's a tie (in round robin)
-      // TODO: should this be marked somewhere?
-      // TODO: playoff needs overtime
+      if (match.type === "group") {
+        match.endTimestamp = new Date();
+        // TODO: should this be marked somewhere?
+      }
+
+      // If it's a playoff, an overtime will start
+      // TODO: Is there something else to notice in an overtime?
+      else if (match.type === "playoff") {
+        await this.startTimer(matchIdAsString);
+      }
+      
+      
     }
   }
 
