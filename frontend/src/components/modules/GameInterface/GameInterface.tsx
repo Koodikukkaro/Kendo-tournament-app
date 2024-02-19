@@ -23,6 +23,7 @@ export interface MatchData {
   playerNames: string[];
   winner: string | undefined;
   officials: string[];
+  endTimeStamp: Date | undefined;
 }
 
 const GameInterface: React.FC = () => {
@@ -31,7 +32,8 @@ const GameInterface: React.FC = () => {
     players: [],
     playerNames: [],
     winner: undefined,
-    officials: []
+    officials: [],
+    endTimeStamp: undefined
   });
 
   const [open, setOpen] = useState(false);
@@ -49,6 +51,7 @@ const GameInterface: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
 
+  // Listening to matches websocket
   useEffect(() => {
     if (matchId !== undefined && !hasJoined) {
       joinMatch(matchId);
@@ -61,6 +64,7 @@ const GameInterface: React.FC = () => {
     }
   }, [matchId]);
 
+  // Fetching match data
   useEffect(() => {
     const getMatchData = async (): Promise<void> => {
       try {
@@ -69,7 +73,9 @@ const GameInterface: React.FC = () => {
         let matchWinner: string | undefined;
         let officialId: string[] = [];
         let time: number = 0;
+        let matchEndTimeStamp: Date | undefined;
 
+        // Get players' names
         const findPlayerName = (playerId: string, index: number): void => {
           const player = tournament.players.find((p) => p.id === playerId);
           if (player !== undefined) {
@@ -77,11 +83,14 @@ const GameInterface: React.FC = () => {
           }
         };
 
+        // Try to get match info from the websocket
         if (matchInfoFromSocket !== undefined) {
+          // Get players' names in this match
           matchPlayers = matchInfoFromSocket.players;
           findPlayerName(matchPlayers[0].id, 0);
           findPlayerName(matchPlayers[1].id, 1);
 
+          // If there is a winner, save them
           if (matchInfoFromSocket.winner !== undefined) {
             const winner = tournament.players.find(
               (p) => p.id === matchInfoFromSocket.winner
@@ -90,11 +99,19 @@ const GameInterface: React.FC = () => {
               matchWinner = winner.firstName;
             }
           }
+          // If there isn't a winner, check if there is an end timestamp (it's a tie)
+          else if (matchInfoFromSocket.endTimestamp !== undefined) {
+            matchEndTimeStamp = matchInfoFromSocket.endTimestamp;
+          }
+          // Get officials
           if (matchInfoFromSocket.officials !== undefined) {
             officialId = matchInfoFromSocket.officials;
           }
+          // Get time
           time = 300 - Math.round(matchInfoFromSocket.elapsedTime / 1000);
-        } else if (matchId !== undefined) {
+        } // If websocket doesn't have match info, use api
+        // Usually this is the first time the match view is loaded
+        else if (matchId !== undefined) {
           const matchFromApi: Match = await api.match.info(matchId);
 
           if (matchFromApi !== undefined) {
@@ -102,6 +119,7 @@ const GameInterface: React.FC = () => {
             findPlayerName(matchPlayers[0].id, 0);
             findPlayerName(matchPlayers[1].id, 1);
 
+            // If there is a winner, save them
             if (matchFromApi.winner !== undefined) {
               const winner = tournament.players.find(
                 (p) => p.id === matchFromApi.winner
@@ -110,9 +128,15 @@ const GameInterface: React.FC = () => {
                 matchWinner = winner.firstName;
               }
             }
+            // If there isn't a winner, check if there is an end timestamp (it's a tie)
+            else if (matchFromApi.endTimestamp !== undefined) {
+              matchEndTimeStamp = matchFromApi.endTimestamp;
+            }
+            // Get officials
             if (matchFromApi.officials !== undefined) {
               officialId = matchFromApi.officials;
             }
+            // Get time
             time = 300 - Math.ceil(matchFromApi.elapsedTime / 1000);
           }
         }
@@ -121,7 +145,8 @@ const GameInterface: React.FC = () => {
           players: matchPlayers,
           playerNames: playersNames,
           winner: matchWinner,
-          officials: officialId
+          officials: officialId,
+          endTimeStamp: matchEndTimeStamp
         });
       } catch (error) {
         setIsError(true);
@@ -137,6 +162,7 @@ const GameInterface: React.FC = () => {
     setTimer(matchInfo.timerTime);
   }, [matchInfo]);
 
+  // Handle timer, make it run and stop
   useEffect(() => {
     let intervalId: NodeJS.Timeout | null = null;
 
@@ -172,6 +198,7 @@ const GameInterface: React.FC = () => {
     pointColor: playerColor
   };
 
+  // When point is selected, close the selection and send it to API
   const handlePointShowing = async (): Promise<void> => {
     setOpen(false);
     if (matchId !== undefined) {
@@ -179,12 +206,14 @@ const GameInterface: React.FC = () => {
     }
   };
 
+  // Get the selected radio button value
   const handleRadioButtonClick = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
     setSelectedButton(event.target.value);
   };
 
+  // Open the radio button selection for points
   const handleOpen = (player: number): void => {
     setSelectedButton("");
     setOpen(true);
@@ -196,6 +225,7 @@ const GameInterface: React.FC = () => {
     }
   };
 
+  // Send the point to the API (add it to the match)
   const apiPointRequest = async (
     matchId: string,
     body: AddPointRequest
@@ -207,6 +237,7 @@ const GameInterface: React.FC = () => {
     }
   };
 
+  // Send timer starts and stops to API
   const apiTimerRequest = async (matchId: string): Promise<void> => {
     try {
       if (!isTimerRunning) {
@@ -219,6 +250,7 @@ const GameInterface: React.FC = () => {
     }
   };
 
+  // When timer button is clicked, set its status
   const handleTimerChange = async (): Promise<void> => {
     setIsTimerRunning((prevIsTimerRunning) => !prevIsTimerRunning);
     if (matchId !== undefined) {
@@ -278,9 +310,16 @@ const GameInterface: React.FC = () => {
                   handleClose={handleClose}
                 />
               )}
+            { /* Print the winner*/}
             {matchInfo.winner !== undefined && (
               <div>
                 <Typography>{matchInfo.winner} wins!</Typography>
+              </div>
+            )}
+            { /* If there isn't a winner, check if there is an end timestamp (it's a tie)*/}
+            {matchInfo.winner === undefined && matchInfo.endTimeStamp !== undefined && (
+              <div>
+                <Typography>It&apos;s a tie!</Typography>
               </div>
             )}
           </>

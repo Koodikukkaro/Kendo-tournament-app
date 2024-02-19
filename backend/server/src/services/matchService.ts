@@ -207,7 +207,6 @@ export class MatchService {
       await this.stopTimer(matchIdAsString);
     }
     // Check if time has ended 
-    // TODO: Is there a better way to check this?
     else if (match.elapsedTime >= MATCH_TIME) {
       await this.stopTimer(matchIdAsString);
       // When time ends, the player with more points wins 
