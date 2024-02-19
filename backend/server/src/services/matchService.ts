@@ -169,7 +169,6 @@ export class MatchService {
   // Determines if the match is finished
   public async checkMatchOutcome(match: Match): Promise<void> {
     const MAXIMUM_POINTS = 2;
-    const MATCH_TIME = 300;
     let player1Points = 0;
     let player2Points = 0;
     const player1: MatchPlayer = match.players[0] as MatchPlayer;
@@ -199,16 +198,47 @@ export class MatchService {
       match.winner = player1.id;
       match.endTimestamp = new Date();
       await this.createPlayoffSchedule(match.id, player1.id);
-      await this.stopTimer(matchIdAsString);
     } else if (player2Points >= MAXIMUM_POINTS) {
       match.winner = player2.id;
       match.endTimestamp = new Date();
       await this.createPlayoffSchedule(match.id, player2.id);
-      await this.stopTimer(matchIdAsString);
     }
+  }
+
+  // Check if there is a tie or an overtime whne time has ended
+  public async checkForTie(id: string): Promise<void> {
+    const match = await MatchModel.findById(id).exec();
+
+    const MATCH_TIME = 300000;
+    let player1Points = 0;
+    let player2Points = 0;
+    if (match !== null) {
+      const player1: MatchPlayer = match.players[0] as MatchPlayer;
+    const player2: MatchPlayer = match.players[1] as MatchPlayer;
+    const matchIdAsString: string = match.id.toString();
     // Check if time has ended 
-    else if (match.elapsedTime >= MATCH_TIME) {
+    //if (match.elapsedTime >= MATCH_TIME) {
+      console.log("elapsedTime >= 300000");
       await this.stopTimer(matchIdAsString);
+
+      player1.points.forEach((point: MatchPoint) => {
+        if (point.type === "hansoku") {
+          // In case of hansoku, the opponent recieves half a point.
+          player2Points += 0.5;
+        } else {
+          // Otherwise give one point to the player.
+          player1Points++;
+        }
+      });
+  
+      player2.points.forEach((point: MatchPoint) => {
+        if (point.type === "hansoku") {
+          player1Points += 0.5;
+        } else {
+          player2Points++;
+        }
+      });
+
       // When time ends, the player with more points wins 
       // (rounded down because one hansoku doesn't count)
       if (Math.floor(player1Points) > Math.floor(player2Points)) {
@@ -223,6 +253,7 @@ export class MatchService {
 
       // If the points are the same, it's a tie (in round robin)
       if (match.type === "group") {
+        console.log("I'm inside the right loop!");
         match.endTimestamp = new Date();
         // TODO: should this be marked somewhere?
       }
@@ -232,9 +263,10 @@ export class MatchService {
       else if (match.type === "playoff") {
         await this.startTimer(matchIdAsString);
       }
-      
-      
+      await match.save();
     }
+    
+   // }
   }
 
   // Add assigned point to the correct player
