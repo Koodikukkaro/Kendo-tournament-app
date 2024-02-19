@@ -22,6 +22,7 @@ interface TournamentPlayer {
   name: string;
   wins: number;
   losses: number;
+  ties: number;
   points: number;
 }
 
@@ -44,7 +45,7 @@ const Scoreboard: React.FC<{ players: TournamentPlayer[] }> = ({ players }) => {
   const generateTable = (): React.ReactNode => {
     const sortedPlayers = [...players].sort((a, b) => b.points - a.points);
 
-    const tableHeaders = ["Name", "Wins", "Losses", "Points"];
+    const tableHeaders = ["Name", "Wins", "Losses", "Ties", "Points"];
     return (
       <TableContainer component={Paper}>
         <Table>
@@ -130,6 +131,7 @@ const RoundRobinTournamentView: React.FC = () => {
               name: playerObject.firstName,
               wins: 0,
               losses: 0,
+              ties: 0,
               points: 0
             });
           }
@@ -158,7 +160,7 @@ const RoundRobinTournamentView: React.FC = () => {
       );
       setPastMatches(
         sortedMatches.filter(
-          (match) => match.elapsedTime > 0 && match.winner !== undefined
+          (match) => match.elapsedTime > 0 && match.endTimestamp !== undefined
         )
       );
     }
@@ -175,6 +177,7 @@ const RoundRobinTournamentView: React.FC = () => {
           continue;
         }
 
+        // Add wins and losses
         if (match.winner !== undefined) {
           const winner = updatedPlayers.find(
             (player) => player.id === match.winner
@@ -188,6 +191,26 @@ const RoundRobinTournamentView: React.FC = () => {
             loser.losses += 1;
           }
 
+          // Add ties
+          if (winner === undefined && loser === undefined && match.endTimestamp !== undefined) {
+            const [player1Id, player2Id] = match.players.map(player => player.id);
+
+            // Find the TournamentPlayer objects corresponding to the player IDs
+            const player1 = updatedPlayers.find(player => player.id === player1Id);
+            const player2 = updatedPlayers.find(player => player.id === player2Id);
+
+            // Update their stats
+            if (player1 && player2) {
+              player1.ties += 1;
+              player2.ties += 1;
+
+              console.log("Player1 ties:", player1.ties);
+               console.log("Player2 ties:", player2.ties);
+            }
+            
+          }
+
+          // Add points
           for (const matchPlayer of match.players) {
             const player = updatedPlayers.find(
               (player) => player.id === matchPlayer.id

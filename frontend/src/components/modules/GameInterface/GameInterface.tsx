@@ -85,11 +85,12 @@ const GameInterface: React.FC = () => {
 
         // Try to get match info from the websocket
         if (matchInfoFromSocket !== undefined) {
+          console.log(matchInfoFromSocket)
           // Get players' names in this match
           matchPlayers = matchInfoFromSocket.players;
           findPlayerName(matchPlayers[0].id, 0);
           findPlayerName(matchPlayers[1].id, 1);
-
+          console.log(matchInfoFromSocket.endTimestamp);
           // If there is a winner, save them
           if (matchInfoFromSocket.winner !== undefined) {
             const winner = tournament.players.find(
@@ -99,6 +100,7 @@ const GameInterface: React.FC = () => {
               matchWinner = winner.firstName;
             }
           }
+          
           // If there isn't a winner, check if there is an end timestamp (it's a tie)
           else if (matchInfoFromSocket.endTimestamp !== undefined) {
             matchEndTimeStamp = matchInfoFromSocket.endTimestamp;
@@ -131,6 +133,10 @@ const GameInterface: React.FC = () => {
             // If there isn't a winner, check if there is an end timestamp (it's a tie)
             else if (matchFromApi.endTimestamp !== undefined) {
               matchEndTimeStamp = matchFromApi.endTimestamp;
+              console.log("We have a enTimeStamp");
+            }
+            if(matchFromApi.endTimestamp === undefined) {
+              console.log("no endtimestamp");
             }
             // Get officials
             if (matchFromApi.officials !== undefined) {
@@ -148,6 +154,7 @@ const GameInterface: React.FC = () => {
           officials: officialId,
           endTimeStamp: matchEndTimeStamp
         });
+        {console.log(matchInfo.endTimeStamp)}
       } catch (error) {
         setIsError(true);
         showToast(error, "error");
@@ -183,6 +190,22 @@ const GameInterface: React.FC = () => {
     };
   }, [isTimerRunning, matchInfo.timerTime]);
 
+  // If timer is ended, check for ties
+  useEffect(() => {
+    const checkForTieAndStopTimer = async () => {
+      if (timer === 0 && matchId !== undefined) {
+        try {
+          await api.match.checkForTie(matchId);
+        } catch (error) {
+          showToast(error, "error");
+        }
+        setIsTimerRunning(false);
+      }
+    };
+  
+    checkForTieAndStopTimer();
+  }, [timer]);
+
   const buttonToTypeMap: Record<string, PointType> = {
     M: "men",
     K: "kote",
@@ -202,6 +225,10 @@ const GameInterface: React.FC = () => {
   const handlePointShowing = async (): Promise<void> => {
     setOpen(false);
     if (matchId !== undefined) {
+      if (isTimerRunning) {
+        setIsTimerRunning((prevIsTimerRunning) => !prevIsTimerRunning);
+        await apiTimerRequest(matchId);
+      }
       await apiPointRequest(matchId, pointRequest);
     }
   };
@@ -289,7 +316,7 @@ const GameInterface: React.FC = () => {
               <Timer timer={timer} />
               {userId !== null &&
                 userId !== undefined &&
-                matchInfo.winner === undefined && (
+                matchInfo.endTimeStamp === undefined && (
                   <TimerButton
                     isTimerRunning={isTimerRunning}
                     handleTimerChange={handleTimerChange}
@@ -300,7 +327,7 @@ const GameInterface: React.FC = () => {
             <br></br>
             {userId !== null &&
               userId !== undefined &&
-              matchInfo.winner === undefined && (
+              matchInfo.endTimeStamp === undefined && (
                 <OfficialButtons
                   open={open}
                   selectedButton={selectedButton}
@@ -310,6 +337,9 @@ const GameInterface: React.FC = () => {
                   handleClose={handleClose}
                 />
               )}
+            
+              {/*test*/}
+              <Typography>Timer variable: {timer}</Typography>
             { /* Print the winner*/}
             {matchInfo.winner !== undefined && (
               <div>
