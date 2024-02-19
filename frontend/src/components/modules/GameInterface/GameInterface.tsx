@@ -175,6 +175,10 @@ const GameInterface: React.FC = () => {
   const handlePointShowing = async (): Promise<void> => {
     setOpen(false);
     if (matchId !== undefined) {
+      if (isTimerRunning) {
+        setIsTimerRunning((prevIsTimerRunning) => !prevIsTimerRunning);
+        await apiTimerRequest(matchId);
+      }
       await apiPointRequest(matchId, pointRequest);
     }
   };
