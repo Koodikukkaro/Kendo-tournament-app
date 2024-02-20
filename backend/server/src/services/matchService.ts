@@ -25,11 +25,11 @@ export class MatchService {
       players: requestBody.players,
       comment: requestBody.comment,
       officials: requestBody.officials,
-      timeKeeper: requestBody.timeKeeper, 
-      pointMaker: requestBody.pointMaker,
+      timeKeeper: requestBody.timeKeeper,
+      pointMaker: requestBody.pointMaker
     });
 
-    return await newMatch.toObject()
+    return await newMatch.toObject();
   }
 
   public async getMatchById(id: string): Promise<Match> {
@@ -168,69 +168,68 @@ export class MatchService {
     timeKeeperId: string
   ): Promise<Match> {
     const match = await MatchModel.findById(matchId).exec();
-  
-    if (!match) {
+
+    if (match === null) {
       throw new NotFoundError({
         message: `Match not found for ID: ${matchId}`
       });
     }
-  
+
     match.timeKeeper = new Types.ObjectId(timeKeeperId);
-  
+
     await match.save();
 
     return await match.toObject();
-
   }
-  
+
   public async addPointMakerToMatch(
     matchId: string,
     pointMakerId: string
   ): Promise<Match> {
     const match = await MatchModel.findById(matchId).exec();
-  
-    if (!match) {
+
+    if (match === null) {
       throw new NotFoundError({
         message: `Match not found for ID: ${matchId}`
       });
     }
-  
+
     match.pointMaker = new Types.ObjectId(pointMakerId);
-  
+
     await match.save();
-  
+
     return await match.toObject();
   }
-  
+
   public async deleteTimeKeeperFromMatch(matchId: string): Promise<Match> {
     const match = await MatchModel.findById(matchId).exec();
-  
-    if (!match) {
+
+    if (match === null) {
       throw new NotFoundError({
         message: `Match not found for ID: ${matchId}`
       });
     }
-  
+
     match.timeKeeper = undefined;
 
     await match.save();
-  
+
     return await match.toObject();
   }
-  
+
   public async deletePointMakerFromMatch(matchId: string): Promise<Match> {
     const match = await MatchModel.findById(matchId).exec();
-  
-    if (!match) {
+
+    if (match === null) {
       throw new NotFoundError({
         message: `Match not found for ID: ${matchId}`
       });
     }
-  
+
     match.pointMaker = undefined;
-  
+
     await match.save();
-  
+
     return await match.toObject();
   }
 

@@ -118,7 +118,7 @@ export class MatchController extends Controller {
 
     io.to(matchId).emit("add-timekeeper", match);
   }
-  
+
   @Patch("{matchId}/remove-timekeeper")
   @Tags("Match")
   @Security("jwt")
@@ -126,13 +126,12 @@ export class MatchController extends Controller {
     @Path() matchId: ObjectIdString
   ): Promise<void> {
     this.setStatus(204);
-  
+
     const match = await this.service.deleteTimeKeeperFromMatch(matchId);
 
     io.to(matchId).emit("remove-timekeeper", match);
   }
-  
-  
+
   @Patch("{matchId}/add-pointmaker")
   @Tags("Match")
   @Security("jwt")
@@ -141,15 +140,15 @@ export class MatchController extends Controller {
     @Body() request: { pointMakerId: ObjectIdString }
   ): Promise<void> {
     this.setStatus(204);
-  
+
     const match = await this.service.addPointMakerToMatch(
       matchId,
       request.pointMakerId
     );
-  
+
     io.to(matchId).emit("add-pointmaker", match);
   }
-  
+
   @Patch("{matchId}/remove-pointmaker")
   @Tags("Match")
   @Security("jwt")
@@ -157,9 +156,9 @@ export class MatchController extends Controller {
     @Path() matchId: ObjectIdString
   ): Promise<void> {
     this.setStatus(204);
-  
+
     const match = await this.service.deletePointMakerFromMatch(matchId);
-  
+
     io.to(matchId).emit("remove-pointmaker", match);
   }
 

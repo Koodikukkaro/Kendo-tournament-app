@@ -91,7 +91,7 @@ export interface CreateMatchRequest {
   matchType: MatchType;
   comment?: string;
   timeKeeper?: ObjectIdString;
-  pointMaker?: ObjectIdString; 
+  pointMaker?: ObjectIdString;
 }
 
 export interface AddPointRequest {
