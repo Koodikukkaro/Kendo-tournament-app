@@ -37,6 +37,11 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
           titleTypographyProps={{ fontWeight: "500" }}
         />
         <CardContent sx={{ marginBottom: "32px" }}>
+          {tournamentFull && type === "upcoming" && (
+            <Typography variant="subtitle1" marginBottom="32px">
+              This tournament is already full!
+            </Typography>
+          )}
           <Typography color="text.secondary">
             Start Date:{" "}
             {new Date(tournament.startDate).toLocaleDateString("fi")}

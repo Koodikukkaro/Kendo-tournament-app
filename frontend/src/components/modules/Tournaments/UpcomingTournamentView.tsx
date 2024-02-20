@@ -68,7 +68,7 @@ const UpcomingTournamentView: React.FC = () => {
       sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
     >
       <Typography
-        variant="h5"
+        variant="h4"
         className="header"
         fontWeight="bold"
         marginBottom="12px"
@@ -78,7 +78,7 @@ const UpcomingTournamentView: React.FC = () => {
 
       {tournamentFull && (
         <Box>
-          <Typography variant="subtitle1" className="header" fontWeight="bold">
+          <Typography variant="h5" className="header" fontWeight="bold">
             This tournament is already full!
           </Typography>
         </Box>
@@ -123,7 +123,7 @@ const UpcomingTournamentView: React.FC = () => {
 
       <br />
 
-      {!userAlreadySigned && (
+      {!userAlreadySigned && !tournamentFull && (
         <Box>
           <Typography variant="body1" className="header">
             Want to attend?
