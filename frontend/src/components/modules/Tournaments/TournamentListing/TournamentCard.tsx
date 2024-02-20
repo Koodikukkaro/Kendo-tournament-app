@@ -23,6 +23,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
   const userAlreadySigned = tournament.players.some(
     (player) => player.id === userId
   );
+  const tournamentFull = tournament.maxPlayers <= tournament.players.length;
 
   return (
     <Card component="main" sx={{ position: "relative" }}>
@@ -50,7 +51,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
         <Button
           color="primary"
           variant="outlined"
-          disabled={userAlreadySigned}
+          disabled={userAlreadySigned || tournamentFull}
           onClick={() => {
             navigate(`${tournament.id}/sign-up`);
           }}

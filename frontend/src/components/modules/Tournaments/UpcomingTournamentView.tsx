@@ -58,6 +58,9 @@ const UpcomingTournamentView: React.FC = () => {
   const userAlreadySigned = tournament.players.some(
     (player) => player.id === userId
   );
+  const maxPlayers = tournament.maxPlayers;
+  const signedPlayers = tournament.players.length;
+  const tournamentFull = maxPlayers <= signedPlayers;
 
   return (
     <Container
@@ -73,6 +76,14 @@ const UpcomingTournamentView: React.FC = () => {
         {tournament.name}
       </Typography>
 
+      {tournamentFull && (
+        <Box>
+          <Typography variant="subtitle1" className="header" fontWeight="bold">
+            This tournament is already full!
+          </Typography>
+        </Box>
+      )}
+
       <Box>
         <Typography variant="subtitle1" className="header" fontWeight="bold">
           When:
@@ -80,6 +91,15 @@ const UpcomingTournamentView: React.FC = () => {
         <Typography variant="body1" className="dates">
           {new Date(tournament.startDate).toLocaleString("fi")} -{" "}
           {new Date(tournament.endDate).toLocaleString("fi")}
+        </Typography>
+      </Box>
+
+      <Box>
+        <Typography variant="subtitle1" className="header" fontWeight="bold">
+          Where:
+        </Typography>
+        <Typography variant="body1" className="subtext">
+          {tournament.location}
         </Typography>
       </Box>
 
@@ -111,7 +131,7 @@ const UpcomingTournamentView: React.FC = () => {
           <Button
             variant="contained"
             color="primary"
-            disabled={userAlreadySigned}
+            disabled={userAlreadySigned || tournamentFull}
             onClick={() => {
               navigate("sign-up");
             }}
