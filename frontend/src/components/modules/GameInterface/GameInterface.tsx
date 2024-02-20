@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Box } from "@mui/material";
+import {
+  Typography,
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
+} from "@mui/material";
 import PointTable from "./PointTable";
 import Timer from "./Timer";
 import OfficialButtons from "./OfficialButtons";
@@ -23,7 +33,10 @@ export interface MatchData {
   players: MatchPlayer[];
   playerNames: string[];
   winner: string | undefined;
-  officials: string[];
+  timeKeeper: string | undefined;
+  pointMaker: string | undefined;
+  startTimestamp: Date | undefined;
+  isTimerOn: boolean;
 }
 
 const GameInterface: React.FC = () => {
@@ -34,13 +47,16 @@ const GameInterface: React.FC = () => {
     players: [],
     playerNames: [],
     winner: undefined,
-    officials: []
+    timeKeeper: undefined,
+    pointMaker: undefined,
+    startTimestamp: undefined,
+    isTimerOn: false
   });
 
-  const [open, setOpen] = useState(false);
+  const [openPoints, setOpenPoints] = useState(false);
+  const [openRoles, setOpenRoles] = useState(false);
   const [selectedButton, setSelectedButton] = useState<string>("");
   const [timer, setTimer] = useState<number>(matchInfo.timerTime);
-  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(false);
   const [playerColor, setPlayerColor] = useState<PlayerColor>("red");
   const [hasJoined, setHasJoined] = useState(false);
 
@@ -51,6 +67,8 @@ const GameInterface: React.FC = () => {
   const tournament = useTournament();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
+  const [timeKeeper, setTimeKeeper] = useState<boolean>(false);
+  const [pointMaker, setPointMaker] = useState<boolean>(false);
 
   useEffect(() => {
     if (matchId !== undefined && !hasJoined) {
@@ -70,8 +88,11 @@ const GameInterface: React.FC = () => {
         let matchPlayers: MatchPlayer[] = [];
         const playersNames: string[] = [];
         let matchWinner: string | undefined;
-        let officialId: string[] = [];
+        let timerPerson: string | undefined;
+        let pointPerson: string | undefined;
         let time: number = 0;
+        let startTime: Date | undefined;
+        let timer: boolean = false;
 
         const findPlayerName = (playerId: string, index: number): void => {
           const player = tournament.players.find((p) => p.id === playerId);
@@ -93,10 +114,19 @@ const GameInterface: React.FC = () => {
               matchWinner = winner.firstName;
             }
           }
-          if (matchInfoFromSocket.officials !== undefined) {
-            officialId = matchInfoFromSocket.officials;
+          if (matchInfoFromSocket.timeKeeper !== undefined) {
+            timerPerson = matchInfoFromSocket.timeKeeper;
+          }
+          if (matchInfoFromSocket.pointMaker !== undefined) {
+            pointPerson = matchInfoFromSocket.pointMaker;
+          }
+          if (matchInfoFromSocket.startTimestamp !== undefined) {
+            startTime = matchInfoFromSocket.startTimestamp;
           }
           time = 300 - Math.round(matchInfoFromSocket.elapsedTime / 1000);
+          timer = matchInfoFromSocket.isTimerOn;
+          setTimeKeeper(matchInfoFromSocket.timeKeeper !== undefined);
+          setPointMaker(matchInfoFromSocket.pointMaker !== undefined);
         } else if (matchId !== undefined) {
           const matchFromApi: Match = await api.match.info(matchId);
 
@@ -113,10 +143,20 @@ const GameInterface: React.FC = () => {
                 matchWinner = winner.firstName;
               }
             }
-            if (matchFromApi.officials !== undefined) {
-              officialId = matchFromApi.officials;
+            if (matchFromApi.timeKeeper !== undefined) {
+              timerPerson = matchFromApi.timeKeeper;
+            }
+            if (matchFromApi.pointMaker !== undefined) {
+              pointPerson = matchFromApi.pointMaker;
+            }
+            if (matchFromApi.startTimestamp !== undefined) {
+              startTime = matchFromApi.startTimestamp;
             }
             time = 300 - Math.ceil(matchFromApi.elapsedTime / 1000);
+            timer = matchFromApi.isTimerOn;
+
+            setTimeKeeper(matchInfo.timeKeeper !== undefined);
+            setPointMaker(matchInfo.pointMaker !== undefined);
           }
         }
         setMatchInfo({
@@ -124,7 +164,10 @@ const GameInterface: React.FC = () => {
           players: matchPlayers,
           playerNames: playersNames,
           winner: matchWinner,
-          officials: officialId
+          timeKeeper: timerPerson,
+          pointMaker: pointPerson,
+          startTimestamp: startTime,
+          isTimerOn: timer
         });
       } catch (error) {
         setIsError(true);
@@ -143,7 +186,7 @@ const GameInterface: React.FC = () => {
   useEffect(() => {
     let intervalId: NodeJS.Timeout | null = null;
 
-    if (isTimerRunning) {
+    if (matchInfo.isTimerOn) {
       intervalId = setInterval(() => {
         setTimer((prevTimer) => (prevTimer > 0 ? prevTimer - 1 : 0));
       }, 1000);
@@ -158,7 +201,7 @@ const GameInterface: React.FC = () => {
         clearInterval(intervalId);
       }
     };
-  }, [isTimerRunning, matchInfo.timerTime]);
+  }, [matchInfo]);
 
   const buttonToTypeMap: Record<string, PointType> = {
     M: "men",
@@ -176,10 +219,9 @@ const GameInterface: React.FC = () => {
   };
 
   const handlePointShowing = async (): Promise<void> => {
-    setOpen(false);
+    setOpenPoints(false);
     if (matchId !== undefined) {
-      if (isTimerRunning) {
-        setIsTimerRunning((prevIsTimerRunning) => !prevIsTimerRunning);
+      if (matchInfo.isTimerOn) {
         await apiTimerRequest(matchId);
       }
       await apiPointRequest(matchId, pointRequest);
@@ -194,7 +236,7 @@ const GameInterface: React.FC = () => {
 
   const handleOpen = (player: number): void => {
     setSelectedButton("");
-    setOpen(true);
+    setOpenPoints(true);
     if (player === 1) {
       setPlayerColor("white");
     }
@@ -216,7 +258,7 @@ const GameInterface: React.FC = () => {
 
   const apiTimerRequest = async (matchId: string): Promise<void> => {
     try {
-      if (!isTimerRunning) {
+      if (!matchInfo.isTimerOn) {
         await api.match.startTimer(matchId);
       } else {
         await api.match.stopTimer(matchId);
@@ -227,14 +269,47 @@ const GameInterface: React.FC = () => {
   };
 
   const handleTimerChange = async (): Promise<void> => {
-    setIsTimerRunning((prevIsTimerRunning) => !prevIsTimerRunning);
     if (matchId !== undefined) {
       await apiTimerRequest(matchId);
     }
   };
 
+  const apiRoleRequest = async (
+    matchId: string,
+    userId: string
+  ): Promise<void> => {
+    try {
+      if (matchId !== undefined) {
+        if (timeKeeper && matchInfo.timeKeeper === undefined) {
+          await api.match.addTimekeeper(matchId, userId);
+        } else if (!timeKeeper && matchInfo.timeKeeper !== undefined) {
+          await api.match.removeTimekeeper(matchId, userId);
+        }
+
+        if (pointMaker && matchInfo.pointMaker === undefined) {
+          await api.match.addPointmaker(matchId, userId);
+        } else if (!pointMaker && matchInfo.pointMaker !== undefined) {
+          await api.match.removePointmaker(matchId, userId);
+        }
+      }
+    } catch (error) {
+      showToast(error, "error");
+    }
+  };
+
+  const handleRoleSave = async (): Promise<void> => {
+    if (matchId !== undefined && userId !== undefined) {
+      await apiRoleRequest(matchId, userId);
+    }
+    setOpenRoles(false);
+  };
+
   function handleClose(): void {
-    setOpen(false);
+    setOpenPoints(false);
+  }
+
+  function handleCloseRoles(): void {
+    setOpenRoles(false);
   }
 
   return (
@@ -252,6 +327,88 @@ const GameInterface: React.FC = () => {
         )}
         {!isLoading && !isError && (
           <>
+            {userId !== null &&
+              userId !== undefined &&
+              matchInfo.startTimestamp === undefined && (
+                <>
+                  <Button
+                    variant="contained"
+                    onClick={() => {
+                      setOpenRoles(true);
+                    }}
+                    disabled={
+                      matchInfo.timeKeeper !== undefined &&
+                      matchInfo.pointMaker !== undefined &&
+                      matchInfo.timeKeeper !== userId &&
+                      matchInfo.pointMaker !== userId
+                    }
+                  >
+                    Assign Roles
+                  </Button>
+                  <br />
+                  <br />
+                </>
+              )}
+            <Dialog open={openRoles} onClose={handleCloseRoles}>
+              <DialogTitle>Assign Roles</DialogTitle>
+              <DialogContent>
+                {(matchInfo.timeKeeper === undefined ||
+                  matchInfo.timeKeeper === userId) && (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={timeKeeper}
+                        onChange={() => {
+                          setTimeKeeper(!timeKeeper);
+                        }}
+                      />
+                    }
+                    label="Time Keeper"
+                  />
+                )}
+                {(matchInfo.pointMaker === undefined ||
+                  matchInfo.pointMaker === userId) && (
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={pointMaker}
+                        onChange={() => {
+                          setPointMaker(!pointMaker);
+                        }}
+                      />
+                    }
+                    label="Point Maker"
+                  />
+                )}
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseRoles}>Cancel</Button>
+                <Button onClick={handleRoleSave}>Save</Button>
+              </DialogActions>
+            </Dialog>
+            {userId !== null &&
+              userId !== undefined &&
+              matchInfo.startTimestamp !== undefined && (
+                <>
+                  <Typography variant="body2">
+                    Time keeper:{" "}
+                    {
+                      tournament.players.find(
+                        (p) => p.id === matchInfo.timeKeeper
+                      )?.firstName
+                    }
+                    <br />
+                    Point maker:{" "}
+                    {
+                      tournament.players.find(
+                        (p) => p.id === matchInfo.pointMaker
+                      )?.firstName
+                    }
+                  </Typography>
+                  <br />
+                  <br />
+                </>
+              )}
             <Box display="flex" gap="20px" justifyContent="center">
               <Box className="playerBox" bgcolor="white">
                 <Typography variant="h3">{matchInfo.playerNames[0]}</Typography>
@@ -264,9 +421,10 @@ const GameInterface: React.FC = () => {
               <Timer timer={timer} />
               {userId !== null &&
                 userId !== undefined &&
-                matchInfo.winner === undefined && (
+                matchInfo.winner === undefined &&
+                matchInfo.timeKeeper === userId && (
                   <TimerButton
-                    isTimerRunning={isTimerRunning}
+                    isTimerRunning={matchInfo.isTimerOn}
                     handleTimerChange={handleTimerChange}
                   />
                 )}
@@ -275,9 +433,10 @@ const GameInterface: React.FC = () => {
             <br></br>
             {userId !== null &&
               userId !== undefined &&
-              matchInfo.winner === undefined && (
+              matchInfo.winner === undefined &&
+              matchInfo.pointMaker === userId && (
                 <OfficialButtons
-                  open={open}
+                  open={openPoints}
                   selectedButton={selectedButton}
                   handleRadioButtonClick={handleRadioButtonClick}
                   handlePointShowing={handlePointShowing}
