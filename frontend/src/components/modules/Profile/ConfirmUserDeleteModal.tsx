@@ -5,6 +5,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Typography from "@mui/material/Typography";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 interface ConfirmUserDeletionModalProps {
   isOpen: boolean;
@@ -17,6 +18,8 @@ const ConfirmUserDeletionModal: React.FC<ConfirmUserDeletionModalProps> = ({
   onClose,
   onConfirm
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Dialog
       open={isOpen}
@@ -25,17 +28,16 @@ const ConfirmUserDeletionModal: React.FC<ConfirmUserDeletionModalProps> = ({
       aria-describedby="delete-user-info-confirmation-dialog-description"
     >
       <DialogTitle id="delete-user-info-confirmation-dialog-title">
-        Confirm Account Deletion
+        {t("titles.confirm_account_deletion")}
       </DialogTitle>
       <DialogContent>
         <Typography>
-          Are you sure you want to delete your account and all associated
-          information?
+          {t("confirm_user_deletion_modal.confirmation_message")}
         </Typography>
       </DialogContent>
       <DialogActions>
         <Button variant="contained" color="error" onClick={onClose}>
-          Cancel
+          {t("buttons.cancel_button")}
         </Button>
         <Button
           type="submit"
@@ -43,7 +45,7 @@ const ConfirmUserDeletionModal: React.FC<ConfirmUserDeletionModalProps> = ({
           variant="contained"
           color="success"
         >
-          Confirm
+          {t("buttons.confirm_button")}
         </Button>
       </DialogActions>
     </Dialog>

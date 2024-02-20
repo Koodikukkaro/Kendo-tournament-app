@@ -16,6 +16,7 @@ import {
 } from "react-hook-form-mui";
 import routePaths from "routes/route-paths";
 import Link from "@mui/material/Link";
+import { useTranslation } from "react-i18next";
 
 interface LoginFormData {
   email: string;
@@ -34,12 +35,13 @@ const LoginForm: React.FC = () => {
   const { isAuthenticated, login } = useAuth();
   const { homeRoute } = routePaths;
   const from = location.state?.from?.pathname ?? homeRoute;
+  const { t } = useTranslation();
 
   /* Runs on the initial render and checks if the user
    * was redirected due to being unauthenticated */
   React.useEffect(() => {
     if (!isAuthenticated && from !== homeRoute) {
-      showToast("You need to login to view this content", "warning");
+      showToast(t("messages.unauthenticated_warning"), "warning");
     }
   }, [from]);
 
@@ -71,7 +73,7 @@ const LoginForm: React.FC = () => {
           fontWeight="bold"
           alignSelf="start"
         >
-          {"Sign in"}
+          {t("titles.login")}
         </Typography>
 
         <FormContainer
@@ -82,7 +84,7 @@ const LoginForm: React.FC = () => {
           <TextFieldElement
             required
             name="email"
-            label="Email Address"
+            label={t("user_info_labels.email_address")}
             type="text"
             fullWidth
             margin="normal"
@@ -91,7 +93,7 @@ const LoginForm: React.FC = () => {
           <PasswordElement
             required
             name="password"
-            label="Password"
+            label={t("user_info_labels.password_label")}
             fullWidth
             margin="normal"
           />
@@ -106,7 +108,7 @@ const LoginForm: React.FC = () => {
               fullWidth
               sx={{ mt: 3, mb: 2 }}
             >
-              {"Log in"}
+              {t("buttons.login_button")}
             </Button>
           </Box>
         </FormContainer>
@@ -115,14 +117,14 @@ const LoginForm: React.FC = () => {
           <Grid item xs>
             <Typography variant="body2">
               <Link component={RouterLink} to={routePaths.passwordReset}>
-                {"Forgot password?"}
+                {t("login_form.forgot_password")}
               </Link>
             </Typography>
           </Grid>
           <Grid item>
             <Typography variant="body2">
               <Link component={RouterLink} to={routePaths.register}>
-                {"Don't have an account? Sign Up"}
+                {t("login_form.sign_up")}
               </Link>
             </Typography>
           </Grid>

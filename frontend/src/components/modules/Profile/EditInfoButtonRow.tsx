@@ -3,6 +3,7 @@ import type { UseFormReturn } from "react-hook-form";
 import type { EditUserRequest } from "types/requests";
 import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
+import { useTranslation } from "react-i18next";
 
 interface EditButtonRowProps {
   editingEnabled: boolean;
@@ -15,6 +16,8 @@ const EditButtonRow: React.FC<EditButtonRowProps> = ({
   setEditingEnabled,
   formContext
 }: EditButtonRowProps) => {
+  const { t } = useTranslation();
+
   return (
     <Box
       display="flex"
@@ -32,7 +35,7 @@ const EditButtonRow: React.FC<EditButtonRowProps> = ({
             setEditingEnabled(true);
           }}
         >
-          Edit Info
+          {t("buttons.edit_info_button")}
         </Button>
       ) : (
         <Button
@@ -47,7 +50,7 @@ const EditButtonRow: React.FC<EditButtonRowProps> = ({
           }}
           sx={{ mt: 3, mb: 2 }}
         >
-          Cancel
+          {t("buttons.cancel_button")}
         </Button>
       )}
       <Button
@@ -57,7 +60,7 @@ const EditButtonRow: React.FC<EditButtonRowProps> = ({
         disabled={!editingEnabled || !formContext.formState.isDirty}
         sx={{ mt: 3, mb: 2 }}
       >
-        Save info
+        {t("buttons.save_info_button")}
       </Button>
     </Box>
   );

@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 import Loader from "components/common/Loader";
 import { type LocationState } from "types/global";
+import { useTranslation } from "react-i18next";
 
 interface ITournamentsContext {
   isLoading: boolean;
@@ -65,6 +66,7 @@ const getSortedTournaments = async (): Promise<SortedTournaments> => {
 export const TournamentsProvider = (): ReactElement => {
   const navigate = useNavigate();
   const showToast = useToast();
+  const { t } = useTranslation();
   const [value, setValue] = useState<ITournamentsContext>(initialContextValue);
   const location = useLocation() as LocationState;
   const shouldRefresh: boolean = location.state?.refresh ?? false;
@@ -89,7 +91,7 @@ export const TournamentsProvider = (): ReactElement => {
           upcoming
         }));
       } catch (error) {
-        showToast("Could not fetch any tournaments", "error");
+        showToast(t("messages.could_not_fetch_tournaments"), "error");
         setValue((prevValue) => ({
           ...prevValue,
           isLoading: false,

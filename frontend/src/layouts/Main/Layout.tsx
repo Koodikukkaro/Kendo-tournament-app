@@ -13,19 +13,33 @@ import Container from "@mui/material/Container";
 import { ArrowBack } from "@mui/icons-material";
 import { Button, Typography } from "@mui/material";
 import routePaths from "routes/route-paths";
+import { useTranslation } from "react-i18next";
 
 const Layout = (): ReactElement => {
   const { isAuthenticated } = useAuth();
   const { pathname } = useLocation();
-
+  const { t } = useTranslation();
   const navigate = useNavigate();
+
+  const navigationItems = isAuthenticated
+    ? authenticatedNavItems
+    : unAuthenticatedNavItems;
+
+  const translantedSettings = settings.map((item) => ({
+    ...item,
+    text: t(item.text)
+  }));
+
+  const translantedNavItems = navigationItems.map((item) => ({
+    ...item,
+    text: t(item.text)
+  }));
+
   return (
     <div className="app-wrapper">
       <NavigationBar
-        navigationItems={
-          isAuthenticated ? authenticatedNavItems : unAuthenticatedNavItems
-        }
-        settings={settings}
+        navigationItems={translantedNavItems}
+        settings={translantedSettings}
       />
       <Container className="app-container">
         {pathname !== routePaths.homeRoute && (
@@ -37,7 +51,7 @@ const Layout = (): ReactElement => {
             sx={{ display: "flex", gap: "5px", marginBottom: "6px" }}
           >
             <ArrowBack />
-            <Typography>Back</Typography>
+            <Typography>{t("navigation.back")}</Typography>
           </Button>
         )}
         <Outlet />

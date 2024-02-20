@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import routePaths from "routes/route-paths";
 import api from "api/axios";
 import { useAuth } from "context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 interface PasswordRecoveryFormData {
   email: string;
@@ -20,6 +21,8 @@ const PasswordRecoveryForm: React.FC = () => {
   const showToast = useToast();
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
+
+  const { t } = useTranslation();
 
   const onSubmit = async ({
     email
@@ -32,10 +35,7 @@ const PasswordRecoveryForm: React.FC = () => {
         : routePaths.login;
 
       navigate(navigateTo, { replace: true });
-      showToast(
-        "Instructions to reset your password will be sent to you shortly. Please check your email.",
-        "success"
-      );
+      showToast(t("messages.password_recovery"), "success");
     } catch (error) {
       showToast(error, "error");
     }
@@ -50,18 +50,18 @@ const PasswordRecoveryForm: React.FC = () => {
         }}
       >
         <Typography component="h1" variant="h5" fontWeight="bold" mb={1}>
-          Recover your password
+          {t("titles.password_recovery")}
         </Typography>
 
         <FormContainer onSuccess={onSubmit} mode="onBlur">
           <TextFieldElement
             required
             name="email"
-            label="Email Address"
+            label={t("user_info_labels.email_address")}
             type="email"
             fullWidth
             margin="normal"
-            helperText="Enter your email and we’ll send you a link to reset your password"
+            helperText={t("password_recovery_form.email_helper_text")}
           />
 
           <Box textAlign="center">
@@ -72,7 +72,7 @@ const PasswordRecoveryForm: React.FC = () => {
               color="primary"
               sx={{ mt: 3, mb: 2 }}
             >
-              Recover Password
+              {t("buttons.recover_button")}
             </Button>
           </Box>
         </FormContainer>

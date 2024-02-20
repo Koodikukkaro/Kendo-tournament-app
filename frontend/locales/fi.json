@@ -1,0 +1,168 @@
+{
+  "messages": {
+    "password_recovery": "Saat ohjeet salasanan nollaamiseksi pian sähköpostiisi. Ole hyvä ja tarkista sähköpostisi.",
+    "unauthenticated_warning": "Sinun on kirjauduttava sisään nähdäksesi tämän sisällön.",
+    "password_reset": "Salasanasi on vaihdettu onnistuneesti!",
+    "error_retrieving_info": "Tietojesi hakemisessa tapahtui virhe. Sulje tämä ikkuna ja palaa edelliseen näkymään.",
+    "update_success": "Tietosi on päivitetty onnistuneesti! Päivitä sivu nähdäksesi muutokset.",
+    "password_validation": "Salasanan on sisällettävä vähintään yksi kirjain, yksi numero ja oltava 8–30 merkkiä pitkä.",
+    "deletion_success": "Tietosi on poistettu onnistuneesti",
+    "registration_success": "Rekisteröinti onnistui!",
+    "phonenumber_validation": "Syötä kelvollinen puhelinnumero",
+    "username_validation": "Käyttäjätunnuksen on oltava 4–20 merkkiä pitkä, alkaa ja päättyy kirjaimeen tai numeroon ja sisältää vain kirjaimia, numeroita, pisteitä tai alaviivoja ilman peräkkäisiä pisteitä tai alaviivoja.",
+    "unexpected_error_happened": "Tapahtui odottamaton virhe!",
+    "sign_up_success": "Ilmoittautuduttiin onnistuneesti turnaukseen: ",
+    "minimum_players_error": "Pelaajien vähimmäismäärä on ",
+    "creation_success": "Turnaus {{name}} luotiin onnistuneesti",
+    "invalid_tournament_error": "Tämä turnaus vaikuttaa virheelliseltä. Ota yhteyttä {{organizerEmail}} saadaksesi lisätietoja tästä turnauksesta.",
+    "session_expired_message": "Istunto vanhentunut: Kirjautumissessiosi on vanhentunut turvallisuussyistä. Kirjaudu sisään uudelleen.",
+    "tournament_info_not_found": "Tälle turnaukselle ei löytynyt tietoja. Sulje tämä ja palaa edelliseen näkymään.",
+    "could_not_fetch_tournaments": "Turnauksia ei voitu noutaa",
+    "dismiss": "Sulje",
+    "unexpected_error": "Odottamaton virhe.",
+    "login_successful": "Kirjautuminen onnistui!",
+    "logout_successful": "Uloskirjautuminen onnistui!"
+  },
+  "game_interface": {
+    "player": "Pelaaja",
+    "wins": "voittaa!",
+    "dialog_title": "Valitse piste",
+    "point_types": {
+      "men": "Men",
+      "kote": "Kote",
+      "do": "Do",
+      "tsuki": "Tsuki",
+      "hansoku": "Hansoku"
+    }
+  },
+  "buttons": {
+    "add_point_player_1": "Lisää piste pelaajalle 1",
+    "add_point_player_2": "Lisää piste pelaajalle 2",
+    "ok_button": "OK",
+    "close_button": "Sulje",
+    "start_timer": "Aloita",
+    "stop_timer": "Pysäytä",
+    "delete_account_button": "Poista tili",
+    "change_password_button": "Vaihda salasana",
+    "confirm_button": "Vahvista",
+    "cancel_button": "Peruuta",
+    "recover_button": "Palauta salasana",
+    "login_button": "Kirjaudu",
+    "edit_info_button": "Muokkaa tietoja",
+    "save_info_button": "Tallenna tiedot",
+    "sign_up_button": "Ilmoittaudu",
+    "register_button": "Rekisteröidy",
+    "create_button": "Luo"
+  },
+  "titles": {
+    "login": "Kirjaudu sisään",
+    "password_recovery": "Palauta salasanasi",
+    "password_change": "Vaihda salasanasi",
+    "confirm_account_deletion": "Vahvista tilin poistaminen",
+    "create_account": "Luo tili",
+    "create_tournament": "Luo uusi turnaus",
+    "confirm_tournament_creation": "Vahvista turnauksen luonti"
+  },
+  "login_form": {
+    "forgot_password": "Unohtuiko salasana?",
+    "sign_up": "Ei vielä käyttäjätiliä? Rekisteröidy"
+  },
+  "password_recovery_form": {
+    "email_helper_text": "Kirjoita sähköpostiosoitteesi, ja lähetämme sinulle linkin salasanan palauttamiseen"
+  },
+  "confirm_user_deletion_modal": {
+    "confirmation_message": "Oletko varma, että haluat poistaa tilisi ja kaikki siihen liittyvät tiedot?"
+  },
+  "user_info_labels": {
+    "first_name": "Etunimi",
+    "last_name": "Sukunimi",
+    "name": "Nimi",
+    "email_address": "Sähköpostiosoite",
+    "phone_number": "Puhelinnumero",
+    "username": "Käyttäjänimi",
+    "nationality": "Kansalaisuus",
+    "in_national_team": "Olen maajoukkueen ringissä",
+    "dan_rank": "Dan-arvo",
+    "club": "Seura",
+    "suomisport_id": "Suomisport ID",
+    "password_label": "Salasana",
+    "repeat_password_label": "Toista salasana",
+    "underage": "Olen alaikäinen",
+    "guardians_email": "Huoltajan sähköpostiosoite",
+    "profile_info": "Profiilitiedot",
+    "change_password": "Vaihda salasana"
+  },
+  "register_labels": {
+    "sign_in": "Kirjaudu sisään",
+    "field_required_notice": "Täytä alla olevat kentät. Kentät, jotka on merkitty *, ovat pakollisia.",
+    "already_have_account": "Onko sinulla jo tili?"
+  },
+  "tournament_view_labels": {
+    "final": "Finaali",
+    "round": "Kierros",
+    "scoreboard": "Tulostaulu",
+    "matches": "Ottelut",
+    "ongoing_matches": "Käynnissä olevat ottelut:",
+    "upcoming_matches": "Tulevat ottelut:",
+    "past_matches": "Menneet ottelut:",
+    "name": "Nimi",
+    "wins": "Voitot",
+    "losses": "Tappiot",
+    "points": "Pisteet"
+  },
+  "signup_labels": {
+    "sign_up_for": "Ilmoittaudu: ",
+    "want_more_info": "Haluatko lisätietoja tästä turnauksesta?",
+    "click_here": "Klikkaa tästä",
+    "userInfo": "Ilmoittautumisen yhteydessä annettavat tiedot:",
+    "user_info_table": "Käyttäjätiedot",
+    "player_table": "Pelaaja taulu"
+  },
+  "frontpage_labels": {
+    "ongoing_tournaments": "Käynnissä olevat turnaukset",
+    "upcoming_tournaments": "Tulevat turnaukset",
+    "past_tournaments": "Menneet turnaukset",
+    "create_tournament": "Luo turnaus",
+    "no_tournaments_found": "Ei löydetty turnauksia.",
+    "start_date": "Aloituspäivä",
+    "end_date": "Päättymispäivä"
+  },
+  "create_tournament_form": {
+    "info": "Täytä alla olevat kentät",
+    "tournament_name": "Turnauksen nimi",
+    "location": "Sijainti",
+    "start_date_time": "Aloituspäivämäärä ja aika",
+    "end_date_time": "Päättymispäivämäärä ja aika",
+    "description": "Kuvaus",
+    "select_tournament_type": "Valitse turnaustyypi",
+    "round_robin": "Kaikki vastaan kaikki",
+    "playoff": "Pudotuspelit",
+    "max_players": "Pelaajien enimmäismäärä",
+    "different_organizer_info": "Järjestäjällä on eri tiedot kuin minulla",
+    "organizer_email": "Järjestäjän sähköposti",
+    "organizer_phone_number": "Järjestäjän puhelinnumero",
+    "confirmation_message": "Oletko varma, että haluat luoda turnauksen annetuilla tiedoilla?"
+  },
+  "upcoming_tournament_view": {
+    "date_header": "Milloin",
+    "type_header": "Turnauksen tyyppi",
+    "about_header": "Turnauksesta",
+    "attend_prompt": "Haluatko osallistua?",
+    "others_signed_up_header": "Muut ilmoittautuneet",
+    "no_players_signed_up": "Muita pelaajia ei ole vielä ilmoittautunut.",
+    "location_header": "Missä",
+    "tournament_full": "Tämä turnaus on jo täynnä!"
+  },
+  "navigation": {
+    "back": "Takaisin",
+    "home": "Etusivu",
+    "login": "Kirjaudu sisään",
+    "register": "Rekisteröidy",
+    "profile": "Profiili",
+    "logout": "Kirjaudu ulos",
+    "appName": "KendoApp",
+    "openSettingsTooltip": "Avaa asetukset",
+    "about": "About-sivu",
+    "privacy_policy": "Yksityisyyskäytäntö"
+  }
+}

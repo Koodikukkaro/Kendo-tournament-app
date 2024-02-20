@@ -16,6 +16,7 @@ import useToast from "hooks/useToast";
 import { useTournament } from "context/TournamentContext";
 import Loader from "components/common/Loader";
 import ErrorModal from "components/common/ErrorModal";
+import { useTranslation } from "react-i18next";
 
 export interface MatchData {
   timerTime: number;
@@ -26,6 +27,8 @@ export interface MatchData {
 }
 
 const GameInterface: React.FC = () => {
+  const { t } = useTranslation();
+
   const [matchInfo, setMatchInfo] = useState<MatchData>({
     timerTime: 300,
     players: [],
@@ -244,7 +247,7 @@ const GameInterface: React.FC = () => {
             onClose={() => {
               setIsError(false);
             }}
-            errorMessage="An unexpected error occurred."
+            errorMessage={t("messages.unexpected_error_happened")}
           />
         )}
         {!isLoading && !isError && (
@@ -284,7 +287,10 @@ const GameInterface: React.FC = () => {
               )}
             {matchInfo.winner !== undefined && (
               <div>
-                <Typography>{matchInfo.winner} wins!</Typography>
+                <Typography>
+                  {t("game_interface.player")} {matchInfo.winner}{" "}
+                  {t("game_interface.wins")}
+                </Typography>
               </div>
             )}
           </>

@@ -14,11 +14,22 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import Paper from "@mui/material/Paper";
 import type { Tournament } from "types/models";
+import { useTranslation } from "react-i18next";
 
 const generateTable = (tournament: Tournament): React.ReactNode => {
-  const tableHeaders = ["Name", "Rank", "Club"] as const;
+  const { t } = useTranslation();
+
+  const tableHeaders = [
+    t("user_info_labels.name"),
+    t("user_info_labels.dan_rank"),
+    t("user_info_labels.club")
+  ] as const;
+
   return (
-    <TableContainer component={Paper} aria-label="Player Table">
+    <TableContainer
+      component={Paper}
+      aria-label={t("signup_labels.player_table")}
+    >
       <Table size="small">
         <TableHead>
           <TableRow>
@@ -52,6 +63,7 @@ const generateTable = (tournament: Tournament): React.ReactNode => {
 };
 
 const UpcomingTournamentView: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { userId } = useAuth();
   const tournament = useTournament();
@@ -79,14 +91,23 @@ const UpcomingTournamentView: React.FC = () => {
       {tournamentFull && (
         <Box>
           <Typography variant="h5" className="header" fontWeight="bold">
-            This tournament is already full!
+            {t("upcoming_tournament_view.tournament_full")}
           </Typography>
         </Box>
       )}
 
       <Box>
         <Typography variant="subtitle1" className="header" fontWeight="bold">
-          When:
+          {t("upcoming_tournament_view.location_header")}:
+        </Typography>
+        <Typography variant="body1" className="subtext">
+          {tournament.location}
+        </Typography>
+      </Box>
+
+      <Box>
+        <Typography variant="subtitle1" className="header" fontWeight="bold">
+          {t("upcoming_tournament_view.date_header")}:
         </Typography>
         <Typography variant="body1" className="dates">
           {new Date(tournament.startDate).toLocaleString("fi")} -{" "}
@@ -96,16 +117,7 @@ const UpcomingTournamentView: React.FC = () => {
 
       <Box>
         <Typography variant="subtitle1" className="header" fontWeight="bold">
-          Where:
-        </Typography>
-        <Typography variant="body1" className="subtext">
-          {tournament.location}
-        </Typography>
-      </Box>
-
-      <Box>
-        <Typography variant="subtitle1" className="header" fontWeight="bold">
-          Type of Tournament:
+          {t("upcoming_tournament_view.type_header")}:
         </Typography>
         <Typography variant="body1" className="subtext">
           {tournament.type}
@@ -114,7 +126,7 @@ const UpcomingTournamentView: React.FC = () => {
 
       <Box>
         <Typography variant="subtitle1" className="header" fontWeight="bold">
-          About the Tournament:
+          {t("upcoming_tournament_view.about_header")}:
         </Typography>
         <Typography variant="body1" className="subtext">
           {tournament.description}
@@ -126,7 +138,7 @@ const UpcomingTournamentView: React.FC = () => {
       {!userAlreadySigned && !tournamentFull && (
         <Box>
           <Typography variant="body1" className="header">
-            Want to attend?
+            {t("upcoming_tournament_view.attend_prompt")}
           </Typography>
           <Button
             variant="contained"
@@ -136,7 +148,7 @@ const UpcomingTournamentView: React.FC = () => {
               navigate("sign-up");
             }}
           >
-            Sign up
+            {t("buttons.sign_up_button")}
           </Button>
           <br />
         </Box>
@@ -145,13 +157,13 @@ const UpcomingTournamentView: React.FC = () => {
       {tournament.players.length > 0 ? (
         <React.Fragment>
           <Typography variant="body1" className="header" fontWeight="bold">
-            Others who have signed up:
+            {t("upcoming_tournament_view.others_signed_up_header")}:
           </Typography>
           {generateTable(tournament)}
         </React.Fragment>
       ) : (
         <Typography variant="body1" className="header" fontWeight="bold">
-          No players have signed up yet.
+          {t("upcoming_tournament_view.no_players_signed_up")}
         </Typography>
       )}
     </Container>

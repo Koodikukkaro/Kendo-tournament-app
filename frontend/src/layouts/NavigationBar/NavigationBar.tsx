@@ -13,6 +13,7 @@ import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import IconButton from "@mui/material/IconButton";
 import Toolbar from "@mui/material/Toolbar";
+import LanguageSwitcher from "./LanguageSwitcher";
 
 import MenuIcon from "@mui/icons-material/Menu";
 
@@ -76,6 +77,7 @@ const NavigationBar: React.FC<Props> = (props) => {
                   <MenuIcon />
                 </IconButton>
               </Box>
+              <LanguageSwitcher />
               {/* Navigation bar links */}
               <Box sx={{ display: { xs: "none", sm: "block" } }}>
                 {navigationItems.map((item) => (

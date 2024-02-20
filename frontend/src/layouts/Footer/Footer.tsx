@@ -5,8 +5,11 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import "./footer.css";
 import routePaths from "routes/route-paths";
+import { useTranslation } from "react-i18next";
 
 const Footer: React.FC = () => {
+  const { t } = useTranslation();
+
   return (
     <Box component="footer" className="footer">
       <Container maxWidth="lg">
@@ -16,10 +19,10 @@ const Footer: React.FC = () => {
             target="_blank"
             color="inherit"
           >
-            About
+            {t("navigation.about")}
           </Link>
           <Link href={routePaths.privacy} target="_blank" color="inherit">
-            Privacy Policy
+            {t("navigation.privacy_policy")}
           </Link>
         </Box>
         <Typography variant="body2" color="textSecondary" align="center">
