@@ -108,7 +108,11 @@
     "name": "Name",
     "wins": "Wins",
     "losses": "Losses",
-    "points": "Points"
+    "points": "Points",
+    "missing_both": "Missing: Time keeper and point maker",
+    "missing_timer": "Missing: Time keeper",
+    "missing_point_maker": "Missing: Point maker",
+    "missing_and": "and point maker"
   },
   "signup_labels": {
     "sign_up_for": "Sign Up for",
