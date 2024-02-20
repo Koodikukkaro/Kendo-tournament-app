@@ -3,7 +3,7 @@ import type { Tournament } from "./tournamentModel";
 
 export type PlayerColor = "red" | "white";
 export type PointType = "men" | "kote" | "do" | "tsuki" | "hansoku";
-export type MatchType = "group" | "playoff";
+export type MatchType = "group" | "playoff" | "preliminary" | "redo preliminary";
 
 export interface MatchPoint {
   type: PointType;

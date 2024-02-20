@@ -2,7 +2,8 @@ import MatchModel, {
   type MatchPlayer,
   type Match,
   type MatchPoint,
-  type PlayerColor
+  type PlayerColor,
+  type MatchType
 } from "../models/matchModel.js";
 import NotFoundError from "../errors/NotFoundError.js";
 import BadRequestError from "../errors/BadRequestError.js";
@@ -10,8 +11,10 @@ import {
   type CreateMatchRequest,
   type AddPointRequest
 } from "../models/requestModel.js";
-import { type Types } from "mongoose";
-import { TournamentModel, TournamentType } from "../models/tournamentModel.js";
+import { Document, type Types } from "mongoose";
+import { Tournament, TournamentModel, TournamentType, UnsavedMatch } from "../models/tournamentModel.js";
+import { TournamentService } from "./tournamentService";
+type rankingStruct = [Types.ObjectId, number, number];
 
 // Note by Samuel:
 // There's something missing about mongoose validation if using update.
@@ -152,9 +155,82 @@ export class MatchService {
 
     this.assignPoint(match, newPoint, pointColor);
 
-    await this.checkMatchOutcome(match);
+    const resolved = await this.checkMatchOutcome(match);
 
     await match.save();
+
+    if((match.type === "preliminary" || match.type === "redo preliminary") && resolved){
+      const tournament = await this.checkPreliminary(match);
+
+      if(tournament !== null){
+        const [players, ties, availableSpots] = this.playersToPlayoffsFromPreliminary(tournament, tournament.matchSchedule as Match[]);
+        
+        if(players.length > 0){
+          tournament.playersPlayoffStage.push(...players);
+        }
+
+        if(availableSpots.every((value) => value === 0)){
+
+          if(players.length > 0){
+
+            if(players.length % 2 !== 0){
+              console.log("UNEVEN PLAYOFF, NOT IMPLEMENTED YET");
+            }
+            else{
+              const shuffledPlayerIds = players;
+              for (let i = 0; i < shuffledPlayerIds.length; i += 2) {
+        
+                const newMatch = {
+                  players: [
+                    { id: shuffledPlayerIds[i], points: [], color: "white" },
+                    { id: shuffledPlayerIds[i + 1], points: [], color: "red" }
+                  ],
+                  type: "playoff",
+                  elapsedTime: 0,
+                  timerStartedTimestamp: null,
+                  tournamentRound: 2
+                };
+        
+                const matchDocuments = await MatchModel.create(newMatch);
+                tournament.matchSchedule.push(matchDocuments.id)
+              }
+              await tournament.save();
+              
+            }
+          }
+        }
+
+        else{
+          console.log("TIES, DO NOT PROCEED");
+          for(let i = 0; i<availableSpots.length; i++){
+            
+            if(availableSpots[i] === tournament.playersToPlayoffs){
+              let matches: UnsavedMatch[] = [];
+              for (const group of tournament.groups){
+                let addedPlayers : Types.ObjectId[] = [];
+                for(const player of group){
+                  let groupMatches = TournamentService.generateRoundRobinSchedule(
+                    addedPlayers as Types.ObjectId[],
+                    player,
+                    tournament.id,
+                    "redo preliminary"
+                  );
+                  matches.push(...groupMatches);
+                  addedPlayers.push(player);
+                }
+                const matchDocuments = await MatchModel.insertMany(matches);
+                const matchIds = matchDocuments.map((doc) => doc._id);
+                tournament.matchSchedule.push(...matchIds);
+              }
+            }
+            else if(availableSpots[i] > 0){
+
+            }
+          }
+        }
+               
+      }
+    }
 
     return await match.toObject();
   }
@@ -170,7 +246,7 @@ export class MatchService {
     pointWinner.points.push(point);
   }
 
-  private async checkMatchOutcome(match: Match): Promise<void> {
+  private async checkMatchOutcome(match: Match): Promise<boolean> {
     const MAXIMUM_POINTS = 2;
     let player1Points = 0;
     let player2Points = 0;
@@ -199,11 +275,15 @@ export class MatchService {
       match.winner = player1.id;
       match.endTimestamp = new Date();
       await this.createPlayoffSchedule(match.id, player1.id);
+      return true;
     } else if (player2Points >= MAXIMUM_POINTS) {
       match.winner = player2.id;
       match.endTimestamp = new Date();
       await this.createPlayoffSchedule(match.id, player2.id);
+      return true;
     }
+
+    return false;
   }
 
   private async createPlayoffSchedule(
@@ -221,7 +301,13 @@ export class MatchService {
       })
       .exec();
 
-    if (tournament?.type !== TournamentType.Playoff) {
+    if(tournament === null || tournament === undefined) {
+      throw new NotFoundError({
+        message: "Tournament not found"
+      });
+    }
+    
+    if (tournament.type === TournamentType.RoundRobin) {
       return;
     }
 
@@ -236,6 +322,11 @@ export class MatchService {
       });
     }
     const currentRound = currentMatch.tournamentRound;
+
+    if(tournament.type === TournamentType.PreliminiaryPlayoff && currentRound === 1){
+        return;
+    }
+
     const nextRound = currentRound + 1;
 
     const winners = playedMatches
@@ -286,4 +377,169 @@ export class MatchService {
       await tournament.save();
     }
   }
+
+  private playersToPlayoffsFromPreliminary(
+    tournament: Tournament & Document,
+    matches: Match[],
+  ):  [Types.ObjectId[], Types.ObjectId[][], number[] ]{
+    let amountToPlayoffsPerGroup = tournament.playersToPlayoffs;
+
+    let rankingMap: Map<string, Array<number>> = this.getAllPlayerScores(matches, "preliminary");
+  
+    let groupRankings: Array<Array<rankingStruct>> = [];
+
+    for(let i=0; i<tournament.groups.length; i++){
+      let groupRankingMap: Array<rankingStruct> = [];
+      groupRankings.push(groupRankingMap);
+
+      for(const playerId of tournament.groups[i]){
+        let score = rankingMap.get(playerId.toString()) || [0, 0];
+        groupRankings[i].push([playerId, score[0], score[1]]);
+      }
+    }
+
+    groupRankings.forEach((group) => {
+      group.sort((a, b) =>{
+        if(b[1] !== a[1] ){
+          return b[1] - a[1];
+        }
+        return b[2] - a[2];
+      });
+    });
+
+    let groupTies: Array<Array<Types.ObjectId>> = [];
+    let availableSpots: Array<number> = []
+
+    for (let i=0; i<groupRankings.length; i++) {
+      let tieIds: Array<Types.ObjectId> = [];
+      availableSpots.push(0);
+
+      // tiescore including wins/draw points and ippons
+      let tieScore = [groupRankings[i][amountToPlayoffsPerGroup-1][1], groupRankings[i][amountToPlayoffsPerGroup-1][2]];
+
+      if(groupRankings[i].length > amountToPlayoffsPerGroup){
+        // check if there is a tie that matters (tie between last player to playoff and the next in scores)
+        if(groupRankings[i][amountToPlayoffsPerGroup][1] === tieScore[0] &&
+          groupRankings[i][amountToPlayoffsPerGroup][2] === tieScore[1]){
+          
+          for(let j=0; j<groupRankings[i].length; j++){
+
+            if(groupRankings[i][j][1] === tieScore[0] && groupRankings[i][j][2] === tieScore[1]){
+              if(tieIds.length === 0){
+                availableSpots[i] = (amountToPlayoffsPerGroup-j);
+              }
+              tieIds.push(groupRankings[i][j][0]);
+            }
+          }
+          
+        }
+
+      }
+      groupTies.push(tieIds);
+    }
+
+    let playerIds: Types.ObjectId[] = [];
+    for (const group of groupRankings) {
+      const topPlayers = group.slice(0, amountToPlayoffsPerGroup);
+      
+      // Extract the playerIds from the topPlayers
+      const topPlayerIds = topPlayers.map(([playerId, _]) => playerId);
+
+      // Append the top playerIds to the playerIds array
+      playerIds.push(...topPlayerIds);
+    }
+
+    return [playerIds, groupTies, availableSpots];
+
+  }
+
+  private async checkPreliminary(match: Match): Promise<Tournament & Document | null>{
+    const tournament = await TournamentModel.findOne({
+      matchSchedule: match.id
+    })
+      .populate<{
+        matchSchedule: Match[];
+      }>({
+        path: "matchSchedule",
+        model: "Match"
+      })
+      .exec();
+
+      if(tournament === null || tournament === undefined) {
+        throw new NotFoundError({
+          message: "Tournament not found"
+        });
+      }
+      const playedMatches = tournament.matchSchedule;
+
+      if(tournament.type === TournamentType.PreliminiaryPlayoff){
+        let played = 0;
+
+        for(let i=0; i<playedMatches.length; i++){
+          if(playedMatches[i].winner != null){
+            played++;
+          }
+        }
+
+        if(played === playedMatches.length){
+          return tournament;
+        }
+        return null;
+      }
+      else{
+        return null
+      }
+  }
+  
+  private getAllPlayerScores(
+    matches: Match[],
+    matchType?: MatchType
+  ): Map<string, Array<number>>{
+    let rankingMap: Map<string, Array<number>> = new Map();
+    
+    for(const match of matches){
+
+      if(matchType === undefined || match.type === matchType){
+        
+        for(let j=0; j<match.players.length; j++){
+          const matchPlayer: MatchPlayer = match.players[j] as MatchPlayer;
+          let playerPoints = 0;
+          matchPlayer.points.forEach((point: MatchPoint) => {
+            if (point.type === "hansoku") {
+              // In case of hansoku, the opponent recieves half a point.
+              playerPoints += 0.5;
+            } else {
+              // Otherwise give one point to the player.
+              playerPoints++;
+            }
+          });
+  
+          if(rankingMap.has(matchPlayer.id.toString())){
+            console.log(playerPoints);
+            let currentPoints = rankingMap.get(matchPlayer.id.toString()) || [0,0];
+            currentPoints[1] += playerPoints;
+            if(match.winner?.equals(matchPlayer.id)){
+              currentPoints[0] += 3;
+            }
+            rankingMap.set(matchPlayer.id.toString(), currentPoints);
+          }
+  
+          else{
+            let currentPoints = [0, playerPoints];
+            if(match.winner?.equals(matchPlayer.id)){
+              currentPoints[0] += 3;
+            }
+            rankingMap.set(matchPlayer.id.toString(), currentPoints);
+            console.log(playerPoints);
+          }
+  
+        }  
+      }
+      
+    }
+
+    return rankingMap;
+  }
 }
+
+

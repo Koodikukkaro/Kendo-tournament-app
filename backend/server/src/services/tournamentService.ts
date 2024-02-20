@@ -8,7 +8,7 @@ import {
 import UserModel, { type User } from "../models/userModel.js";
 import BadRequestError from "../errors/BadRequestError.js";
 import { Types } from "mongoose";
-import MatchModel from "../models/matchModel.js";
+import MatchModel, { MatchType } from "../models/matchModel.js";
 import { type CreateTournamentRequest } from "../models/requestModel.js";
 import { type Match, type MatchPlayer } from "../models/matchModel.js";
 
@@ -144,6 +144,15 @@ export class TournamentService {
     }
 
     tournament.players.push(player.id);
+
+    // Adding new player to preliminary requires redoing all groups and matches,
+    // perhaps a better way would be possible?
+    if(tournament.type === TournamentType.PreliminiaryPlayoff){
+      tournament.groups = this.dividePlayersIntoGroups(tournament.players as Types.ObjectId[], tournament.groupsSizePreference);
+      await MatchModel.deleteMany({tournamentId : tournament.id});
+      
+      tournament.matchSchedule = [];
+    }
     await tournament.save();
 
     if (tournament.players.length > 1) {
@@ -209,30 +218,50 @@ export class TournamentService {
     let matches: UnsavedMatch[] = [];
     switch (tournament.type) {
       case TournamentType.RoundRobin:
-        matches = this.generateRoundRobinSchedule(
+        matches = TournamentService.generateRoundRobinSchedule(
           tournament.players as Types.ObjectId[],
-          newPlayer
+          newPlayer,
+          tournament.id
         );
         break;
       case TournamentType.Playoff:
         matches = await this.generatePlayoffSchedule(
           tournament.players as Types.ObjectId[],
-          tournament.matchSchedule as Types.ObjectId[]
+          tournament.matchSchedule as Types.ObjectId[],
+          tournament.id
         );
+        break;
+      case TournamentType.PreliminiaryPlayoff:
+        
+        for (const group of tournament.groups){
+          let addedPlayers : Types.ObjectId[] = [];
+          for(const player of group){
+            let groupMatches = TournamentService.generateRoundRobinSchedule(
+              addedPlayers as Types.ObjectId[],
+              player,
+              tournament.id,
+              "preliminary"
+            );
+            matches.push(...groupMatches);
+            addedPlayers.push(player);
+          }
+          
+        }
         break;
     }
 
     if (matches.length === 0) {
       return [];
     }
-
     const matchDocuments = await MatchModel.insertMany(matches);
     return matchDocuments.map((doc) => doc._id);
   }
 
-  private generateRoundRobinSchedule(
+  public static generateRoundRobinSchedule(
     playerIds: Types.ObjectId[],
-    newPlayer: Types.ObjectId
+    newPlayer: Types.ObjectId,
+    tournament: Types.ObjectId,
+    tournamentType: MatchType = "group"
   ): UnsavedMatch[] {
     const matches: UnsavedMatch[] = [];
     for (const playerId of playerIds) {
@@ -242,10 +271,11 @@ export class TournamentService {
             { id: newPlayer, points: [], color: "white" },
             { id: playerId, points: [], color: "red" }
           ],
-          type: "group",
+          type: tournamentType,
           elapsedTime: 0,
           timerStartedTimestamp: null,
-          tournamentRound: 1
+          tournamentRound: 1,
+          tournamentId: tournament
         });
       }
     }
@@ -254,7 +284,8 @@ export class TournamentService {
 
   private async generatePlayoffSchedule(
     playerIds: Types.ObjectId[],
-    previousMatches: Types.ObjectId[]
+    previousMatches: Types.ObjectId[],
+    tournament: Types.ObjectId
   ): Promise<UnsavedMatch[]> {
     const matches: UnsavedMatch[] = [];
     const playerSet = new Set<string>();
@@ -290,7 +321,8 @@ export class TournamentService {
         type: "playoff",
         elapsedTime: 0,
         timerStartedTimestamp: null,
-        tournamentRound: 1
+        tournamentRound: 1,
+        tournamentId: tournament
       });
     }
 
@@ -313,4 +345,21 @@ export class TournamentService {
     }
     return (playerCount * (playerCount - 1)) / 2;
   }
+
+  private dividePlayersIntoGroups(players: Types.ObjectId[], preferredGroupSize: number): Types.ObjectId[][] {
+    const totalPlayers = players.length;
+    const numGroups = Math.ceil(totalPlayers / preferredGroupSize);
+  
+    const groups: Types.ObjectId[][] = Array.from({ length: numGroups }, () => []);
+  
+    for (let i = 0; i < totalPlayers; i++) {
+      const currentPlayer = players[i];
+      const groupIndex = i % numGroups;
+  
+      groups[groupIndex].push(currentPlayer);
+    }
+  
+    return groups;
+  }
+ 
 }
