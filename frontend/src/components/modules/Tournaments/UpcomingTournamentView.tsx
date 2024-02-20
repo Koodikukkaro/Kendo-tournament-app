@@ -70,6 +70,9 @@ const UpcomingTournamentView: React.FC = () => {
   const userAlreadySigned = tournament.players.some(
     (player) => player.id === userId
   );
+  const maxPlayers = tournament.maxPlayers;
+  const signedPlayers = tournament.players.length;
+  const tournamentFull = maxPlayers <= signedPlayers;
 
   return (
     <Container
@@ -77,13 +80,30 @@ const UpcomingTournamentView: React.FC = () => {
       sx={{ display: "flex", flexDirection: "column", gap: "8px" }}
     >
       <Typography
-        variant="h5"
+        variant="h4"
         className="header"
         fontWeight="bold"
         marginBottom="12px"
       >
         {tournament.name}
       </Typography>
+
+      {tournamentFull && (
+        <Box>
+          <Typography variant="h5" className="header" fontWeight="bold">
+            {t("upcoming_tournament_view.tournament_full")}
+          </Typography>
+        </Box>
+      )}
+
+      <Box>
+        <Typography variant="subtitle1" className="header" fontWeight="bold">
+          {t("upcoming_tournament_view.location_header")}:
+        </Typography>
+        <Typography variant="body1" className="subtext">
+          {tournament.location}
+        </Typography>
+      </Box>
 
       <Box>
         <Typography variant="subtitle1" className="header" fontWeight="bold">
@@ -115,7 +135,7 @@ const UpcomingTournamentView: React.FC = () => {
 
       <br />
 
-      {!userAlreadySigned && (
+      {!userAlreadySigned && !tournamentFull && (
         <Box>
           <Typography variant="body1" className="header">
             {t("upcoming_tournament_view.attend_prompt")}
@@ -123,7 +143,7 @@ const UpcomingTournamentView: React.FC = () => {
           <Button
             variant="contained"
             color="primary"
-            disabled={userAlreadySigned}
+            disabled={userAlreadySigned || tournamentFull}
             onClick={() => {
               navigate("sign-up");
             }}

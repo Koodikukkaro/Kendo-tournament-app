@@ -149,7 +149,9 @@
     "about_header": "About the Tournament",
     "attend_prompt": "Want to attend?",
     "others_signed_up_header": "Others who have signed up",
-    "no_players_signed_up": "No players have signed up yet."
+    "no_players_signed_up": "No players have signed up yet.",
+    "location_header": "Where",
+    "tournament_full": "This tournament is already full!"
   },
   "navigation": {
     "back": "Back",

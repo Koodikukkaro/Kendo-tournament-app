@@ -149,7 +149,9 @@
     "about_header": "Turnauksesta",
     "attend_prompt": "Haluatko osallistua?",
     "others_signed_up_header": "Muut ilmoittautuneet",
-    "no_players_signed_up": "Muita pelaajia ei ole vielä ilmoittautunut."
+    "no_players_signed_up": "Muita pelaajia ei ole vielä ilmoittautunut.",
+    "location_header": "Missä",
+    "tournament_full": "Tämä turnaus on jo täynnä!"
   },
   "navigation": {
     "back": "Takaisin",

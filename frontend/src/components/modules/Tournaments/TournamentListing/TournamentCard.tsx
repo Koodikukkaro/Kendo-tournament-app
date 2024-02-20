@@ -25,6 +25,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
   const userAlreadySigned = tournament.players.some(
     (player) => player.id === userId
   );
+  const tournamentFull = tournament.maxPlayers <= tournament.players.length;
 
   return (
     <Card component="main" sx={{ position: "relative" }}>
@@ -38,6 +39,11 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
           titleTypographyProps={{ fontWeight: "500" }}
         />
         <CardContent sx={{ marginBottom: "32px" }}>
+          {tournamentFull && type === "upcoming" && (
+            <Typography variant="subtitle1" marginBottom="32px">
+              {t("upcoming_tournament_view.tournament_full")}
+            </Typography>
+          )}
           <Typography color="text.secondary">
             {t("frontpage_labels.start_date")}:{" "}
             {new Date(tournament.startDate).toLocaleDateString("fi")}
@@ -53,7 +59,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
         <Button
           color="primary"
           variant="outlined"
-          disabled={userAlreadySigned}
+          disabled={userAlreadySigned || tournamentFull}
           onClick={() => {
             navigate(`${tournament.id}/sign-up`);
           }}
