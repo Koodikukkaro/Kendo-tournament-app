@@ -24,6 +24,7 @@ import {
   isValidUsername
 } from "utils/form-validators";
 import routePaths from "routes/route-paths";
+import { useTranslation } from "react-i18next";
 
 export interface RegisterFormData {
   firstName: string;
@@ -61,6 +62,7 @@ const defaultValues: RegisterFormData = {
 const RegisterForm: React.FC = () => {
   const navigate = useNavigate();
   const showToast = useToast();
+  const { t } = useTranslation();
   const formContext = useForm<RegisterFormData>({
     defaultValues,
     mode: "onBlur"
@@ -71,7 +73,7 @@ const RegisterForm: React.FC = () => {
     try {
       const { passwordConfirmation, ...requestBody } = data;
       await api.user.register(requestBody as RegisterRequest);
-      showToast("Registration successful!", "success");
+      showToast(t("messages.registration_success"), "success");
       navigate(routePaths.login, { replace: true });
     } catch (error) {
       showToast(error, "error");
@@ -88,16 +90,16 @@ const RegisterForm: React.FC = () => {
       >
         <Box display="flex" flexDirection="column" gap="5px" width="100%">
           <Typography component="h1" variant="h5" fontWeight="bold">
-            {"Create an account"}
+            {t("titles.create_account")}
           </Typography>
           <Typography variant="body1">
             {"Already have an account? "}
             <Link component={RouterLink} to={routePaths.login}>
-              {"Sign In"}
+              {t("register_labels.sign_in")}
             </Link>
           </Typography>
           <Typography variant="body2">
-            {"Fill in the fields below. Fields marked with * are required."}
+            {t("register_labels.field_required_notice")}
           </Typography>
         </Box>
 
@@ -109,7 +111,7 @@ const RegisterForm: React.FC = () => {
           <TextFieldElement
             required
             name="firstName"
-            label="First Name"
+            label={t("user_info_labels.first_name")}
             fullWidth
             margin="normal"
           />
@@ -117,7 +119,7 @@ const RegisterForm: React.FC = () => {
           <TextFieldElement
             required
             name="lastName"
-            label="Last Name"
+            label={t("user_info_labels.last_name")}
             fullWidth
             margin="normal"
           />
@@ -125,7 +127,7 @@ const RegisterForm: React.FC = () => {
           <TextFieldElement
             required
             name="email"
-            label="Email Address"
+            label={t("user_info_labels.email_address")}
             type="email"
             fullWidth
             margin="normal"
@@ -134,14 +136,14 @@ const RegisterForm: React.FC = () => {
           <TextFieldElement
             required
             name="phoneNumber"
-            label="Phone Number"
+            label={t("user_info_labels.phone_number")}
             type="tel"
             fullWidth
             margin="normal"
             validation={{
               validate: (value: string) => {
                 return (
-                  isValidPhone(value) || "Please enter a valid phone number"
+                  isValidPhone(value) || t("messages.phonenumber_validation")
                 );
               }
             }}
@@ -150,37 +152,36 @@ const RegisterForm: React.FC = () => {
           <PasswordElement
             required
             name="password"
-            label="Password"
+            label={t("user_info_labels.password_label")}
             fullWidth
             margin="normal"
             validation={{
               validate: (value: string) => {
                 return (
-                  isValidPassword(value) ||
-                  "A valid password must contain at least one letter, one number, and be 8-30 characters long."
+                  isValidPassword(value) || t("messages.password_validation")
                 );
               }
             }}
           />
 
           <PasswordRepeatElement
+            required
             passwordFieldName="password"
             name="passwordConfirmation"
-            label="Repeat Password"
+            label={t("user_info_labels.repeat_password_label")}
             fullWidth
             margin="normal"
           />
 
           <TextFieldElement
             name="userName"
-            label="Username"
+            label={t("user_info_labels.username")}
             fullWidth
             margin="normal"
             validation={{
               validate: (value: string) => {
                 return (
-                  isValidUsername(value) ||
-                  "Username must be 4-20 characters long, start and end with a letter or number, and contain only letters, numbers, dots, or underscores with no consecutive dots or underscores."
+                  isValidUsername(value) || t("messages.username_validation")
                 );
               }
             }}
@@ -188,40 +189,40 @@ const RegisterForm: React.FC = () => {
 
           <TextFieldElement
             name="nationality"
-            label="Nationality"
+            label={t("user_info_labels.nationality")}
             fullWidth
             margin="normal"
           />
 
           <CheckboxElement
             name="inNationalTeam"
-            label="I'm in the national team ring"
+            label={t("user_info_labels.in_national_team")}
           />
 
           <TextFieldElement
             name="rank"
-            label="Dan Rank"
+            label={t("user_info_labels.dan_rank")}
             fullWidth
             margin="normal"
           />
 
           <TextFieldElement
             name="club"
-            label="Club"
+            label={t("user_info_labels.club")}
             fullWidth
             margin="normal"
           />
 
           <TextFieldElement
             name="suomisport"
-            label="Suomisport ID"
+            label={t("user_info_labels.suomisport_id")}
             fullWidth
             margin="normal"
           />
 
           <CheckboxElement
             name="underage"
-            label="I'm underage"
+            label={t("user_info_labels.underage")}
             onChange={(e) => {
               formContext.resetField("guardiansEmail");
               formContext.setValue("underage", e.target.checked);
@@ -231,7 +232,7 @@ const RegisterForm: React.FC = () => {
             <TextFieldElement
               required
               name="guardiansEmail"
-              label="Guardian's Email Address"
+              label={t("user_info_labels.guardians_email")}
               type="email"
               fullWidth
               margin="normal"
@@ -246,7 +247,7 @@ const RegisterForm: React.FC = () => {
               fullWidth
               sx={{ mt: 3, mb: 2 }}
             >
-              Register
+              {t("buttons.register_button")}
             </Button>
           </Box>
         </FormContainer>

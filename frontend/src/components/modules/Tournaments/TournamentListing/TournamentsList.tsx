@@ -13,17 +13,15 @@ import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import EventIcon from "@mui/icons-material/Event";
 import Container from "@mui/material/Container";
 import type { Tournament } from "types/models";
-
-const tabTypes = ["past", "ongoing", "upcoming"] as const;
-const defaultTab = "ongoing";
-
-// SpeedDial actions
-const actions = [{ icon: <EventIcon />, name: "Create Tournament" }];
+import { useTranslation } from "react-i18next";
 
 const TournamentList: React.FC = () => {
   const navigate = useNavigate();
   const { past, upcoming, ongoing } = useTournaments();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { t } = useTranslation();
+  const tabTypes = ["past", "ongoing", "upcoming"] as const;
+  const defaultTab = "ongoing";
   const currentTab = searchParams.get("tab") ?? defaultTab;
 
   useEffect(() => {
@@ -55,11 +53,16 @@ const TournamentList: React.FC = () => {
     });
   };
 
+  // SpeedDial actions
+  const actions = [
+    { icon: <EventIcon />, name: t("frontpage_labels.create_tournament") }
+  ];
+
   return (
     <Container sx={{ position: "relative", paddingBottom: "30px" }}>
       {/* Floating Create Tournament Button */}
       <SpeedDial
-        ariaLabel="Create Tournament"
+        ariaLabel={t("frontpage_labels.create_tournament")}
         icon={<SpeedDialIcon />}
         direction="up"
         sx={{ position: "fixed", bottom: "100px", right: "20px" }}
@@ -93,9 +96,18 @@ const TournamentList: React.FC = () => {
             backgroundColor: "white"
           }}
         >
-          <Tab label="Ongoing Tournaments" value={"ongoing"}></Tab>
-          <Tab label="Upcoming Tournaments" value={"upcoming"}></Tab>
-          <Tab label="Past Tournaments" value={"past"}></Tab>
+          <Tab
+            label={t("frontpage_labels.ongoing_tournaments")}
+            value={"ongoing"}
+          ></Tab>
+          <Tab
+            label={t("frontpage_labels.upcoming_tournaments")}
+            value={"upcoming"}
+          ></Tab>
+          <Tab
+            label={t("frontpage_labels.past_tournaments")}
+            value={"past"}
+          ></Tab>
         </Tabs>
       </Box>
       <Grid container spacing={2} direction="row" alignItems="stretch">
@@ -108,7 +120,7 @@ const TournamentList: React.FC = () => {
         ) : (
           <Container>
             <Typography variant="h6" marginTop="32px" textAlign="center">
-              No tournaments found.
+              {t("frontpage_labels.no_tournaments_found")}
             </Typography>
           </Container>
         )}

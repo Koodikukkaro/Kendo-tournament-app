@@ -7,6 +7,7 @@ import { type Tournament } from "types/models";
 import { useTournament } from "context/TournamentContext";
 import { useNavigate } from "react-router-dom";
 import routePaths from "routes/route-paths";
+import { useTranslation } from "react-i18next";
 
 const getTournamentComponent = (
   tournament: Tournament
@@ -26,6 +27,7 @@ const getTournamentComponent = (
 const TournamentDetails: React.FC = (): React.ReactElement => {
   const tournament = useTournament();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const tournamentComponent = getTournamentComponent(tournament);
 
   if (tournamentComponent === undefined) {
@@ -35,7 +37,9 @@ const TournamentDetails: React.FC = (): React.ReactElement => {
         onClose={() => {
           navigate(routePaths.homeRoute);
         }}
-        errorMessage={`This tournament seems to be invalid. Contact ${tournament.organizerEmail} for more information about this tournament.`}
+        errorMessage={t("messages.invalid_tournament_error", {
+          organizerEmail: tournament.organizerEmail
+        })}
       />
     );
   }

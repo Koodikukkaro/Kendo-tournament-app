@@ -15,6 +15,7 @@ import routePaths from "routes/route-paths";
 import { useAuth } from "context/AuthContext";
 import api from "api/axios";
 import { isValidPassword } from "utils/form-validators";
+import { useTranslation } from "react-i18next";
 
 interface PasswordResetFormData {
   password: string;
@@ -32,6 +33,8 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
+  const { t } = useTranslation();
+
   const onSubmit = async ({
     password
   }: PasswordResetFormData): Promise<void> => {
@@ -42,7 +45,7 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({
         ? routePaths.homeRoute
         : routePaths.login;
 
-      showToast("Your password was changed successfully!", "success");
+      showToast(t("messages.password_reset"), "success");
       navigate(navigateTo, { replace: true });
     } catch (error) {
       showToast(error, "error");
@@ -58,21 +61,20 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({
         }}
       >
         <Typography component="h1" variant="h5" fontWeight="bold" mb={1}>
-          Change your password
+          {t("titles.password_change")}
         </Typography>
 
         <FormContainer onSuccess={onSubmit} mode="onBlur">
           <PasswordElement
             required
             name="password"
-            label="Password"
+            label={t("user_info_labels.password_label")}
             fullWidth
             margin="normal"
             validation={{
               validate: (value: string) => {
                 return (
-                  isValidPassword(value) ||
-                  "A valid password must contain at least one letter, one number, and be 8-30 characters long."
+                  isValidPassword(value) || t("messages.password_validation")
                 );
               }
             }}
@@ -81,7 +83,7 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({
           <PasswordRepeatElement
             passwordFieldName="password"
             name="passwordConfirmation"
-            label="Repeat Password"
+            label={t("user_info_labels.repeat_password_label")}
             fullWidth
             margin="normal"
           />
@@ -94,7 +96,7 @@ const PasswordResetForm: React.FC<PasswordResetFormProps> = ({
               color="primary"
               sx={{ mt: 3, mb: 2 }}
             >
-              Change password
+              {t("buttons.change_password_button")}
             </Button>
           </Box>
         </FormContainer>

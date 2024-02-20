@@ -6,6 +6,7 @@ import api from "api/axios";
 import useToast from "hooks/useToast";
 import { useNavigate } from "react-router-dom";
 import { type TournamentType } from "types/models";
+import { useTranslation } from "react-i18next";
 import {
   Typography,
   Button,
@@ -61,6 +62,7 @@ const defaultValues: CreateTournamentFormData = {
 const CreateTournamentForm: React.FC = () => {
   const showToast = useToast();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const formContext = useForm<CreateTournamentFormData>({
     defaultValues,
     mode: "onBlur"
@@ -76,7 +78,10 @@ const CreateTournamentForm: React.FC = () => {
         startDate: data.startDate.toString(),
         endDate: data.endDate.toString()
       });
-      showToast(`Tournament '${data.name}' created successfully!`, "success");
+      showToast(
+        t("messages.creations_success", { name: data.name }),
+        "success"
+      );
       navigate(routePaths.homeRoute, {
         replace: true,
         state: { refresh: true }
@@ -95,17 +100,17 @@ const CreateTournamentForm: React.FC = () => {
     <Container component="main" maxWidth="xs">
       <Box display="flex" flexDirection="column" gap="5px" width="100%">
         <Typography variant="h5" className="header" fontWeight="bold">
-          Create a new tournament
+          {t("titles.create_tournament")}
         </Typography>
         <Typography variant="subtitle1" className="subtext">
-          Fill information below.
+          {t("create_tournament_form.info")}
         </Typography>
       </Box>
       <FormContainer defaultValues={defaultValues} formContext={formContext}>
         <TextFieldElement
           required
           name="name"
-          label="Tournament Name"
+          label={t("create_tournament_form.tournament_name")}
           fullWidth
           margin="normal"
         />
@@ -113,7 +118,7 @@ const CreateTournamentForm: React.FC = () => {
         <TextFieldElement
           required
           name="location"
-          label="Location"
+          label={t("create_tournament_form.location")}
           fullWidth
           margin="normal"
         />
@@ -122,14 +127,14 @@ const CreateTournamentForm: React.FC = () => {
           <DateTimePickerElement
             required
             name="startDate"
-            label="Start date time"
+            label={t("create_tournament_form.start_date_time")}
             minDateTime={now}
             format="DD/MM/YYYY HH:mm"
           />
           <DateTimePickerElement
             required
             name="endDate"
-            label="End date time"
+            label={t("create_tournament_form.end_date_time")}
             minDateTime={startDate}
             format="DD/MM/YYYY HH:mm"
           />
@@ -139,18 +144,21 @@ const CreateTournamentForm: React.FC = () => {
           required
           multiline
           name="description"
-          label="Description"
+          label={t("create_tournament_form.description")}
           fullWidth
           margin="normal"
         />
 
         <SelectElement
           required
-          label="Select tournament type"
+          label={t("create_tournament_form.select_tournament_type")}
           name="type"
           options={[
-            { id: "Round Robin", label: "Round Robin" },
-            { id: "Playoff", label: "Playoff" }
+            {
+              id: "Round Robin",
+              label: t("create_tournament_form.round_robin")
+            },
+            { id: "Playoff", label: t("create_tournament_form.playoff") }
           ]}
           fullWidth
           margin="normal"
@@ -160,14 +168,14 @@ const CreateTournamentForm: React.FC = () => {
           required
           name="maxPlayers"
           type="number"
-          label="Maximum number of players"
+          label={t("create_tournament_form.max_players")}
           fullWidth
           margin="normal"
           validation={{
             validate: (value: number) => {
               return (
                 value >= MIN_PLAYER_AMOUNT ||
-                `Minimum amount of players is ${MIN_PLAYER_AMOUNT}`
+                `${t("messages.minimum_players_error")}${MIN_PLAYER_AMOUNT}`
               );
             }
           }}
@@ -175,7 +183,7 @@ const CreateTournamentForm: React.FC = () => {
 
         <CheckboxElement
           name="differentOrganizer"
-          label="Organizer has different information than me"
+          label={t("create_tournament_form.different_organizer_info")}
           onChange={(e) => {
             formContext.resetField("organizerEmail");
             formContext.resetField("organizerTel");
@@ -189,7 +197,7 @@ const CreateTournamentForm: React.FC = () => {
               required
               name="organizerEmail"
               type="email"
-              label="Organizer's email"
+              label={t("create_tournament_form.organizer_email")}
               fullWidth
               margin="normal"
             />
@@ -198,13 +206,13 @@ const CreateTournamentForm: React.FC = () => {
               required
               name="organizerTel"
               type="tel"
-              label="Organizer's phone number"
+              label={t("create_tournament_form.organizer_phone_number")}
               fullWidth
               margin="normal"
               validation={{
                 validate: (value: string) => {
                   return (
-                    isValidPhone(value) || "Please enter a valid phone number"
+                    isValidPhone(value) || t("messages.phonenumber_validation")
                   );
                 }
               }}
@@ -222,7 +230,7 @@ const CreateTournamentForm: React.FC = () => {
             fullWidth
             sx={{ mt: 3, mb: 2 }}
           >
-            Create
+            {t("buttons.create_button")}
           </Button>
         </Box>
 
@@ -239,8 +247,7 @@ const CreateTournamentForm: React.FC = () => {
           </DialogTitle>
           <DialogContent>
             <Typography>
-              Are you sure you want to create the tournament with the provided
-              information?
+              {t("create_tournament_form.confirmation_message")}
             </Typography>
           </DialogContent>
           <DialogActions>
@@ -251,7 +258,7 @@ const CreateTournamentForm: React.FC = () => {
                 setConfirmationDialogOpen(false);
               }}
             >
-              Cancel
+              {t("buttons.cancel_button")}
             </Button>
             <Button
               type="submit"
@@ -259,7 +266,7 @@ const CreateTournamentForm: React.FC = () => {
               variant="contained"
               color="success"
             >
-              Confirm
+              {t("buttons.confirm_button")}
             </Button>
           </DialogActions>
         </Dialog>

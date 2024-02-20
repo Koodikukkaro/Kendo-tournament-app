@@ -6,27 +6,30 @@ import TableCell from "@mui/material/TableCell";
 import { type User } from "types/models";
 import TableContainer from "@mui/material/TableContainer";
 import Paper from "@mui/material/Paper";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   user?: User;
 }
 
 const UserInfoTable = ({ user }: Props): React.ReactElement => {
+  const { t } = useTranslation();
+
   const rows = {
     name: {
-      label: "Name:",
+      label: `${t("user_info_labels.name")}:`,
       value: `${user?.firstName} ${user?.lastName}` ?? "-"
     },
     email: {
-      label: "Email:",
+      label: `${t("user_info_labels.email_address")}:`,
       value: user?.email ?? "-"
     },
     club: {
-      label: "Club:",
+      label: `${t("user_info_labels.club")}:`,
       value: user?.clubName ?? "-"
     },
     rank: {
-      label: "Dan-rank:",
+      label: `${t("user_info_labels.dan_rank")}:`,
       value: user?.danRank ?? "-"
     }
   };
@@ -36,7 +39,7 @@ const UserInfoTable = ({ user }: Props): React.ReactElement => {
       <Table
         size="small"
         className="user-info-table"
-        aria-label="User Information"
+        aria-label={t("signup_labels.useer_info_table")}
       >
         <TableBody>
           {Object.values(rows).map((row, index) => (

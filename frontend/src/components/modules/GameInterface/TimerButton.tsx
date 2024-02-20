@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 interface TimerButtonProps {
   isTimerRunning: boolean;
@@ -10,13 +11,15 @@ const TimerButton: React.FC<TimerButtonProps> = ({
   isTimerRunning,
   handleTimerChange
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Button
       onClick={handleTimerChange}
       variant="contained"
       style={{ height: "40px", marginTop: "40px" }}
     >
-      {isTimerRunning ? "Stop" : "Start"}
+      {isTimerRunning ? t("buttons.start_timer") : t("buttons.stop_timer")}
     </Button>
   );
 };
