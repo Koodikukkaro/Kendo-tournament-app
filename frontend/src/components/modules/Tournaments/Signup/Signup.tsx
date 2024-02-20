@@ -6,6 +6,7 @@ import api from "api/axios";
 import type { User } from "types/models";
 import { useAuth } from "context/AuthContext";
 import { useTournament } from "context/TournamentContext";
+import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -23,6 +24,7 @@ const Signup: React.FC = (): ReactElement => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | undefined>();
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchUserData = async (): Promise<void> => {
@@ -47,7 +49,7 @@ const Signup: React.FC = (): ReactElement => {
       // eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
       await api.tournaments.signup(tournament.id, { playerId: userId! });
       showToast(
-        `Successfully signed up for tournament: ${tournament.name}`,
+        `${t("messages.sign_up_success")}${tournament.name}`,
         "success"
       );
       navigate(routePaths.homeRoute, {
@@ -73,7 +75,7 @@ const Signup: React.FC = (): ReactElement => {
           fontWeight="bold"
           marginBottom="12px"
         >
-          Sign Up for {tournament.name}
+          {t("signup_labels.sign_up_for")} {tournament.name}
         </Typography>
 
         <Typography variant="body1" className="dates">
@@ -84,19 +86,19 @@ const Signup: React.FC = (): ReactElement => {
 
       <Box className="sign-up-body">
         <Typography variant="body1" className="subtext">
-          Want more information on this tournament?{" "}
+          {t("signup_labels.want_more_info")}{" "}
           <Link
             component={RouterLink}
             to={`${routePaths.homeRoute}/${tournament.id}`}
           >
-            Click here
+            {t("signup_labels.click_here")}
           </Link>
         </Typography>
       </Box>
 
       <Box className="sign-up-body-2">
         <Typography variant="body1" className="subtext">
-          The information you are signing up with:
+          {t("signup_labels.user_info")}
         </Typography>
 
         {/* User info */}
@@ -115,7 +117,7 @@ const Signup: React.FC = (): ReactElement => {
           }}
           disabled={userId === undefined}
         >
-          Sign up
+          {t("buttons.sign_up_button")}
         </Button>
       </Box>
     </Container>

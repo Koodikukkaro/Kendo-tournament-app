@@ -5,6 +5,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 interface ErrorModalProps {
   open: boolean;
@@ -17,6 +18,8 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
   onClose,
   errorMessage
 }) => {
+  const { t } = useTranslation();
+
   return (
     <Dialog
       open={open}
@@ -24,13 +27,15 @@ const ErrorModal: React.FC<ErrorModalProps> = ({
       aria-labelledby="error-dialog-title"
       fullWidth
     >
-      <DialogTitle id="error-dialog-title">Unexpected error</DialogTitle>
+      <DialogTitle id="error-dialog-title">
+        {t("messages.unexpected_error")}
+      </DialogTitle>
       <DialogContent>
         <DialogContentText>{errorMessage}</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="primary">
-          close
+          {t("buttons.close_button")}
         </Button>
       </DialogActions>
     </Dialog>

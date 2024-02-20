@@ -17,6 +17,7 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 
 import type { NavigationItem, NavigationData } from "./navigation-bar";
 import { useAuth } from "context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   settings: NavigationData;
@@ -25,6 +26,7 @@ interface Props {
 const NavigationUserMenu: React.FC<Props> = (props) => {
   const { logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
     null
@@ -37,7 +39,7 @@ const NavigationUserMenu: React.FC<Props> = (props) => {
     navigationItem: NavigationItem
   ): Promise<void> => {
     setAnchorElUser(null);
-    if (navigationItem.text === "Logout") {
+    if (navigationItem.text === t("navigation.logout")) {
       await logout();
     }
 
@@ -48,7 +50,7 @@ const NavigationUserMenu: React.FC<Props> = (props) => {
     <>
       {/* User profile settings icon */}
       <Box sx={{ flexGrow: 0 }}>
-        <Tooltip title="Open settings">
+        <Tooltip title={t("navigation.openSettingsTooltip")}>
           <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
             <Avatar
               alt="user avatar" /* src="avatarimagefilepath" */

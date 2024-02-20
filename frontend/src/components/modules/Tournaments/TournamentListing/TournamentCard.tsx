@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 import Card from "@mui/material/Card";
 import { useAuth } from "context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 interface TournamentCardProps {
   tournament: Tournament;
@@ -18,6 +19,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
   tournament,
   type
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { userId } = useAuth();
   const userAlreadySigned = tournament.players.some(
@@ -37,12 +39,13 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
         />
         <CardContent sx={{ marginBottom: "32px" }}>
           <Typography color="text.secondary">
-            Start Date:{" "}
+            {t("frontpage_labels.start_date")}:{" "}
             {new Date(tournament.startDate).toLocaleDateString("fi")}
           </Typography>
 
           <Typography color="text.secondary">
-            End Date: {new Date(tournament.endDate).toLocaleDateString("fi")}
+            {t("frontpage_labels.end_date")}:{" "}
+            {new Date(tournament.endDate).toLocaleDateString("fi")}
           </Typography>
         </CardContent>
       </CardActionArea>
@@ -56,7 +59,7 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
           }}
           sx={{ position: "absolute", bottom: 10, right: 10 }}
         >
-          Sign up
+          {t("buttons.sign_up_button")}
         </Button>
       )}
     </Card>

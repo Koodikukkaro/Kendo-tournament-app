@@ -10,18 +10,18 @@ import routePaths from "routes/route-paths";
 
 export const baseNavItems: NavigationData = [
   {
-    text: "Home",
+    text: "navigation.home",
     link: routePaths.homeRoute
   }
 ];
 
 export const signupData: NavigationData = [
   {
-    text: "Login",
+    text: "navigation.login",
     link: routePaths.login
   },
   {
-    text: "Register",
+    text: "navigation.register",
     link: routePaths.register
   }
 ];
@@ -31,18 +31,18 @@ export const unAuthenticatedNavItems: NavigationData =
 
 export const authenticatedNavItems: NavigationData = baseNavItems.concat([
   {
-    text: "Profile",
+    text: "navigation.profile",
     link: routePaths.profile
   }
 ]);
 
 export const settings: NavigationData = [
   {
-    text: "Profile",
+    text: "navigation.profile",
     link: routePaths.profile
   },
   {
-    text: "Logout",
+    text: "navigation.logout",
     link: routePaths.logout
   }
 ];

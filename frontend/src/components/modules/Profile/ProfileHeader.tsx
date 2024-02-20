@@ -10,10 +10,12 @@ import { useAuth } from "context/AuthContext";
 import api from "api/axios";
 import ConfirmUserDeletionModal from "./ConfirmUserDeleteModal";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ProfileHeader: React.FC = () => {
   const showToast = useToast();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { userId, logout } = useAuth();
   const [isConfirmationDialogOpen, setConfirmationDialogOpen] = useState(false);
 
@@ -23,7 +25,7 @@ const ProfileHeader: React.FC = () => {
       // eslint-disable-next-line  @typescript-eslint/no-non-null-assertion
       await api.user.delete(userId!);
       await logout();
-      showToast("Your information has been deleted successfully", "success");
+      showToast(t("messages.deletion_success"), "success");
       navigate(routePaths.homeRoute, {
         replace: true,
         state: { refresh: true }
@@ -51,12 +53,12 @@ const ProfileHeader: React.FC = () => {
 
       <Box display="flex" flexDirection="column">
         <Typography component="h1" variant="h5" fontWeight="bold">
-          Profile info
+          {t("user_info_labels.profile_info")}
         </Typography>
 
         <Typography variant="body2">
           <Link component={RouterLink} to={routePaths.passwordReset}>
-            Change password
+            {t("user_info_labels.change_password")}
           </Link>
         </Typography>
       </Box>
@@ -71,7 +73,7 @@ const ProfileHeader: React.FC = () => {
         }}
         sx={{ alignSelf: "flex-end" }}
       >
-        Delete account
+        {t("buttons.delete_account_button")}
       </Button>
     </Box>
   );
