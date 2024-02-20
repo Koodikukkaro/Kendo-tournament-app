@@ -29,6 +29,9 @@ export interface Match {
   tournamentId: Types.ObjectId | Tournament;
   officials: Types.ObjectId[];
   tournamentRound: number;
+  timeKeeper?: Types.ObjectId;
+  pointMaker?: Types.ObjectId;
+  isTimerOn: boolean;
 }
 
 const pointSchema = new Schema<MatchPoint>(
@@ -84,7 +87,10 @@ const matchSchema = new Schema<Match>(
     tournamentRound: {
       type: Number,
       default: 1
-    }
+    },
+    timeKeeper: { type: Schema.Types.ObjectId, required: false },
+    pointMaker: { type: Schema.Types.ObjectId, required: false },
+    isTimerOn: { type: Boolean, required: true, default: false }
   },
   {
     toObject: {

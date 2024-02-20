@@ -103,6 +103,66 @@ export class MatchController extends Controller {
     io.to(matchId).emit("add-point", match);
   }
 
+  @Patch("{matchId}/add-timekeeper")
+  @Tags("Match")
+  @Security("jwt")
+  public async addTimeKeeperToMatch(
+    @Path() matchId: ObjectIdString,
+    @Body() request: { timeKeeperId: ObjectIdString }
+  ): Promise<void> {
+    this.setStatus(204);
+    const match = await this.service.addTimeKeeperToMatch(
+      matchId,
+      request.timeKeeperId
+    );
+
+    io.to(matchId).emit("add-timekeeper", match);
+  }
+  
+  @Patch("{matchId}/remove-timekeeper")
+  @Tags("Match")
+  @Security("jwt")
+  public async deleteTimeKeeperFromMatch(
+    @Path() matchId: ObjectIdString
+  ): Promise<void> {
+    this.setStatus(204);
+  
+    const match = await this.service.deleteTimeKeeperFromMatch(matchId);
+
+    io.to(matchId).emit("remove-timekeeper", match);
+  }
+  
+  
+  @Patch("{matchId}/add-pointmaker")
+  @Tags("Match")
+  @Security("jwt")
+  public async addPointMakerToMatch(
+    @Path() matchId: ObjectIdString,
+    @Body() request: { pointMakerId: ObjectIdString }
+  ): Promise<void> {
+    this.setStatus(204);
+  
+    const match = await this.service.addPointMakerToMatch(
+      matchId,
+      request.pointMakerId
+    );
+  
+    io.to(matchId).emit("add-pointmaker", match);
+  }
+  
+  @Patch("{matchId}/remove-pointmaker")
+  @Tags("Match")
+  @Security("jwt")
+  public async deletePointMakerFromMatch(
+    @Path() matchId: ObjectIdString
+  ): Promise<void> {
+    this.setStatus(204);
+  
+    const match = await this.service.deletePointMakerFromMatch(matchId);
+  
+    io.to(matchId).emit("remove-pointmaker", match);
+  }
+
   private get service(): MatchService {
     return new MatchService();
   }
