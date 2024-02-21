@@ -55,7 +55,8 @@
     "save_info_button": "Tallenna tiedot",
     "sign_up_button": "Ilmoittaudu",
     "register_button": "Rekisteröidy",
-    "create_button": "Luo"
+    "create_button": "Luo",
+    "save_button": "Tallenna"
   },
   "titles": {
     "login": "Kirjaudu sisään",

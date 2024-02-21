@@ -67,6 +67,7 @@ const GameInterface: React.FC = () => {
   const tournament = useTournament();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isError, setIsError] = useState<boolean>(false);
+  // state handlers for whether or not checkbox is checked
   const [timeKeeper, setTimeKeeper] = useState<boolean>(false);
   const [pointMaker, setPointMaker] = useState<boolean>(false);
 
@@ -280,15 +281,21 @@ const GameInterface: React.FC = () => {
   ): Promise<void> => {
     try {
       if (matchId !== undefined) {
+        // if checkbox is checked and no time keeper is set yet
         if (timeKeeper && matchInfo.timeKeeper === undefined) {
           await api.match.addTimekeeper(matchId, userId);
-        } else if (!timeKeeper && matchInfo.timeKeeper !== undefined) {
+        }
+        // if checkbox is not chcekd and time keeper is set
+        else if (!timeKeeper && matchInfo.timeKeeper !== undefined) {
           await api.match.removeTimekeeper(matchId, userId);
         }
 
+        // if checkbox is checked and no point maker is set yet
         if (pointMaker && matchInfo.pointMaker === undefined) {
           await api.match.addPointmaker(matchId, userId);
-        } else if (!pointMaker && matchInfo.pointMaker !== undefined) {
+        }
+        // if checkbox is not checked and point maker is set
+        else if (!pointMaker && matchInfo.pointMaker !== undefined) {
           await api.match.removePointmaker(matchId, userId);
         }
       }
@@ -301,6 +308,7 @@ const GameInterface: React.FC = () => {
     if (matchId !== undefined && userId !== undefined) {
       await apiRoleRequest(matchId, userId);
     }
+    // close popup on save press
     setOpenRoles(false);
   };
 
@@ -327,10 +335,12 @@ const GameInterface: React.FC = () => {
         )}
         {!isLoading && !isError && (
           <>
+            {/* button is shown until the match is started */}
             {userId !== null &&
               userId !== undefined &&
               matchInfo.startTimestamp === undefined && (
                 <>
+                  {/* button is disabled if both roles are checked and user is not one of them */}
                   <Button
                     variant="contained"
                     onClick={() => {
@@ -352,6 +362,8 @@ const GameInterface: React.FC = () => {
             <Dialog open={openRoles} onClose={handleCloseRoles}>
               <DialogTitle>{t("game_interface.select_role")}</DialogTitle>
               <DialogContent>
+                {/* checkbox is shown if there is no time keeper yet
+                  or if user is the time keeper */}
                 {(matchInfo.timeKeeper === undefined ||
                   matchInfo.timeKeeper === userId) && (
                   <FormControlLabel
@@ -366,6 +378,8 @@ const GameInterface: React.FC = () => {
                     label={t("game_interface.time_keeper")}
                   />
                 )}
+                {/* checkbox is shown if there is no point maker yet
+                  or if user is the point maker */}
                 {(matchInfo.pointMaker === undefined ||
                   matchInfo.pointMaker === userId) && (
                   <FormControlLabel
@@ -382,14 +396,16 @@ const GameInterface: React.FC = () => {
                 )}
               </DialogContent>
               <DialogActions>
-                <Button onClick={handleCloseRoles}>Cancel</Button>
-                <Button onClick={handleRoleSave}>Save</Button>
+                <Button onClick={handleCloseRoles}>{t("buttons.cancel_button")}</Button>
+                <Button onClick={handleRoleSave}>{t("buttons.save_button")}</Button>
               </DialogActions>
             </Dialog>
+            {/* elements shown only after match has started */}
             {userId !== null &&
               userId !== undefined &&
               matchInfo.startTimestamp !== undefined && (
                 <>
+                   {/* print time keeper and point maker names */}
                   <Typography variant="body2">
                     {t("game_interface.time_keeper")}:{" "}
                     {
@@ -419,6 +435,7 @@ const GameInterface: React.FC = () => {
             </Box>
             <Box display="flex" gap="20px" justifyContent="center">
               <Timer timer={timer} />
+              {/* timer button only shown to time keeper */}
               {userId !== null &&
                 userId !== undefined &&
                 matchInfo.winner === undefined &&
@@ -431,6 +448,7 @@ const GameInterface: React.FC = () => {
             </Box>
             <PointTable matchInfo={matchInfo} />
             <br></br>
+            {/* point buttons only shown to point maker */}
             {userId !== null &&
               userId !== undefined &&
               matchInfo.winner === undefined &&

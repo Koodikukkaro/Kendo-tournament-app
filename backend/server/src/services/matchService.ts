@@ -123,6 +123,7 @@ export class MatchService {
     // Reset the timer timestamp
     match.elapsedTime += elapsedMilliseconds;
     match.timerStartedTimestamp = null;
+    // Mark the timer to be off
     match.isTimerOn = false;
     await match.save();
 
@@ -175,6 +176,13 @@ export class MatchService {
       });
     }
 
+    if (match.winner !== undefined) {
+      throw new BadRequestError({
+        message: "Finished matches cannot be edited"
+      });
+    }
+
+    // Set the time keeper
     match.timeKeeper = new Types.ObjectId(timeKeeperId);
 
     await match.save();
@@ -194,6 +202,13 @@ export class MatchService {
       });
     }
 
+    if (match.winner !== undefined) {
+      throw new BadRequestError({
+        message: "Finished matches cannot be edited"
+      });
+    }
+
+    // Set the point maker
     match.pointMaker = new Types.ObjectId(pointMakerId);
 
     await match.save();
@@ -210,6 +225,13 @@ export class MatchService {
       });
     }
 
+    if (match.winner !== undefined) {
+      throw new BadRequestError({
+        message: "Finished matches cannot be edited"
+      });
+    }
+
+    // Remove time keeper's id
     match.timeKeeper = undefined;
 
     await match.save();
@@ -226,6 +248,13 @@ export class MatchService {
       });
     }
 
+    if (match.winner !== undefined) {
+      throw new BadRequestError({
+        message: "Finished matches cannot be edited"
+      });
+    }
+
+    // Remove point maker's id
     match.pointMaker = undefined;
 
     await match.save();

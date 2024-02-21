@@ -48,6 +48,8 @@ const Bracket: React.FC<BracketProps> = ({ match, players }) => {
     const timerPerson = match.timeKeeper ?? undefined;
     const pointMaker = match.pointMaker ?? undefined;
 
+    // depending on which roles are missing for the match, print them under button
+
     if (timerPerson === undefined && pointMaker === undefined) {
       officialsInfo.push(
         t("tournament_view_labels.missing_timer"),

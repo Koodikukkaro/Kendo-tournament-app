@@ -55,7 +55,8 @@
     "save_info_button": "Save info",
     "sign_up_button": "Sign up",
     "register_button": "Register",
-    "create_button": "Create"
+    "create_button": "Create",
+    "save_button": "Save"
   },
   "titles": {
     "login": "Sign in",

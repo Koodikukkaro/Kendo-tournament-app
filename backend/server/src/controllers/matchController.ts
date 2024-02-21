@@ -103,6 +103,9 @@ export class MatchController extends Controller {
     io.to(matchId).emit("add-point", match);
   }
 
+  /*
+  * Add a time keeper to the specified Kendo match
+  */
   @Patch("{matchId}/add-timekeeper")
   @Tags("Match")
   @Security("jwt")
@@ -119,6 +122,9 @@ export class MatchController extends Controller {
     io.to(matchId).emit("add-timekeeper", match);
   }
 
+  /*
+  * Remove the time keeper from the specified Kendo match
+  */
   @Patch("{matchId}/remove-timekeeper")
   @Tags("Match")
   @Security("jwt")
@@ -132,6 +138,9 @@ export class MatchController extends Controller {
     io.to(matchId).emit("remove-timekeeper", match);
   }
 
+  /*
+  * Add a point maker to the specified Kendo match
+  */
   @Patch("{matchId}/add-pointmaker")
   @Tags("Match")
   @Security("jwt")
@@ -148,7 +157,10 @@ export class MatchController extends Controller {
 
     io.to(matchId).emit("add-pointmaker", match);
   }
-
+  
+  /*
+  * Remove the point maker from the specified Kendo match
+  */
   @Patch("{matchId}/remove-pointmaker")
   @Tags("Match")
   @Security("jwt")

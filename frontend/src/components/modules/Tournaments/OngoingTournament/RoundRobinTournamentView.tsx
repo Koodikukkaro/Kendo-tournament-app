@@ -236,6 +236,7 @@ const RoundRobinTournamentView: React.FC = () => {
       const timerPerson = match.timeKeeper ?? undefined;
       const pointMaker = match.pointMaker ?? undefined;
 
+      // depending on which roles are missing for the match, print them under button
       if (timerPerson === undefined && pointMaker === undefined) {
         officialsInfo = t("tournament_view_labels.missing_both");
       } else {
