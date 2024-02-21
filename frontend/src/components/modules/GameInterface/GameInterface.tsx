@@ -222,11 +222,14 @@ const GameInterface: React.FC = () => {
   const handlePointShowing = async (): Promise<void> => {
     // Check if both time keeper and point maker roles are checked
     setOpenPoints(false);
-    if (!matchInfo.timeKeeper && !matchInfo.pointMaker) {
+    if (
+      matchInfo.timeKeeper === undefined &&
+      matchInfo.pointMaker === undefined
+    ) {
       showToast(t("messages.missing_both"), "error");
       return;
     }
-    if (!matchInfo.timeKeeper) {
+    if (matchInfo.timeKeeper === undefined) {
       showToast(t("messages.missing_timekeeper"), "error");
       return;
     }
@@ -281,11 +284,14 @@ const GameInterface: React.FC = () => {
 
   const handleTimerChange = async (): Promise<void> => {
     // Check if both time keeper and point maker roles are checked
-    if (!matchInfo.timeKeeper && !matchInfo.pointMaker) {
+    if (
+      matchInfo.timeKeeper === undefined &&
+      matchInfo.pointMaker === undefined
+    ) {
       showToast(t("messages.missing_both"), "error");
       return;
     }
-    if (!matchInfo.pointMaker) {
+    if (matchInfo.pointMaker === undefined) {
       showToast(t("messages.missing_pointmaker"), "error");
       return;
     }
@@ -415,8 +421,12 @@ const GameInterface: React.FC = () => {
                 )}
               </DialogContent>
               <DialogActions>
-                <Button onClick={handleCloseRoles}>{t("buttons.cancel_button")}</Button>
-                <Button onClick={handleRoleSave}>{t("buttons.save_button")}</Button>
+                <Button onClick={handleCloseRoles}>
+                  {t("buttons.cancel_button")}
+                </Button>
+                <Button onClick={handleRoleSave}>
+                  {t("buttons.save_button")}
+                </Button>
               </DialogActions>
             </Dialog>
             {/* elements shown only after match has started */}
@@ -424,7 +434,7 @@ const GameInterface: React.FC = () => {
               userId !== undefined &&
               matchInfo.startTimestamp !== undefined && (
                 <>
-                   {/* print time keeper and point maker names */}
+                  {/* print time keeper and point maker names */}
                   <Typography variant="body2">
                     {t("game_interface.time_keeper")}:{" "}
                     {
