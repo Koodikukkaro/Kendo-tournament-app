@@ -1,0 +1,168 @@
+{
+  "messages": {
+    "password_recovery": "Instructions to reset your password will be sent to you shortly. Please check your email.",
+    "unauthenticated_warning": "You need to login to view this content.",
+    "password_reset": "Your password was changed successfully!",
+    "error_retrieving_info": "There was an error retrieving your information. Please close this window and go back to the previous view.",
+    "update_success": "Your information has been updated successfully! Please refresh the page to see the changes.",
+    "password_validation": "A valid password must contain at least one letter, one number, and be 8-30 characters long.",
+    "deletion_success": "Your information has been deleted successfully",
+    "registration_success": "Registration successful!",
+    "phonenumber_validation": "Please enter a valid phone number",
+    "username_validation": "Username must be 4-20 characters long, start and end with a letter or number, and contain only letters, numbers, dots, or underscores with no consecutive dots or underscores.",
+    "unexpected_error_happened": "An unexpected error occurred!",
+    "sign_up_success": "Successfully signed up for tournament: ",
+    "minimum_players_error": "Minimum amount of players is ",
+  	"creations_success": "Tournament {{name}} created successfully",
+    "invalid_tournament_error": "This tournament seems to be invalid. Contact {{organizerEmail}} for more information about this tournament.",
+    "session_expired_message": "Session Expired: Your login session has expired for security reasons. Please log in again.",
+    "tournament_info_not_found": "No data was found for this tournament. Close this to go back to the previous view.",
+    "could_not_fetch_tournaments": "Could not fetch any tournaments",
+    "dismiss": "Dismiss",
+    "unexpected_error": "Unexpected error",
+    "login_successful": "Login successful!",
+    "logout_successful": "Logout successful!"
+  },
+  "game_interface": {
+    "player": "Player",
+    "wins": "wins!",
+    "dialog_title": "Select a point",
+    "point_types": {
+      "men": "Men",
+      "kote": "Kote",
+      "do": "Do",
+      "tsuki": "Tsuki",
+      "hansoku": "Hansoku"
+    }
+  },
+  "buttons": {
+    "add_point_player_1": "Add point for player 1",
+    "add_point_player_2": "Add point for player 2",
+    "ok_button": "OK",
+    "close_button": "Close",
+    "start_timer": "Start",
+    "stop_timer": "Stop",
+    "delete_account_button": "Delete account",
+    "change_password_button": "Change password",
+    "confirm_button": "Confirm",
+    "cancel_button": "Cancel",
+    "recover_button": "Recover Password",
+    "login_button": "Log in",
+    "edit_info_button": "Edit Info",
+    "save_info_button": "Save info",
+    "sign_up_button": "Sign up",
+    "register_button": "Register",
+    "create_button": "Create"
+  },
+  "titles": {
+    "login": "Sign in",
+    "password_recovery": "Recover your password",
+    "password_change": "Change your password",
+    "confirm_account_deletion": "Confirm Account Deletion",
+    "create_account": "Create an account",
+    "create_tournament": "Create a new tournament",
+    "confirm_tournament_creation": "Confirm tournament creation"
+  },
+  "login_form": {
+    "forgot_password": "Forgot password?",
+    "sign_up": "Don't have an account? Sign Up"
+  },
+  "password_recovery_form": {
+    "email_helper_text": "Enter your email and we’ll send you a link to reset your password"
+  },
+  "confirm_user_deletion_modal": {
+    "confirmation_message": "Are you sure you want to delete your account and all associated information?"
+  },
+  "user_info_labels": {
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "name": "Name",
+    "email_address": "Email Address",
+    "phone_number": "Phone Number",
+    "username": "Username",
+    "nationality": "Nationality",
+    "in_national_team": "I'm in the national team ring",
+    "dan_rank": "Dan Rank",
+    "club": "Club",
+    "suomisport_id": "Suomisport ID",
+    "password_label": "Password",
+    "repeat_password_label": "Repeat Password",
+    "underage": "I'm underage",
+    "guardians_email": "Guardian's Email Address",
+    "profile_info": "Profile info",
+    "change_password": "Change password"
+  },
+  "register_labels": {
+    "sign_in": "Sign In",
+    "field_required_notice": "Fill in the fields below. Fields marked with * are required.",
+    "already_have_account": "Already have an account?"
+  },
+  "tournament_view_labels": {
+    "final": "Final",
+    "round": "Round",
+    "scoreboard": "Scoreboard",
+    "matches": "Matches",
+    "ongoing_matches": "Ongoing matches:",
+    "upcoming_matches": "Upcoming matches:",
+    "past_matches": "Past matches:",
+    "name": "Name",
+    "wins": "Wins",
+    "losses": "Losses",
+    "points": "Points"
+  },
+  "signup_labels": {
+    "sign_up_for": "Sign Up for",
+    "want_more_info": "Want more information on this tournament?",
+    "click_here": "Click here",
+    "user_info": "The information you are signing up with:",
+    "user_info_table": "User Information",
+    "player_table": "Player Table"
+  },
+  "frontpage_labels": {
+    "ongoing_tournaments": "Ongoing Tournaments",
+    "upcoming_tournaments": "Upcoming Tournaments",
+    "past_tournaments": "Past Tournaments",
+    "create_tournament": "Create Tournament",
+    "no_tournaments_found": "No tournaments found.",
+    "start_date": "Start Date",
+    "end_date": "End Date"
+  },
+  "create_tournament_form": {
+    "info": "Fill information below.",
+    "tournament_name": "Tournament Name",
+    "location": "Location",
+    "start_date_time": "Start date time",
+    "end_date_time": "End date time",
+    "description": "Description",
+    "select_tournament_type": "Select tournament type",
+    "round_robin": "Round Robin",
+    "playoff": "Playoff",
+    "max_players": "Maximum number of players",
+    "different_organizer_info": "Organizer has different information than me",
+    "organizer_email": "Organizer's email",
+    "organizer_phone_number": "Organizer's phone number",
+    "confirmation_message": "Are you sure you want to create the tournament with the provided information?"
+  },
+  "upcoming_tournament_view": {
+    "date_header": "When",
+    "type_header": "Type of Tournament",
+    "about_header": "About the Tournament",
+    "attend_prompt": "Want to attend?",
+    "others_signed_up_header": "Others who have signed up",
+    "no_players_signed_up": "No players have signed up yet.",
+    "location_header": "Where",
+    "tournament_full": "This tournament is already full!"
+  },
+  "navigation": {
+    "back": "Back",
+    "home": "Home",
+    "login": "Login",
+    "register": "Register",
+    "profile": "Profile",
+    "logout": "Logout",
+    "appName": "KendoApp",
+    "openSettingsTooltip": "Open settings",
+    "about": "About",
+    "privacy_policy": "Privacy Policy"
+  }
+}

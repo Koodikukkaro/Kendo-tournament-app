@@ -10,6 +10,7 @@ import React, {
   useState
 } from "react";
 import { type LoginRequest } from "types/requests";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   children?: ReactNode;
@@ -30,6 +31,7 @@ const AuthContext = createContext<IAuthContext>({
 });
 
 export const AuthProvider = ({ children }: Props): ReactElement => {
+  const { t } = useTranslation();
   const showToast = useToast();
   const [userId, setUserId] = useState<string | undefined>();
   const [loading, setLoading] = useState(true);
@@ -54,13 +56,13 @@ export const AuthProvider = ({ children }: Props): ReactElement => {
   const login = async (payload: LoginRequest): Promise<void> => {
     const { userId } = await api.auth.login(payload);
     setUserId(userId);
-    showToast("Login successful!", "success");
+    showToast(t("messages.login_successful"), "success");
   };
 
   const logout = async (): Promise<void> => {
     await api.auth.logout();
     setUserId(undefined);
-    showToast("Logout successful!", "success");
+    showToast(t("messages.logout_successful"), "success");
   };
 
   const contextValue = useMemo(

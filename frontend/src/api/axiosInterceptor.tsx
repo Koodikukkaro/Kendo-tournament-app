@@ -5,6 +5,7 @@ import useToast from "hooks/useToast";
 import type { AxiosRequestConfig, AxiosError, AxiosResponse } from "axios";
 import { type ApiErrorResponse } from "types/responses";
 import routePaths from "routes/route-paths";
+import { useTranslation } from "react-i18next";
 
 /**
  * Component responsible for setting up a response interceptor
@@ -21,6 +22,8 @@ const InterceptorSetup = (): null => {
   const location = useLocation();
   const showToast = useToast();
 
+  const { t } = useTranslation();
+
   const handleTokenExpiration = async (
     originalRequest?: AxiosRequestConfig
   ): Promise<void> => {
@@ -33,10 +36,7 @@ const InterceptorSetup = (): null => {
         ? await axiosInstance(originalRequest)
         : await Promise.resolve();
     } catch (error) {
-      showToast(
-        "Session Expired: Your login session has expired for security reasons. Please log in again.",
-        "error"
-      );
+      showToast(t("messages.session_expired_message"), "error");
 
       // If token refresh fails, redirect the user to the login page, but store the state they were.
       // This way we can redirect them back to where they left.

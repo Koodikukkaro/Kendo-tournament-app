@@ -10,6 +10,7 @@ import EditButtonRow from "./EditInfoButtonRow";
 import ProfileHeader from "./ProfileHeader";
 import type { EditUserRequest } from "types/requests";
 import routePaths from "routes/route-paths";
+import { useTranslation } from "react-i18next";
 
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
@@ -41,6 +42,7 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
   const showToast = useToast();
   const { userId } = useAuth();
+  const { t } = useTranslation();
 
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
@@ -84,9 +86,7 @@ const Profile: React.FC = () => {
         onClose={() => {
           navigate(routePaths.homeRoute);
         }}
-        errorMessage={
-          "There was an error retrieveing your information. Close this to go back to the previous view."
-        }
+        errorMessage={t("messages.error_retrieving_info")}
       />
     );
   }
@@ -94,10 +94,7 @@ const Profile: React.FC = () => {
   const onSubmit = async (data: EditUserRequest): Promise<void> => {
     try {
       await api.user.update(userId, data);
-      showToast(
-        "Your information has been updated successfully! Please refresh the page to see the changes.",
-        "success"
-      );
+      showToast(t("messages.update_success"), "success");
     } catch (error) {
       showToast(error, "error");
     }
@@ -125,7 +122,7 @@ const Profile: React.FC = () => {
                 required
                 fullWidth
                 name="firstName"
-                label="First Name"
+                label={t("user_info_labels.first_name")}
                 margin="normal"
                 disabled={!editingEnabled}
               />
@@ -135,7 +132,7 @@ const Profile: React.FC = () => {
                 required
                 fullWidth
                 name="lastName"
-                label="Last Name"
+                label={t("user_info_labels.last_name")}
                 margin="normal"
                 disabled={!editingEnabled}
               />
@@ -145,7 +142,7 @@ const Profile: React.FC = () => {
           <TextFieldElement
             required
             name="email"
-            label="Email Address"
+            label={t("user_info_labels.email_address")}
             type="email"
             fullWidth
             margin="normal"
@@ -155,7 +152,7 @@ const Profile: React.FC = () => {
           <TextFieldElement
             required
             name="phoneNumber"
-            label="Phone Number"
+            label={t("user_info_labels.phone_number")}
             type="tel"
             fullWidth
             margin="normal"
@@ -163,7 +160,7 @@ const Profile: React.FC = () => {
             validation={{
               validate: (value: string) => {
                 return (
-                  isValidPhone(value) || "Please enter a valid phone number"
+                  isValidPhone(value) || t("messages.phonenumber_validation")
                 );
               }
             }}
@@ -171,15 +168,14 @@ const Profile: React.FC = () => {
 
           <TextFieldElement
             name="userName"
-            label="Username"
+            label={t("user_info_labels.username")}
             fullWidth
             margin="normal"
             disabled={!editingEnabled}
             validation={{
               validate: (value: string) => {
                 return (
-                  isValidUsername(value) ||
-                  "Username must be 4-20 characters long, start and end with a letter or number, and contain only letters, numbers, dots, or underscores with no consecutive dots or underscores."
+                  isValidUsername(value) || t("messages.username_validation")
                 );
               }
             }}
@@ -187,7 +183,7 @@ const Profile: React.FC = () => {
 
           <TextFieldElement
             name="nationality"
-            label="Nationality"
+            label={t("user_info_labels.nationality")}
             fullWidth
             margin="normal"
             disabled={!editingEnabled}
@@ -195,13 +191,13 @@ const Profile: React.FC = () => {
 
           <CheckboxElement
             name="inNationalTeam"
-            label="I'm in the national team ring"
+            label={t("user_info_labels.in_national_team")}
             disabled={!editingEnabled}
           />
 
           <TextFieldElement
             name="rank"
-            label="Dan Rank"
+            label={t("user_info_labels.dan_rank")}
             fullWidth
             margin="normal"
             disabled={!editingEnabled}
@@ -209,7 +205,7 @@ const Profile: React.FC = () => {
 
           <TextFieldElement
             name="club"
-            label="Club"
+            label={t("user_info_labels.club")}
             fullWidth
             margin="normal"
             disabled={!editingEnabled}
@@ -217,7 +213,7 @@ const Profile: React.FC = () => {
 
           <TextFieldElement
             name="suomisport"
-            label="Suomisport ID"
+            label={t("user_info_labels.suomisport_id")}
             fullWidth
             margin="normal"
             disabled={!editingEnabled}
@@ -225,7 +221,7 @@ const Profile: React.FC = () => {
 
           <CheckboxElement
             name="underage"
-            label="I'm underage"
+            label={t("user_info_labels.underage")}
             disabled={!editingEnabled}
             onChange={(e) => {
               formContext.resetField("guardiansEmail");
@@ -236,7 +232,7 @@ const Profile: React.FC = () => {
             <TextFieldElement
               required
               name="guardiansEmail"
-              label="Guardian's Email Address"
+              label={t("user_info_labels.guardians_email")}
               type="email"
               fullWidth
               margin="normal"

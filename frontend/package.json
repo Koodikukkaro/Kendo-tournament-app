@@ -65,11 +65,13 @@
     "dotenv": "^16.3.1",
     "dotenv-webpack": "^8.0.1",
     "eslint-webpack-plugin": "^4.0.1",
+    "i18next": "^23.9.0",
     "notistack": "^3.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.48.2",
     "react-hook-form-mui": "^6.7.1",
+    "react-i18next": "^14.0.5",
     "react-router-dom": "^6.17.0",
     "socket.io-client": "^4.7.2"
   }

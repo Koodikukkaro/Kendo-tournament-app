@@ -8,6 +8,7 @@ import Typography from "@mui/material/Typography";
 import CardContent from "@mui/material/CardContent";
 import Card from "@mui/material/Card";
 import { useAuth } from "context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 interface TournamentCardProps {
   tournament: Tournament;
@@ -18,11 +19,13 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
   tournament,
   type
 }) => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { userId } = useAuth();
   const userAlreadySigned = tournament.players.some(
     (player) => player.id === userId
   );
+  const tournamentFull = tournament.maxPlayers <= tournament.players.length;
 
   return (
     <Card component="main" sx={{ position: "relative" }}>
@@ -36,13 +39,19 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
           titleTypographyProps={{ fontWeight: "500" }}
         />
         <CardContent sx={{ marginBottom: "32px" }}>
+          {tournamentFull && type === "upcoming" && (
+            <Typography variant="subtitle1" marginBottom="32px">
+              {t("upcoming_tournament_view.tournament_full")}
+            </Typography>
+          )}
           <Typography color="text.secondary">
-            Start Date:{" "}
+            {t("frontpage_labels.start_date")}:{" "}
             {new Date(tournament.startDate).toLocaleDateString("fi")}
           </Typography>
 
           <Typography color="text.secondary">
-            End Date: {new Date(tournament.endDate).toLocaleDateString("fi")}
+            {t("frontpage_labels.end_date")}:{" "}
+            {new Date(tournament.endDate).toLocaleDateString("fi")}
           </Typography>
         </CardContent>
       </CardActionArea>
@@ -50,13 +59,13 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
         <Button
           color="primary"
           variant="outlined"
-          disabled={userAlreadySigned}
+          disabled={userAlreadySigned || tournamentFull}
           onClick={() => {
             navigate(`${tournament.id}/sign-up`);
           }}
           sx={{ position: "absolute", bottom: 10, right: 10 }}
         >
-          Sign up
+          {t("buttons.sign_up_button")}
         </Button>
       )}
     </Card>

@@ -6,6 +6,7 @@ import { Typography, Box, Grid, Divider } from "@mui/material";
 import ErrorModal from "components/common/ErrorModal";
 import { useNavigate } from "react-router-dom";
 import routePaths from "routes/route-paths";
+import { useTranslation } from "react-i18next";
 
 interface Rounds extends Record<number, Match[]> {}
 
@@ -13,6 +14,8 @@ const PlayoffTournamentView: React.FC = () => {
   const { matchSchedule, players } = useTournament();
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+
+  const { t } = useTranslation();
 
   // Calculate the total number of rounds, assuming it's a single-elimination tournament
   const totalRounds = Math.ceil(Math.log2(players.length));
@@ -74,8 +77,8 @@ const PlayoffTournamentView: React.FC = () => {
                     }}
                   >
                     {parseInt(roundNumber) === totalRounds
-                      ? "Final"
-                      : `Round ${roundNumber}`}
+                      ? t("tournament_view_labels.final")
+                      : `${t("tournament_view_labels.round")} ${roundNumber}`}
                   </Typography>
                   {matches.map((match: Match) => {
                     const tempPlayers: User[] = match.players.map(
@@ -108,7 +111,7 @@ const PlayoffTournamentView: React.FC = () => {
     if (e instanceof Error) {
       setError(e.message);
     } else {
-      setError("An unexpected error occurred!");
+      setError(t("messages.unexpected_error_happened"));
     }
   }
 };

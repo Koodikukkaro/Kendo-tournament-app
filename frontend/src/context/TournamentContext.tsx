@@ -10,6 +10,7 @@ import { useTournaments } from "./TournamentsContext";
 import Loader from "components/common/Loader";
 import ErrorModal from "components/common/ErrorModal";
 import routePaths from "routes/route-paths";
+import { useTranslation } from "react-i18next";
 
 /*
  * Child provider for singular tournament components.
@@ -17,6 +18,7 @@ import routePaths from "routes/route-paths";
  * and passing it to the child component(s).
  * */
 export const TournamentProvider = (): ReactElement => {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const { upcoming, ongoing, past, isLoading, isError } = useTournaments();
@@ -47,9 +49,7 @@ export const TournamentProvider = (): ReactElement => {
         onClose={() => {
           navigate(routePaths.homeRoute);
         }}
-        errorMessage={
-          "No data was found for this tournament. Close this to go back to the previous view."
-        }
+        errorMessage={t("messages.tournament_info_not_found")}
       />
     );
   }

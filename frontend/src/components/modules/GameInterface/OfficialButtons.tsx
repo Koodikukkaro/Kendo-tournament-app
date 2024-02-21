@@ -9,6 +9,7 @@ import {
   Button,
   Box
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 interface AddPointDialogProps {
   open: boolean;
@@ -27,6 +28,8 @@ const OfficialButtons: React.FC<AddPointDialogProps> = ({
   handleOpen,
   handleClose
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div>
       <Box display="flex" gap="20px" justifyContent="center">
@@ -36,7 +39,7 @@ const OfficialButtons: React.FC<AddPointDialogProps> = ({
           }}
           variant="contained"
         >
-          Add point for player 1
+          {t("buttons.add_point_player_1")}
         </Button>
         <Button
           onClick={() => {
@@ -44,11 +47,11 @@ const OfficialButtons: React.FC<AddPointDialogProps> = ({
           }}
           variant="contained"
         >
-          Add point for player 2
+          {t("buttons.add_point_player_2")}
         </Button>
       </Box>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Select a Point</DialogTitle>
+        <DialogTitle>{t("game_interface.dialog_title")}</DialogTitle>
         <DialogContent>
           <RadioGroup
             aria-label="point"
@@ -68,7 +71,7 @@ const OfficialButtons: React.FC<AddPointDialogProps> = ({
             }}
             disabled={selectedButton === ""}
           >
-            OK
+            {t("buttons.ok_button")}
           </Button>
         </DialogContent>
       </Dialog>
