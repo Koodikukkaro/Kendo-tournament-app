@@ -33,7 +33,10 @@
       "do": "Do",
       "tsuki": "Tsuki",
       "hansoku": "Hansoku"
-    }
+    },
+    "select_role": "Select role as an official",
+    "time_keeper": "Time keeper",
+    "point_maker": "Point maker"
   },
   "buttons": {
     "add_point_player_1": "Add point for player 1",

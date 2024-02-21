@@ -343,14 +343,14 @@ const GameInterface: React.FC = () => {
                       matchInfo.pointMaker !== userId
                     }
                   >
-                    Assign Roles
+                    {t("game_interface.select_role")}
                   </Button>
                   <br />
                   <br />
                 </>
               )}
             <Dialog open={openRoles} onClose={handleCloseRoles}>
-              <DialogTitle>Assign Roles</DialogTitle>
+              <DialogTitle>{t("game_interface.select_role")}</DialogTitle>
               <DialogContent>
                 {(matchInfo.timeKeeper === undefined ||
                   matchInfo.timeKeeper === userId) && (
@@ -363,7 +363,7 @@ const GameInterface: React.FC = () => {
                         }}
                       />
                     }
-                    label="Time Keeper"
+                    label={t("game_interface.time_keeper")}
                   />
                 )}
                 {(matchInfo.pointMaker === undefined ||
@@ -377,7 +377,7 @@ const GameInterface: React.FC = () => {
                         }}
                       />
                     }
-                    label="Point Maker"
+                    label={t("game_interface.point_maker")}
                   />
                 )}
               </DialogContent>
@@ -391,14 +391,14 @@ const GameInterface: React.FC = () => {
               matchInfo.startTimestamp !== undefined && (
                 <>
                   <Typography variant="body2">
-                    Time keeper:{" "}
+                    {t("game_interface.time_keeper")}:{" "}
                     {
                       tournament.players.find(
                         (p) => p.id === matchInfo.timeKeeper
                       )?.firstName
                     }
                     <br />
-                    Point maker:{" "}
+                    {t("game_interface.point_maker")}:{" "}
                     {
                       tournament.players.find(
                         (p) => p.id === matchInfo.pointMaker

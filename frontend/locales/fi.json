@@ -33,7 +33,10 @@
       "do": "Do",
       "tsuki": "Tsuki",
       "hansoku": "Hansoku"
-    }
+    },
+    "select_role": "Valitse toimitsijarooli",
+    "time_keeper": "Kellokalle",
+    "point_maker": "Pistevastaava"
   },
   "buttons": {
     "add_point_player_1": "Lisää piste pelaajalle 1",
