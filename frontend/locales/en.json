@@ -13,7 +13,7 @@
     "unexpected_error_happened": "An unexpected error occurred!",
     "sign_up_success": "Successfully signed up for tournament: ",
     "minimum_players_error": "Minimum amount of players is ",
-  	"creations_success": "Tournament {{name}} created successfully",
+    "creations_success": "Tournament {{name}} created successfully",
     "invalid_tournament_error": "This tournament seems to be invalid. Contact {{organizerEmail}} for more information about this tournament.",
     "session_expired_message": "Session Expired: Your login session has expired for security reasons. Please log in again.",
     "tournament_info_not_found": "No data was found for this tournament. Close this to go back to the previous view.",
@@ -164,5 +164,13 @@
     "openSettingsTooltip": "Open settings",
     "about": "About",
     "privacy_policy": "Privacy Policy"
+  },
+  "sorting": {
+    "orderBy": "Order By: ",
+    "mostRecent": "Most recent",
+    "oldest": "Oldest",
+    "name": "Name A-Ö",
+    "nameDesc": "Name Ö-Ä",
+    "location": "Location"
   }
 }

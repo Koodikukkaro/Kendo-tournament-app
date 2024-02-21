@@ -164,5 +164,13 @@
     "openSettingsTooltip": "Avaa asetukset",
     "about": "About-sivu",
     "privacy_policy": "Yksityisyyskäytäntö"
+  },
+  "sorting": {
+    "orderBy": "Järjestä: ",
+    "mostRecent": "Uusin",
+    "oldest": "Vanhin",
+    "name": "Nimi A-Ö",
+    "nameDesc": "Nimi Ö-Ä",
+    "location": "Sijainti"
   }
 }
