@@ -108,6 +108,7 @@
     "name": "Nimi",
     "wins": "Voitot",
     "losses": "Tappiot",
+    "ties": "Tasapelit",
     "points": "Pisteet"
   },
   "signup_labels": {

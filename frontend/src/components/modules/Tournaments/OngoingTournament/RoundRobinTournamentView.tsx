@@ -47,17 +47,14 @@ const Scoreboard: React.FC<{ players: TournamentPlayer[] }> = ({ players }) => {
   const generateTable = (): React.ReactNode => {
     const sortedPlayers = [...players].sort((a, b) => b.points - a.points);
 
-<<<<<<< HEAD
-    const tableHeaders = ["Name", "Wins", "Losses", "Ties", "Points"];
-=======
     const tableHeaders = [
       t("tournament_view_labels.name"),
       t("tournament_view_labels.wins"),
       t("tournament_view_labels.losses"),
+      t("tournament_view_labels.ties"),
       t("tournament_view_labels.points")
     ];
 
->>>>>>> development
     return (
       <TableContainer component={Paper}>
         <Table>

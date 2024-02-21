@@ -108,6 +108,7 @@
     "name": "Name",
     "wins": "Wins",
     "losses": "Losses",
+    "ties": "Ties",
     "points": "Points"
   },
   "signup_labels": {
