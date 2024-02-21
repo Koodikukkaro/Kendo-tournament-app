@@ -15,6 +15,7 @@ import CreateTournamentForm from "components/modules/Tournaments/CreateTournamen
 import Signup from "components/modules/Tournaments/Signup/Signup";
 import TournamentDetails from "components/modules/Tournaments/TournamentDetails";
 import TournamentList from "components/modules/Tournaments/TournamentListing/TournamentsList";
+import PastTournamentMatches from "components/modules/Tournaments/PastTournamentMatches";
 import { TournamentsProvider } from "context/TournamentsContext";
 import { TournamentProvider } from "context/TournamentContext";
 import RootRoute from "./RootRoute";
@@ -28,6 +29,11 @@ const routes = createRoutesFromElements(
     <Route element={<Layout />}>
       <Route path={routePaths.tournaments} element={<TournamentsProvider />}>
         <Route index element={<TournamentList />} />
+
+        <Route
+          path="past-tournament/:tournamentId"
+          element={<PastTournamentMatches />}
+        />
 
         <Route element={<AuthenticationGuard />}>
           <Route path="new-tournament" element={<CreateTournamentForm />} />

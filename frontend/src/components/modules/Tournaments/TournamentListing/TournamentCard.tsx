@@ -31,7 +31,11 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
     <Card component="main" sx={{ position: "relative" }}>
       <CardActionArea
         onClick={() => {
-          navigate(tournament.id);
+          if (type === "past") {
+            navigate(`past-tournament/${tournament.id}`);
+          } else {
+            navigate(tournament.id);
+          }
         }}
       >
         <CardHeader
@@ -44,15 +48,25 @@ const TournamentCard: React.FC<TournamentCardProps> = ({
               {t("upcoming_tournament_view.tournament_full")}
             </Typography>
           )}
-          <Typography color="text.secondary">
-            {t("frontpage_labels.start_date")}:{" "}
-            {new Date(tournament.startDate).toLocaleDateString("fi")}
-          </Typography>
-
-          <Typography color="text.secondary">
-            {t("frontpage_labels.end_date")}:{" "}
-            {new Date(tournament.endDate).toLocaleDateString("fi")}
-          </Typography>
+          {(type === "ongoing" || type === "upcoming") && (
+            <Typography color="text.secondary">
+              {t("frontpage_labels.start_date")}:{" "}
+              {new Date(tournament.startDate).toLocaleDateString("fi")}
+            </Typography>
+          )}
+          {(type === "ongoing" || type === "upcoming") && (
+            <Typography color="text.secondary">
+              {t("frontpage_labels.end_date")}:{" "}
+              {new Date(tournament.endDate).toLocaleDateString("fi")}
+            </Typography>
+          )}
+          {type === "past" && (
+            <Typography color="text.secondary">
+              {tournament.location},
+              {new Date(tournament.startDate).toLocaleDateString("fi")} -
+              {new Date(tournament.endDate).toLocaleDateString("fi")}
+            </Typography>
+          )}
         </CardContent>
       </CardActionArea>
       {type === "upcoming" && (
