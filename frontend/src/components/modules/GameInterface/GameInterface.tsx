@@ -220,7 +220,17 @@ const GameInterface: React.FC = () => {
   };
 
   const handlePointShowing = async (): Promise<void> => {
+    // Check if both time keeper and point maker roles are checked
     setOpenPoints(false);
+    if (!matchInfo.timeKeeper && !matchInfo.pointMaker) {
+      showToast(t("messages.missing_both"), "error");
+      return;
+    }
+    if (!matchInfo.timeKeeper) {
+      showToast(t("messages.missing_timekeeper"), "error");
+      return;
+    }
+
     if (matchId !== undefined) {
       if (matchInfo.isTimerOn) {
         await apiTimerRequest(matchId);
@@ -270,6 +280,15 @@ const GameInterface: React.FC = () => {
   };
 
   const handleTimerChange = async (): Promise<void> => {
+    // Check if both time keeper and point maker roles are checked
+    if (!matchInfo.timeKeeper && !matchInfo.pointMaker) {
+      showToast(t("messages.missing_both"), "error");
+      return;
+    }
+    if (!matchInfo.pointMaker) {
+      showToast(t("messages.missing_pointmaker"), "error");
+      return;
+    }
     if (matchId !== undefined) {
       await apiTimerRequest(matchId);
     }

@@ -21,7 +21,10 @@
     "dismiss": "Sulje",
     "unexpected_error": "Odottamaton virhe.",
     "login_successful": "Kirjautuminen onnistui!",
-    "logout_successful": "Uloskirjautuminen onnistui!"
+    "logout_successful": "Uloskirjautuminen onnistui!",
+    "missing_both": "Matsilta puuttuu molemmat toimitsijat!",
+    "missing_pointmaker": "Matsilta puuttuu pistevastaava!",
+    "missing_timekeeper": "Matsilta puuttuu kellokalle!"
   },
   "game_interface": {
     "player": "Pelaaja",

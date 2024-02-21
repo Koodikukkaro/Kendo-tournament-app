@@ -21,7 +21,10 @@
     "dismiss": "Dismiss",
     "unexpected_error": "Unexpected error",
     "login_successful": "Login successful!",
-    "logout_successful": "Logout successful!"
+    "logout_successful": "Logout successful!",
+    "missing_both": "Match is missing both officials!",
+    "missing_pointmaker": "Match is missing a point maker!",
+    "missing_timekeeper": "Match is missing a time keeper!"
   },
   "game_interface": {
     "player": "Player",
