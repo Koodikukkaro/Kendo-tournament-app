@@ -243,7 +243,7 @@ const CreateTournamentForm: React.FC = () => {
           aria-describedby="confirmation-dialog-description"
         >
           <DialogTitle id="confirmation-dialog-title">
-            Confirm tournament creation
+            {t("titles.confirm_tournament_creation")}
           </DialogTitle>
           <DialogContent>
             <Typography>

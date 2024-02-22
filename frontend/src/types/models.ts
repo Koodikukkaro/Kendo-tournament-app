@@ -44,6 +44,9 @@ export interface Match {
   tournamentId: string;
   officials: string[];
   tournamentRound: number;
+  timeKeeper?: string;
+  pointMaker?: string;
+  isTimerOn: boolean;
 }
 
 export interface Tournament {

@@ -21,7 +21,10 @@
     "dismiss": "Dismiss",
     "unexpected_error": "Unexpected error",
     "login_successful": "Login successful!",
-    "logout_successful": "Logout successful!"
+    "logout_successful": "Logout successful!",
+    "missing_both": "Match is missing both officials!",
+    "missing_pointmaker": "Match is missing a point maker!",
+    "missing_timekeeper": "Match is missing a time keeper!"
   },
   "game_interface": {
     "player": "Player",
@@ -33,7 +36,10 @@
       "do": "Do",
       "tsuki": "Tsuki",
       "hansoku": "Hansoku"
-    }
+    },
+    "select_role": "Select role as an official",
+    "time_keeper": "Time keeper",
+    "point_maker": "Point maker"
   },
   "buttons": {
     "add_point_player_1": "Add point for player 1",
@@ -52,7 +58,8 @@
     "save_info_button": "Save info",
     "sign_up_button": "Sign up",
     "register_button": "Register",
-    "create_button": "Create"
+    "create_button": "Create",
+    "save_button": "Save"
   },
   "titles": {
     "login": "Sign in",
@@ -108,7 +115,11 @@
     "name": "Name",
     "wins": "Wins",
     "losses": "Losses",
-    "points": "Points"
+    "points": "Points",
+    "missing_both": "Missing: Time keeper and point maker",
+    "missing_timer": "Missing: Time keeper",
+    "missing_point_maker": "Missing: Point maker",
+    "missing_and": "and point maker"
   },
   "signup_labels": {
     "sign_up_for": "Sign Up for",

@@ -13,7 +13,7 @@
     "unexpected_error_happened": "Tapahtui odottamaton virhe!",
     "sign_up_success": "Ilmoittautuduttiin onnistuneesti turnaukseen: ",
     "minimum_players_error": "Pelaajien vähimmäismäärä on ",
-    "creation_success": "Turnaus {{name}} luotiin onnistuneesti",
+    "creations_success": "Turnaus {{name}} luotiin onnistuneesti",
     "invalid_tournament_error": "Tämä turnaus vaikuttaa virheelliseltä. Ota yhteyttä {{organizerEmail}} saadaksesi lisätietoja tästä turnauksesta.",
     "session_expired_message": "Istunto vanhentunut: Kirjautumissessiosi on vanhentunut turvallisuussyistä. Kirjaudu sisään uudelleen.",
     "tournament_info_not_found": "Tälle turnaukselle ei löytynyt tietoja. Sulje tämä ja palaa edelliseen näkymään.",
@@ -21,7 +21,10 @@
     "dismiss": "Sulje",
     "unexpected_error": "Odottamaton virhe.",
     "login_successful": "Kirjautuminen onnistui!",
-    "logout_successful": "Uloskirjautuminen onnistui!"
+    "logout_successful": "Uloskirjautuminen onnistui!",
+    "missing_both": "Matsilta puuttuu molemmat toimitsijat!",
+    "missing_pointmaker": "Matsilta puuttuu pistevastaava!",
+    "missing_timekeeper": "Matsilta puuttuu kellokalle!"
   },
   "game_interface": {
     "player": "Pelaaja",
@@ -33,7 +36,10 @@
       "do": "Do",
       "tsuki": "Tsuki",
       "hansoku": "Hansoku"
-    }
+    },
+    "select_role": "Valitse toimitsijarooli",
+    "time_keeper": "Kellokalle",
+    "point_maker": "Pistevastaava"
   },
   "buttons": {
     "add_point_player_1": "Lisää piste pelaajalle 1",
@@ -52,7 +58,8 @@
     "save_info_button": "Tallenna tiedot",
     "sign_up_button": "Ilmoittaudu",
     "register_button": "Rekisteröidy",
-    "create_button": "Luo"
+    "create_button": "Luo",
+    "save_button": "Tallenna"
   },
   "titles": {
     "login": "Kirjaudu sisään",
@@ -108,7 +115,11 @@
     "name": "Nimi",
     "wins": "Voitot",
     "losses": "Tappiot",
-    "points": "Pisteet"
+    "points": "Pisteet",
+    "missing_both": "Puuttuu: kellokalle ja pistevastaava",
+    "missing_timer": "Puuttuu: kellokalle",
+    "missing_point_maker": "Puuttuu: pistevastaava",
+    "missing_and": "ja pistevastaava"
   },
   "signup_labels": {
     "sign_up_for": "Ilmoittaudu: ",

@@ -10,7 +10,7 @@ import {
   type CreateMatchRequest,
   type AddPointRequest
 } from "../models/requestModel.js";
-import { type Types } from "mongoose";
+import { Types } from "mongoose";
 import { TournamentModel, TournamentType } from "../models/tournamentModel.js";
 
 // Note by Samuel:
@@ -24,7 +24,9 @@ export class MatchService {
       type: requestBody.matchType,
       players: requestBody.players,
       comment: requestBody.comment,
-      officials: requestBody.officials
+      officials: requestBody.officials,
+      timeKeeper: requestBody.timeKeeper,
+      pointMaker: requestBody.pointMaker
     });
 
     return await newMatch.toObject();
@@ -81,6 +83,7 @@ export class MatchService {
 
     // Mark the timer as started
     match.timerStartedTimestamp = new Date();
+    match.isTimerOn = true;
 
     await match.save();
 
@@ -120,6 +123,8 @@ export class MatchService {
     // Reset the timer timestamp
     match.elapsedTime += elapsedMilliseconds;
     match.timerStartedTimestamp = null;
+    // Mark the timer to be off
+    match.isTimerOn = false;
     await match.save();
 
     return await match.toObject();
@@ -153,6 +158,104 @@ export class MatchService {
     this.assignPoint(match, newPoint, pointColor);
 
     await this.checkMatchOutcome(match);
+
+    await match.save();
+
+    return await match.toObject();
+  }
+
+  public async addTimeKeeperToMatch(
+    matchId: string,
+    timeKeeperId: string
+  ): Promise<Match> {
+    const match = await MatchModel.findById(matchId).exec();
+
+    if (match === null) {
+      throw new NotFoundError({
+        message: `Match not found for ID: ${matchId}`
+      });
+    }
+
+    if (match.winner !== undefined) {
+      throw new BadRequestError({
+        message: "Finished matches cannot be edited"
+      });
+    }
+
+    // Set the time keeper
+    match.timeKeeper = new Types.ObjectId(timeKeeperId);
+
+    await match.save();
+
+    return await match.toObject();
+  }
+
+  public async addPointMakerToMatch(
+    matchId: string,
+    pointMakerId: string
+  ): Promise<Match> {
+    const match = await MatchModel.findById(matchId).exec();
+
+    if (match === null) {
+      throw new NotFoundError({
+        message: `Match not found for ID: ${matchId}`
+      });
+    }
+
+    if (match.winner !== undefined) {
+      throw new BadRequestError({
+        message: "Finished matches cannot be edited"
+      });
+    }
+
+    // Set the point maker
+    match.pointMaker = new Types.ObjectId(pointMakerId);
+
+    await match.save();
+
+    return await match.toObject();
+  }
+
+  public async deleteTimeKeeperFromMatch(matchId: string): Promise<Match> {
+    const match = await MatchModel.findById(matchId).exec();
+
+    if (match === null) {
+      throw new NotFoundError({
+        message: `Match not found for ID: ${matchId}`
+      });
+    }
+
+    if (match.winner !== undefined) {
+      throw new BadRequestError({
+        message: "Finished matches cannot be edited"
+      });
+    }
+
+    // Remove time keeper's id
+    match.timeKeeper = undefined;
+
+    await match.save();
+
+    return await match.toObject();
+  }
+
+  public async deletePointMakerFromMatch(matchId: string): Promise<Match> {
+    const match = await MatchModel.findById(matchId).exec();
+
+    if (match === null) {
+      throw new NotFoundError({
+        message: `Match not found for ID: ${matchId}`
+      });
+    }
+
+    if (match.winner !== undefined) {
+      throw new BadRequestError({
+        message: "Finished matches cannot be edited"
+      });
+    }
+
+    // Remove point maker's id
+    match.pointMaker = undefined;
 
     await match.save();
 

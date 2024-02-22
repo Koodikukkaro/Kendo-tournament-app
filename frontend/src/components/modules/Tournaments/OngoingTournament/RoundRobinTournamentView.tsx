@@ -87,20 +87,20 @@ const Matches: React.FC<{
     <div>
       <div>
         <Typography variant="h5">
-          {t("tournament_view_labels.ongoing_matches")}:
+          {t("tournament_view_labels.ongoing_matches")}
         </Typography>
       </div>
       <div>{ongoingMatchElements}</div>
 
       <div>
         <Typography variant="h5">
-          {t("tournament_view_labels.upcoming_matches")}:
+          {t("tournament_view_labels.upcoming_matches")}
         </Typography>
       </div>
       <div>{upcomingMatchElements}</div>
       <div>
         <Typography variant="h5">
-          {t("tournament_view_labels.past_matches")}:
+          {t("tournament_view_labels.past_matches")}
         </Typography>
       </div>
       <div>{pastMatchElements}</div>
@@ -229,6 +229,26 @@ const RoundRobinTournamentView: React.FC = () => {
     const player2 = players.find((player) => player.id === match.players[1].id)
       ?.name;
 
+    let officialsInfo = "";
+
+    if (match.elapsedTime <= 0) {
+      // Match is upcoming
+      const timerPerson = match.timeKeeper ?? undefined;
+      const pointMaker = match.pointMaker ?? undefined;
+
+      // depending on which roles are missing for the match, print them under button
+      if (timerPerson === undefined && pointMaker === undefined) {
+        officialsInfo = t("tournament_view_labels.missing_both");
+      } else {
+        if (timerPerson === undefined) {
+          officialsInfo += t("tournament_view_labels.missing_timer");
+        }
+        if (pointMaker === undefined) {
+          officialsInfo += t("tournament_view_labels.missing_point_maker");
+        }
+      }
+    }
+
     return (
       <div style={{ marginBottom: "10px" }} key={match.id}>
         <Button
@@ -239,6 +259,9 @@ const RoundRobinTournamentView: React.FC = () => {
         >
           {`${player1} - ${player2}`}
         </Button>
+        {officialsInfo !== undefined && (
+          <Typography variant="body2">{officialsInfo}</Typography>
+        )}
       </div>
     );
   };

@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import { type Match, type User } from "types/models";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface BracketProps {
   match: Match;
@@ -16,6 +17,7 @@ interface BracketProps {
 
 const Bracket: React.FC<BracketProps> = ({ match, players }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   // Find the players in the players array using their IDs
   const player1 = players.find(
     (player) => player.id === match.players[0].id
@@ -37,6 +39,30 @@ const Bracket: React.FC<BracketProps> = ({ match, players }) => {
   if (isWinnerDeclared) {
     player1Color = winner === player1.id ? "#f44336" : "#666666";
     player2Color = winner === player2.id ? "#f44336" : "#666666";
+  }
+
+  const officialsInfo = [];
+
+  if (match.elapsedTime <= 0) {
+    // Match is upcoming
+    const timerPerson = match.timeKeeper ?? undefined;
+    const pointMaker = match.pointMaker ?? undefined;
+
+    // depending on which roles are missing for the match, print them under button
+
+    if (timerPerson === undefined && pointMaker === undefined) {
+      officialsInfo.push(
+        t("tournament_view_labels.missing_timer"),
+        t("tournament_view_labels.missing_and")
+      );
+    } else {
+      if (timerPerson === undefined) {
+        officialsInfo.push(t("tournament_view_labels.missing_timer"));
+      }
+      if (pointMaker === undefined) {
+        officialsInfo.push(t("tournament_view_labels.missing_point_maker"));
+      }
+    }
   }
 
   return (
@@ -62,6 +88,12 @@ const Bracket: React.FC<BracketProps> = ({ match, players }) => {
             <Typography textAlign="center" style={{ color: player2Color }}>
               {player2Name}
             </Typography>
+            {match.elapsedTime <= 0 &&
+              officialsInfo.map((info, index) => (
+                <Typography textAlign="center" key={index} variant="body2">
+                  {info}
+                </Typography>
+              ))}
           </CardContent>
         </CardActionArea>
       </Card>

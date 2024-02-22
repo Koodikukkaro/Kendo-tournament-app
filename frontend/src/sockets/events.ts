@@ -23,4 +23,28 @@ export const socketEvents = (
       return { ...state, matchInfo };
     });
   });
+
+  socket.on("add-timekeeper", (matchInfo: Match) => {
+    setValue((state) => {
+      return { ...state, matchInfo };
+    });
+  });
+
+  socket.on("remove-timekeeper", (matchInfo: Match) => {
+    setValue((state) => {
+      return { ...state, matchInfo };
+    });
+  });
+
+  socket.on("add-pointmaker", (matchInfo: Match) => {
+    setValue((state) => {
+      return { ...state, matchInfo };
+    });
+  });
+
+  socket.on("remove-pointmaker", (matchInfo: Match) => {
+    setValue((state) => {
+      return { ...state, matchInfo };
+    });
+  });
 };
