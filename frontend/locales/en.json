@@ -109,7 +109,8 @@
     "wins": "Wins",
     "losses": "Losses",
     "ties": "Ties",
-    "points": "Points"
+    "points": "Points",
+    "ippons": "Ippons"
   },
   "signup_labels": {
     "sign_up_for": "Sign Up for",

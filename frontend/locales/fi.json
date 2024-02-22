@@ -109,7 +109,8 @@
     "wins": "Voitot",
     "losses": "Tappiot",
     "ties": "Tasapelit",
-    "points": "Pisteet"
+    "points": "Pisteet",
+    "ippons": "Ipponit"
   },
   "signup_labels": {
     "sign_up_for": "Ilmoittaudu: ",

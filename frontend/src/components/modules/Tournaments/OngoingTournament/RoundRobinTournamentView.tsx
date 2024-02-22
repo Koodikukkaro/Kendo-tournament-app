@@ -21,14 +21,16 @@ import { useTranslation } from "react-i18next";
 interface TournamentPlayer {
   id: string;
   name: string;
+  points: number;
+  ippons: number;
   wins: number;
   losses: number;
   ties: number;
-  points: number;
 }
 
 const Scoreboard: React.FC<{ players: TournamentPlayer[] }> = ({ players }) => {
   const { t } = useTranslation();
+
   const generateTableCells = (player: TournamentPlayer): React.ReactNode[] => {
     return Object.values(player).map((value, index) => {
       if (index === 0) {
@@ -49,10 +51,11 @@ const Scoreboard: React.FC<{ players: TournamentPlayer[] }> = ({ players }) => {
 
     const tableHeaders = [
       t("tournament_view_labels.name"),
+      t("tournament_view_labels.points"),
+      t("tournament_view_labels.ippons"),
       t("tournament_view_labels.wins"),
       t("tournament_view_labels.losses"),
-      t("tournament_view_labels.ties"),
-      t("tournament_view_labels.points")
+      t("tournament_view_labels.ties")
     ];
 
     return (
@@ -147,10 +150,11 @@ const RoundRobinTournamentView: React.FC = () => {
             updatedPlayers.push({
               id: playerObject.id,
               name: playerObject.firstName,
+              points: 0,
+              ippons: 0,
               wins: 0,
               losses: 0,
-              ties: 0,
-              points: 0
+              ties: 0
             });
           }
         }
@@ -204,8 +208,10 @@ const RoundRobinTournamentView: React.FC = () => {
             (player) => player.id !== match.winner
           );
 
+          // Update stats, win equals 3 points
           if (winner !== undefined && loser !== undefined) {
             winner.wins += 1;
+            winner.points += 3;
             loser.losses += 1;
           }
 
@@ -217,10 +223,12 @@ const RoundRobinTournamentView: React.FC = () => {
             const player1 = updatedPlayers.find(player => player.id === player1Id);
             const player2 = updatedPlayers.find(player => player.id === player2Id);
 
-            // Update their stats
+            // Update their stats, tie equals 1 point
             if (player1 && player2) {
               player1.ties += 1;
+              player1.points += 1;
               player2.ties += 1;
+              player2.points +=1;
 
               console.log("Player1 ties:", player1.ties);
                console.log("Player2 ties:", player2.ties);
@@ -228,13 +236,13 @@ const RoundRobinTournamentView: React.FC = () => {
             
           }
 
-          // Add points
+          // Add ippons
           for (const matchPlayer of match.players) {
             const player = updatedPlayers.find(
               (player) => player.id === matchPlayer.id
             );
             if (player !== undefined) {
-              player.points += matchPlayer.points.length;
+              player.ippons += matchPlayer.points.length;
             }
           }
           processedMatches.add(match.id);
