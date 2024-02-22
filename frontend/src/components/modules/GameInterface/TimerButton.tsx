@@ -19,7 +19,7 @@ const TimerButton: React.FC<TimerButtonProps> = ({
       variant="contained"
       style={{ height: "40px", marginTop: "40px" }}
     >
-      {isTimerRunning ? t("buttons.start_timer") : t("buttons.stop_timer")}
+      {isTimerRunning ? t("buttons.stop_timer") : t("buttons.start_timer")}
     </Button>
   );
 };

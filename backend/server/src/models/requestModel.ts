@@ -90,6 +90,8 @@ export interface CreateMatchRequest {
   officials?: ObjectIdString[];
   matchType: MatchType;
   comment?: string;
+  timeKeeper?: ObjectIdString;
+  pointMaker?: ObjectIdString;
 }
 
 export interface AddPointRequest {

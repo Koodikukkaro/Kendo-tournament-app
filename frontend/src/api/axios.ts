@@ -145,6 +145,26 @@ const match = {
   },
   checkForTie: async (matchId: string) => {
     await request.patch(`${MATCH_API}/${matchId}/check-tie`);
+  },
+  addTimekeeper: async (matchId: string, userId: string) => {
+    await request.patch(`${MATCH_API}/${matchId}/add-timekeeper`, {
+      timeKeeperId: userId
+    });
+  },
+  removeTimekeeper: async (matchId: string, userId: string) => {
+    await request.patch(`${MATCH_API}/${matchId}/remove-timekeeper`, {
+      timeKeeperId: userId
+    });
+  },
+  addPointmaker: async (matchId: string, userId: string) => {
+    await request.patch(`${MATCH_API}/${matchId}/add-pointmaker`, {
+      pointMakerId: userId
+    });
+  },
+  removePointmaker: async (matchId: string, userId: string) => {
+    await request.patch(`${MATCH_API}/${matchId}/remove-pointmaker`, {
+      pointMakerId: userId
+    });
   }
 };
 
