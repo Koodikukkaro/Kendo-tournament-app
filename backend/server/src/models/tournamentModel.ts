@@ -31,10 +31,9 @@ export interface Tournament {
   organizerPhone?: string;
   maxPlayers: number;
   groups: Array<Array<Types.ObjectId>>;
-  playersToPlayoffs: number;
+  playersToPlayoffsPerGroup: number;
   groupsSizePreference: number;
   players: Array<Types.ObjectId | User>;
-  playersPlayoffStage: Array<Types.ObjectId>;
   matchSchedule: Array<Types.ObjectId | Match>;
 }
 
@@ -57,8 +56,7 @@ const tournamentSchema = new Schema<Tournament & Document>(
       default: []
     },
     groupsSizePreference: { type: Number },
-    playersToPlayoffs: { type: Number },
-    playersPlayoffStage: [{ type: Schema.Types.ObjectId, ref: "User", default: [] }],
+    playersToPlayoffsPerGroup: { type: Number },
     maxPlayers: { type: Number, required: true },
     creator: {
       type: Schema.Types.ObjectId,

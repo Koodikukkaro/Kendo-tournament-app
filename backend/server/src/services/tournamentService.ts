@@ -261,7 +261,8 @@ export class TournamentService {
     playerIds: Types.ObjectId[],
     newPlayer: Types.ObjectId,
     tournament: Types.ObjectId,
-    tournamentType: MatchType = "group"
+    tournamentType: MatchType = "group",
+    tournamentRound: number = 1
   ): UnsavedMatch[] {
     const matches: UnsavedMatch[] = [];
     for (const playerId of playerIds) {
@@ -274,7 +275,7 @@ export class TournamentService {
           type: tournamentType,
           elapsedTime: 0,
           timerStartedTimestamp: null,
-          tournamentRound: 1,
+          tournamentRound: tournamentRound,
           tournamentId: tournament
         });
       }

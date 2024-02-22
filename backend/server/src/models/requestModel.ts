@@ -110,7 +110,7 @@ export type CreateTournamentRequest = Pick<
   | "organizerPhone"
   | "description"
   | "groupsSizePreference"
-  | "playersToPlayoffs"
+  | "playersToPlayoffsPerGroup"
 > & {
   differentOrganizer: boolean;
 };
