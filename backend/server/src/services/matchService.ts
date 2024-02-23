@@ -19,9 +19,6 @@ import { TournamentModel, TournamentType } from "../models/tournamentModel.js";
 // the DB has been configured for a replica set, testing transactions
 // is not possible. The transactions have been commented out in the code.
 export class MatchService {
-  static checkMatchOutcome(match: Match) {
-      throw new Error("Method not implemented.");
-  }
   public async createMatch(requestBody: CreateMatchRequest): Promise<Match> {
     const newMatch = await MatchModel.create({
       type: requestBody.matchType,
@@ -123,7 +120,7 @@ export class MatchService {
     const currentTime = new Date();
     const elapsedMilliseconds =
       currentTime.getTime() - match.timerStartedTimestamp.getTime();
-    
+
     match.elapsedTime += elapsedMilliseconds;
     // Reset the timer timestamp
     match.timerStartedTimestamp = null;
@@ -135,7 +132,7 @@ export class MatchService {
   }
 
   // Every time adding point is done in frontend, this function handles it
-  // It adds the point to a match, adds the point to a player, 
+  // It adds the point to a match, adds the point to a player,
   // checks if the match is finished and saves the match
   public async addPointToMatchById(
     id: string,
@@ -275,7 +272,6 @@ export class MatchService {
     let player2Points = 0;
     const player1: MatchPlayer = match.players[0] as MatchPlayer;
     const player2: MatchPlayer = match.players[1] as MatchPlayer;
-    const matchIdAsString: string = match.id.toString();
 
     player1.points.forEach((point: MatchPoint) => {
       if (point.type === "hansoku") {
@@ -311,15 +307,13 @@ export class MatchService {
   public async checkForTie(id: string): Promise<void> {
     const match = await MatchModel.findById(id).exec();
 
-    const MATCH_TIME = 300000;
     let player1Points = 0;
     let player2Points = 0;
     if (match !== null) {
       const player1: MatchPlayer = match.players[0] as MatchPlayer;
-    const player2: MatchPlayer = match.players[1] as MatchPlayer;
-    const matchIdAsString: string = match.id.toString();
+      const player2: MatchPlayer = match.players[1] as MatchPlayer;
 
-    // Give the points
+      // Give the points
       player1.points.forEach((point: MatchPoint) => {
         if (point.type === "hansoku") {
           // In case of hansoku, the opponent receives half a point.
@@ -329,7 +323,7 @@ export class MatchService {
           player1Points++;
         }
       });
-  
+
       player2.points.forEach((point: MatchPoint) => {
         if (point.type === "hansoku") {
           player1Points += 0.5;
@@ -338,7 +332,7 @@ export class MatchService {
         }
       });
 
-      // When time ends, the player with more points wins 
+      // When time ends, the player with more points wins
       // (rounded down because one hansoku doesn't count)
       if (Math.floor(player1Points) > Math.floor(player2Points)) {
         match.winner = player1.id;
@@ -363,8 +357,6 @@ export class MatchService {
       }
       await match.save();
     }
-    
-   // }
   }
 
   // Add assigned point to the correct player

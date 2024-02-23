@@ -193,10 +193,10 @@ const RoundRobinTournamentView: React.FC = () => {
 
   const updatePlayerStats = (): void => {
     const processedMatches = new Set<string>();
-  
+
     setPlayers((prevPlayers) => {
       const updatedPlayers = [...prevPlayers];
-  
+
       for (const match of tournament.matchSchedule) {
         if (processedMatches.has(match.id)) {
           continue;
@@ -210,7 +210,7 @@ const RoundRobinTournamentView: React.FC = () => {
           const loser = updatedPlayers.find(
             (player) => player.id !== match.winner
           );
-  
+
           // Update stats, win equals 3 points
           if (winner !== undefined && loser !== undefined) {
             winner.wins += 1;
@@ -218,18 +218,24 @@ const RoundRobinTournamentView: React.FC = () => {
             loser.losses += 1;
           }
         }
-  
+
         // Add ties
         if (
           match.winner === undefined &&
           (match.endTimestamp !== undefined || match.elapsedTime >= MATCH_TIME)
         ) {
-          const [player1Id, player2Id] = match.players.map((player) => player.id);
-  
+          const [player1Id, player2Id] = match.players.map(
+            (player) => player.id
+          );
+
           // Find the TournamentPlayer objects corresponding to the player IDs
-          const player1 = updatedPlayers.find((player) => player.id === player1Id);
-          const player2 = updatedPlayers.find((player) => player.id === player2Id);
-  
+          const player1 = updatedPlayers.find(
+            (player) => player.id === player1Id
+          );
+          const player2 = updatedPlayers.find(
+            (player) => player.id === player2Id
+          );
+
           // Update their stats, tie equals 1 point
           if (player1 !== undefined && player2 !== undefined) {
             player1.ties += 1;
@@ -238,7 +244,7 @@ const RoundRobinTournamentView: React.FC = () => {
             player2.points += 1;
           }
         }
-  
+
         // Add ippons
         for (const matchPlayer of match.players) {
           const player = updatedPlayers.find(
@@ -253,7 +259,6 @@ const RoundRobinTournamentView: React.FC = () => {
       return updatedPlayers;
     });
   };
-  
 
   const createMatchButton = (
     match: Match,
