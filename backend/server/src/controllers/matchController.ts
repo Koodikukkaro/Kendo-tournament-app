@@ -182,13 +182,9 @@ export class MatchController extends Controller {
   @Patch("{matchId}/check-tie")
   @Tags("Match")
   @Security("jwt")
-  public async checkForTie(
-    @Path() matchId: ObjectIdString
-  ): Promise<void> {
+  public async checkForTie(@Path() matchId: ObjectIdString): Promise<void> {
     this.setStatus(204);
 
-    const match = await this.service.checkForTie(matchId);
+    await this.service.checkForTie(matchId);
   }
 }
-
- 
