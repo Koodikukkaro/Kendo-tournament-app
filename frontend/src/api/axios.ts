@@ -143,6 +143,9 @@ const match = {
   stopTimer: async (matchId: string) => {
     await request.patch(`${MATCH_API}/${matchId}/stop-timer`);
   },
+  checkForTie: async (matchId: string) => {
+    await request.patch(`${MATCH_API}/${matchId}/check-tie`);
+  },
   addTimekeeper: async (matchId: string, userId: string) => {
     await request.patch(`${MATCH_API}/${matchId}/add-timekeeper`, {
       timeKeeperId: userId

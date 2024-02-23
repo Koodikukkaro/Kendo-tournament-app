@@ -177,4 +177,14 @@ export class MatchController extends Controller {
   private get service(): MatchService {
     return new MatchService();
   }
+
+  // Check if there is a tie for the specified match
+  @Patch("{matchId}/check-tie")
+  @Tags("Match")
+  @Security("jwt")
+  public async checkForTie(@Path() matchId: ObjectIdString): Promise<void> {
+    this.setStatus(204);
+
+    await this.service.checkForTie(matchId);
+  }
 }

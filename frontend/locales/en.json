@@ -39,7 +39,8 @@
     },
     "select_role": "Select role as an official",
     "time_keeper": "Time keeper",
-    "point_maker": "Point maker"
+    "point_maker": "Point maker",
+    "tie": "It's a tie!"
   },
   "buttons": {
     "add_point_player_1": "Add point for player 1",
@@ -115,6 +116,8 @@
     "name": "Name",
     "wins": "Wins",
     "losses": "Losses",
+    "ties": "Ties",
+    "ippons": "Ippons",
     "points": "Points",
     "missing_both": "Missing: Time keeper and point maker",
     "missing_timer": "Missing: Time keeper",

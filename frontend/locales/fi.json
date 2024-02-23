@@ -39,7 +39,8 @@
     },
     "select_role": "Valitse toimitsijarooli",
     "time_keeper": "Kellokalle",
-    "point_maker": "Pistevastaava"
+    "point_maker": "Pistevastaava",
+    "tie": "Tasapeli!"
   },
   "buttons": {
     "add_point_player_1": "Lisää piste pelaajalle 1",
@@ -115,6 +116,8 @@
     "name": "Nimi",
     "wins": "Voitot",
     "losses": "Tappiot",
+    "ties": "Tasapelit",
+    "ippons": "Ipponit",
     "points": "Pisteet",
     "missing_both": "Puuttuu: kellokalle ja pistevastaava",
     "missing_timer": "Puuttuu: kellokalle",

@@ -33,10 +33,12 @@ export interface MatchData {
   players: MatchPlayer[];
   playerNames: string[];
   winner: string | undefined;
+  endTimeStamp: Date | undefined;
   timeKeeper: string | undefined;
   pointMaker: string | undefined;
   startTimestamp: Date | undefined;
   isTimerOn: boolean;
+  elapsedTime: number;
 }
 
 const GameInterface: React.FC = () => {
@@ -47,10 +49,12 @@ const GameInterface: React.FC = () => {
     players: [],
     playerNames: [],
     winner: undefined,
+    endTimeStamp: undefined,
     timeKeeper: undefined,
     pointMaker: undefined,
     startTimestamp: undefined,
-    isTimerOn: false
+    isTimerOn: false,
+    elapsedTime: 0
   });
 
   const [openPoints, setOpenPoints] = useState(false);
@@ -70,7 +74,10 @@ const GameInterface: React.FC = () => {
   // state handlers for whether or not checkbox is checked
   const [timeKeeper, setTimeKeeper] = useState<boolean>(false);
   const [pointMaker, setPointMaker] = useState<boolean>(false);
+  // to be changed when match time is get from api
+  const MATCH_TIME = 300000;
 
+  // Listening to matches websocket
   useEffect(() => {
     if (matchId !== undefined && !hasJoined) {
       joinMatch(matchId);
@@ -83,6 +90,7 @@ const GameInterface: React.FC = () => {
     }
   }, [matchId]);
 
+  // Fetching match data
   useEffect(() => {
     const getMatchData = async (): Promise<void> => {
       try {
@@ -92,9 +100,12 @@ const GameInterface: React.FC = () => {
         let timerPerson: string | undefined;
         let pointPerson: string | undefined;
         let time: number = 0;
+        let matchEndTimeStamp: Date | undefined;
         let startTime: Date | undefined;
         let timer: boolean = false;
+        let elapsedtime: number = 0;
 
+        // Get players' names
         const findPlayerName = (playerId: string, index: number): void => {
           const player = tournament.players.find((p) => p.id === playerId);
           if (player !== undefined) {
@@ -102,11 +113,14 @@ const GameInterface: React.FC = () => {
           }
         };
 
+        // Try to get match info from the websocket
         if (matchInfoFromSocket !== undefined) {
+          // Get players' names in this match
           matchPlayers = matchInfoFromSocket.players;
           findPlayerName(matchPlayers[0].id, 0);
           findPlayerName(matchPlayers[1].id, 1);
 
+          // If there is a winner, save them
           if (matchInfoFromSocket.winner !== undefined) {
             const winner = tournament.players.find(
               (p) => p.id === matchInfoFromSocket.winner
@@ -114,7 +128,19 @@ const GameInterface: React.FC = () => {
             if (winner !== undefined) {
               matchWinner = winner.firstName;
             }
+            matchEndTimeStamp = matchInfoFromSocket.endTimestamp;
           }
+
+          // If there isn't a winner, check if there is an end timestamp or if the elapsedtime
+          // is over the match time (it's a tie)
+          else if (
+            matchInfoFromSocket.endTimestamp !== undefined ||
+            matchInfoFromSocket.elapsedTime >= MATCH_TIME
+          ) {
+            matchEndTimeStamp = matchInfoFromSocket.endTimestamp;
+          }
+
+          // Get officials
           if (matchInfoFromSocket.timeKeeper !== undefined) {
             timerPerson = matchInfoFromSocket.timeKeeper;
           }
@@ -124,11 +150,18 @@ const GameInterface: React.FC = () => {
           if (matchInfoFromSocket.startTimestamp !== undefined) {
             startTime = matchInfoFromSocket.startTimestamp;
           }
+          // Get time
           time = 300 - Math.round(matchInfoFromSocket.elapsedTime / 1000);
           timer = matchInfoFromSocket.isTimerOn;
+
+          elapsedtime = matchInfoFromSocket.elapsedTime;
+
           setTimeKeeper(matchInfoFromSocket.timeKeeper !== undefined);
           setPointMaker(matchInfoFromSocket.pointMaker !== undefined);
-        } else if (matchId !== undefined) {
+        }
+        // If websocket doesn't have match info, use api
+        // Usually this is the first time the match view is loaded
+        else if (matchId !== undefined) {
           const matchFromApi: Match = await api.match.info(matchId);
 
           if (matchFromApi !== undefined) {
@@ -136,6 +169,7 @@ const GameInterface: React.FC = () => {
             findPlayerName(matchPlayers[0].id, 0);
             findPlayerName(matchPlayers[1].id, 1);
 
+            // If there is a winner, save them
             if (matchFromApi.winner !== undefined) {
               const winner = tournament.players.find(
                 (p) => p.id === matchFromApi.winner
@@ -143,6 +177,15 @@ const GameInterface: React.FC = () => {
               if (winner !== undefined) {
                 matchWinner = winner.firstName;
               }
+              matchEndTimeStamp = matchFromApi.endTimestamp;
+            }
+            // If there isn't a winner, check if there is an end timestamp
+            // or if elapsed time is over match time (it's a tie)
+            else if (
+              matchFromApi.endTimestamp !== undefined ||
+              matchFromApi.elapsedTime >= MATCH_TIME
+            ) {
+              matchEndTimeStamp = matchFromApi.endTimestamp;
             }
             if (matchFromApi.timeKeeper !== undefined) {
               timerPerson = matchFromApi.timeKeeper;
@@ -153,8 +196,15 @@ const GameInterface: React.FC = () => {
             if (matchFromApi.startTimestamp !== undefined) {
               startTime = matchFromApi.startTimestamp;
             }
-            time = 300 - Math.ceil(matchFromApi.elapsedTime / 1000);
+            // Get time
+            if (300 - Math.ceil(matchFromApi.elapsedTime / 1000) >= 0) {
+              time = 300 - Math.ceil(matchFromApi.elapsedTime / 1000);
+            } else {
+              time = 0;
+            }
             timer = matchFromApi.isTimerOn;
+
+            elapsedtime = matchFromApi.elapsedTime;
 
             setTimeKeeper(matchInfo.timeKeeper !== undefined);
             setPointMaker(matchInfo.pointMaker !== undefined);
@@ -165,10 +215,12 @@ const GameInterface: React.FC = () => {
           players: matchPlayers,
           playerNames: playersNames,
           winner: matchWinner,
+          endTimeStamp: matchEndTimeStamp,
           timeKeeper: timerPerson,
           pointMaker: pointPerson,
           startTimestamp: startTime,
-          isTimerOn: timer
+          isTimerOn: timer,
+          elapsedTime: elapsedtime
         });
       } catch (error) {
         setIsError(true);
@@ -184,6 +236,7 @@ const GameInterface: React.FC = () => {
     setTimer(matchInfo.timerTime);
   }, [matchInfo]);
 
+  // Handle timer, make it run and stop
   useEffect(() => {
     let intervalId: NodeJS.Timeout | null = null;
 
@@ -204,6 +257,31 @@ const GameInterface: React.FC = () => {
     };
   }, [matchInfo]);
 
+  // If timer is ended, check for ties
+  useEffect(() => {
+    const checkForTieAndStopTimer = async (): Promise<void> => {
+      try {
+        if (timer === 0 && matchId !== undefined) {
+          if (matchInfo.isTimerOn) {
+            await apiTimerRequest(matchId);
+          }
+        }
+
+        if (
+          (matchInfo.elapsedTime >= MATCH_TIME ||
+            matchInfo.endTimeStamp !== undefined) &&
+          matchId !== undefined
+        ) {
+          await api.match.checkForTie(matchId);
+        }
+      } catch (error) {
+        showToast(error, "error");
+      }
+    };
+
+    void checkForTieAndStopTimer();
+  }, [matchInfo, timer]);
+
   const buttonToTypeMap: Record<string, PointType> = {
     M: "men",
     K: "kote",
@@ -219,6 +297,7 @@ const GameInterface: React.FC = () => {
     pointColor: playerColor
   };
 
+  // When point is selected, close the selection and send it to API
   const handlePointShowing = async (): Promise<void> => {
     // Check if both time keeper and point maker roles are checked
     setOpenPoints(false);
@@ -242,12 +321,14 @@ const GameInterface: React.FC = () => {
     }
   };
 
+  // Get the selected radio button value
   const handleRadioButtonClick = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
     setSelectedButton(event.target.value);
   };
 
+  // Open the radio button selection for points
   const handleOpen = (player: number): void => {
     setSelectedButton("");
     setOpenPoints(true);
@@ -259,6 +340,7 @@ const GameInterface: React.FC = () => {
     }
   };
 
+  // Send the point to the API (add it to the match)
   const apiPointRequest = async (
     matchId: string,
     body: AddPointRequest
@@ -270,6 +352,7 @@ const GameInterface: React.FC = () => {
     }
   };
 
+  // Send timer starts and stops to API
   const apiTimerRequest = async (matchId: string): Promise<void> => {
     try {
       if (!matchInfo.isTimerOn) {
@@ -282,6 +365,7 @@ const GameInterface: React.FC = () => {
     }
   };
 
+  // When timer button is clicked, set its status
   const handleTimerChange = async (): Promise<void> => {
     // Check if both time keeper and point maker roles are checked
     if (
@@ -343,6 +427,19 @@ const GameInterface: React.FC = () => {
 
   function handleCloseRoles(): void {
     setOpenRoles(false);
+  }
+
+  function showButtons(): boolean {
+    if (matchInfo.winner !== undefined) {
+      return false;
+    } else if (
+      matchInfo.winner === undefined &&
+      matchInfo.elapsedTime > MATCH_TIME
+    ) {
+      return false;
+    } else {
+      return true;
+    }
   }
 
   return (
@@ -467,7 +564,7 @@ const GameInterface: React.FC = () => {
               {/* timer button only shown to time keeper */}
               {userId !== null &&
                 userId !== undefined &&
-                matchInfo.winner === undefined &&
+                showButtons() &&
                 matchInfo.timeKeeper === userId && (
                   <TimerButton
                     isTimerRunning={matchInfo.isTimerOn}
@@ -480,7 +577,7 @@ const GameInterface: React.FC = () => {
             {/* point buttons only shown to point maker */}
             {userId !== null &&
               userId !== undefined &&
-              matchInfo.winner === undefined &&
+              showButtons() &&
               matchInfo.pointMaker === userId && (
                 <OfficialButtons
                   open={openPoints}
@@ -491,6 +588,8 @@ const GameInterface: React.FC = () => {
                   handleClose={handleClose}
                 />
               )}
+
+            {/* Print the winner */}
             {matchInfo.winner !== undefined && (
               <div>
                 <Typography>
@@ -499,6 +598,14 @@ const GameInterface: React.FC = () => {
                 </Typography>
               </div>
             )}
+            {/* If there isn't a winner, check if there is an end timestamp (it's a tie) */}
+            {matchInfo.winner === undefined &&
+              (matchInfo.endTimeStamp !== undefined ||
+                matchInfo.elapsedTime >= MATCH_TIME) && (
+                <div>
+                  <Typography>{t("game_interface.tie")}</Typography>
+                </div>
+              )}
           </>
         )}
       </main>

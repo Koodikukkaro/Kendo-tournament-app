@@ -4,6 +4,7 @@
     "tsx"
   ],
   "spec": "test/**/*.test.{ts,tsx}",
+  "loader": "ts-node/esm",
   "require": [
     "mocha.cjs",
     "ts-node/register"
