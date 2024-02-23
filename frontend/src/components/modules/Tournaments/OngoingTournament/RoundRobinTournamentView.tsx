@@ -201,6 +201,15 @@ const RoundRobinTournamentView: React.FC = () => {
         if (processedMatches.has(match.id)) {
           continue;
         }
+        const [player1Id, player2Id] = match.players.map((player) => player.id);
+
+        // Find the TournamentPlayer objects corresponding to the player IDs
+        const player1 = updatedPlayers.find(
+          (player) => player.id === player1Id
+        );
+        const player2 = updatedPlayers.find(
+          (player) => player.id === player2Id
+        );
 
         // Add wins and losses
         if (match.winner !== undefined) {
@@ -224,18 +233,6 @@ const RoundRobinTournamentView: React.FC = () => {
           match.winner === undefined &&
           (match.endTimestamp !== undefined || match.elapsedTime >= MATCH_TIME)
         ) {
-          const [player1Id, player2Id] = match.players.map(
-            (player) => player.id
-          );
-
-          // Find the TournamentPlayer objects corresponding to the player IDs
-          const player1 = updatedPlayers.find(
-            (player) => player.id === player1Id
-          );
-          const player2 = updatedPlayers.find(
-            (player) => player.id === player2Id
-          );
-
           // Update their stats, tie equals 1 point
           if (player1 !== undefined && player2 !== undefined) {
             player1.ties += 1;
@@ -246,13 +243,38 @@ const RoundRobinTournamentView: React.FC = () => {
         }
 
         // Add ippons
-        for (const matchPlayer of match.players) {
-          const player = updatedPlayers.find(
-            (player) => player.id === matchPlayer.id
-          );
-          if (player !== undefined) {
-            player.ippons += matchPlayer.points.length;
+        const matchPlayer1 = match.players[0];
+        const matchPlayer2 = match.players[1];
+        let temporaryPoints1 = 0;
+        let temporaryPoints2 = 0;
+
+        if (
+          matchPlayer1 !== undefined &&
+          matchPlayer2 !== undefined &&
+          player1 !== undefined &&
+          player2 !== undefined
+        ) {
+          for (const point of matchPlayer1.points) {
+            if (point.type === "hansoku") {
+              // In case of hansoku, the opponent receives half a point.
+              temporaryPoints2 += 0.5;
+            } else {
+              // Otherwise, give one point to the player.
+              temporaryPoints1 += 1;
+            }
           }
+          for (const point of matchPlayer2.points) {
+            if (point.type === "hansoku") {
+              // In case of hansoku, the opponent receives half a point.
+              temporaryPoints1 += 0.5;
+            } else {
+              // Otherwise, give one point to the player.
+              temporaryPoints2 += 1;
+            }
+          }
+          // set the rounded points
+          player1.ippons += Math.floor(temporaryPoints1);
+          player2.ippons += Math.floor(temporaryPoints2);
         }
         processedMatches.add(match.id);
       }

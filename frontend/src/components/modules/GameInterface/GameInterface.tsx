@@ -279,7 +279,7 @@ const GameInterface: React.FC = () => {
       }
     };
 
-    checkForTieAndStopTimer();
+    void checkForTieAndStopTimer();
   }, [matchInfo, timer]);
 
   const buttonToTypeMap: Record<string, PointType> = {
@@ -589,8 +589,6 @@ const GameInterface: React.FC = () => {
                 />
               )}
 
-            {/* test */}
-            <Typography>Timer variable: {timer}</Typography>
             {/* Print the winner */}
             {matchInfo.winner !== undefined && (
               <div>

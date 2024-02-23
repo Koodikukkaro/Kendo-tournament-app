@@ -337,21 +337,24 @@ export class MatchService {
       if (Math.floor(player1Points) > Math.floor(player2Points)) {
         match.winner = player1.id;
         match.endTimestamp = new Date();
-        await this.createPlayoffSchedule(match.id, player1.id);
+        if (match.type === "playoff") {
+          await this.createPlayoffSchedule(match.id, player1.id);
+        }
       } else if (Math.floor(player2Points) > Math.floor(player1Points)) {
         match.winner = player2.id;
         match.endTimestamp = new Date();
-        await this.createPlayoffSchedule(match.id, player2.id);
+        if (match.type === "playoff") {
+          await this.createPlayoffSchedule(match.id, player2.id);
+        }
       }
 
       // If the points are the same, it's a tie (in round robin)
       else if (match.type === "group") {
         match.endTimestamp = new Date();
-        // TODO: should this be marked somewhere?
       }
 
       // If it's a playoff, an overtime will start
-      // TODO: Is there something else to notice in an overtime?
+      // TODO: Handling this
       else if (match.type === "playoff") {
         console.log("Overtime");
       }
