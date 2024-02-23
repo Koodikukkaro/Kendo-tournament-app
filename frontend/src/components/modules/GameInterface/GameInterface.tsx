@@ -124,12 +124,18 @@ const GameInterface: React.FC = () => {
             if (winner !== undefined) {
               matchWinner = winner.firstName;
             }
+            matchEndTimeStamp = matchInfoFromSocket.endTimestamp;
           }
           
           // If there isn't a winner, check if there is an end timestamp (it's a tie)
           else if (matchInfoFromSocket.endTimestamp !== undefined) {
             matchEndTimeStamp = matchInfoFromSocket.endTimestamp;
+            console.log("We have a endTimeStamp from socket");
           }
+          if (matchInfoFromSocket.endTimestamp === undefined) {
+            console.log("We dont have endTimeStamp from socket");
+          }
+
           // Get officials
           if (matchInfoFromSocket.timeKeeper !== undefined) {
             timerPerson = matchInfoFromSocket.timeKeeper;
@@ -164,14 +170,15 @@ const GameInterface: React.FC = () => {
               if (winner !== undefined) {
                 matchWinner = winner.firstName;
               }
+              matchEndTimeStamp = matchFromApi.endTimestamp;
             }
             // If there isn't a winner, check if there is an end timestamp (it's a tie)
             else if (matchFromApi.endTimestamp !== undefined) {
               matchEndTimeStamp = matchFromApi.endTimestamp;
-              console.log("We have a enTimeStamp");
+              console.log("We have a endTimeStamp from api");
             }
             if(matchFromApi.endTimestamp === undefined) {
-              console.log("no endtimestamp");
+              console.log("no endtimestamp from api");
             }
             if (matchFromApi.timeKeeper !== undefined) {
               timerPerson = matchFromApi.timeKeeper;
@@ -246,7 +253,9 @@ const GameInterface: React.FC = () => {
         } catch (error) {
           showToast(error, "error");
         }
-        await apiTimerRequest(matchId);
+        if (matchInfo.isTimerOn) {
+          await apiTimerRequest(matchId);
+        }
       }
     };
   

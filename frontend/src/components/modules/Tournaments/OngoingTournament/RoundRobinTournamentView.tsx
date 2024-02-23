@@ -172,12 +172,12 @@ const RoundRobinTournamentView: React.FC = () => {
 
       setOngoingMatches(
         sortedMatches.filter(
-          (match) => match.elapsedTime > 0 && match.winner === undefined
+          (match) => match.elapsedTime > 0 && match.endTimestamp === undefined
         )
       );
       setUpcomingMatches(
         sortedMatches.filter(
-          (match) => match.elapsedTime <= 0 && match.winner === undefined
+          (match) => match.elapsedTime <= 0 && match.endTimestamp === undefined
         )
       );
       setPastMatches(
@@ -190,6 +190,7 @@ const RoundRobinTournamentView: React.FC = () => {
 
   const updatePlayerStats = (): void => {
     const processedMatches = new Set<string>();
+    
 
     setPlayers((prevPlayers) => {
       const updatedPlayers = [...prevPlayers];
@@ -198,7 +199,7 @@ const RoundRobinTournamentView: React.FC = () => {
         if (processedMatches.has(match.id)) {
           continue;
         }
-
+        console.log("Match info:", match);
         // Add wins and losses
         if (match.winner !== undefined) {
           const winner = updatedPlayers.find(
@@ -222,9 +223,10 @@ const RoundRobinTournamentView: React.FC = () => {
             // Find the TournamentPlayer objects corresponding to the player IDs
             const player1 = updatedPlayers.find(player => player.id === player1Id);
             const player2 = updatedPlayers.find(player => player.id === player2Id);
+            console.log("player1:", player1?.name);
 
             // Update their stats, tie equals 1 point
-            if (player1 && player2) {
+            if (player1 !== undefined && player2 !== undefined) {
               player1.ties += 1;
               player1.points += 1;
               player2.ties += 1;
