@@ -321,7 +321,6 @@ export class MatchService {
     // Check if time has ended 
     //if (match.elapsedTime >= MATCH_TIME) {
       console.log("elapsedTime >= 300000");
-      await this.stopTimer(matchIdAsString);
 
       player1.points.forEach((point: MatchPoint) => {
         if (point.type === "hansoku") {
@@ -363,7 +362,7 @@ export class MatchService {
       // If it's a playoff, an overtime will start
       // TODO: Is there something else to notice in an overtime?
       else if (match.type === "playoff") {
-        await this.startTimer(matchIdAsString);
+        console.log("Overtime");
       }
       await match.save();
     }
