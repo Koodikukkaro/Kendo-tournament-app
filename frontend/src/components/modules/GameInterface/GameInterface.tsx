@@ -27,6 +27,7 @@ import { useTournament } from "context/TournamentContext";
 import Loader from "components/common/Loader";
 import ErrorModal from "components/common/ErrorModal";
 import { useTranslation } from "react-i18next";
+import { match } from "assert";
 
 export interface MatchData {
   timerTime: number;
@@ -38,6 +39,7 @@ export interface MatchData {
   pointMaker: string | undefined;
   startTimestamp: Date | undefined;
   isTimerOn: boolean;
+  elapsedTime: number;
 }
 
 const GameInterface: React.FC = () => {
@@ -52,7 +54,8 @@ const GameInterface: React.FC = () => {
     timeKeeper: undefined,
     pointMaker: undefined,
     startTimestamp: undefined,
-    isTimerOn: false
+    isTimerOn: false,
+    elapsedTime: 0
   });
 
   const [openPoints, setOpenPoints] = useState(false);
@@ -72,6 +75,8 @@ const GameInterface: React.FC = () => {
   // state handlers for whether or not checkbox is checked
   const [timeKeeper, setTimeKeeper] = useState<boolean>(false);
   const [pointMaker, setPointMaker] = useState<boolean>(false);
+  // to be changed when match time is get from api
+  const MATCH_TIME = 300000;
 
   // Listening to matches websocket
   useEffect(() => {
@@ -99,6 +104,7 @@ const GameInterface: React.FC = () => {
         let matchEndTimeStamp: Date | undefined;
         let startTime: Date | undefined;
         let timer: boolean = false;
+        let elapsedtime: number = 0;
 
         // Get players' names
         const findPlayerName = (playerId: string, index: number): void => {
@@ -110,12 +116,11 @@ const GameInterface: React.FC = () => {
 
         // Try to get match info from the websocket
         if (matchInfoFromSocket !== undefined) {
-          console.log(matchInfoFromSocket)
           // Get players' names in this match
           matchPlayers = matchInfoFromSocket.players;
           findPlayerName(matchPlayers[0].id, 0);
           findPlayerName(matchPlayers[1].id, 1);
-          console.log(matchInfoFromSocket.endTimestamp);
+
           // If there is a winner, save them
           if (matchInfoFromSocket.winner !== undefined) {
             const winner = tournament.players.find(
@@ -127,13 +132,11 @@ const GameInterface: React.FC = () => {
             matchEndTimeStamp = matchInfoFromSocket.endTimestamp;
           }
           
-          // If there isn't a winner, check if there is an end timestamp (it's a tie)
-          else if (matchInfoFromSocket.endTimestamp !== undefined) {
+          // If there isn't a winner, check if there is an end timestamp or if the elapsedtime
+          // is over the match time (it's a tie)
+          else if (matchInfoFromSocket.endTimestamp !== undefined 
+            || matchInfoFromSocket.elapsedTime >= MATCH_TIME) {
             matchEndTimeStamp = matchInfoFromSocket.endTimestamp;
-            console.log("We have a endTimeStamp from socket");
-          }
-          if (matchInfoFromSocket.endTimestamp === undefined) {
-            console.log("We dont have endTimeStamp from socket");
           }
 
           // Get officials
@@ -149,6 +152,9 @@ const GameInterface: React.FC = () => {
           // Get time
           time = 300 - Math.round(matchInfoFromSocket.elapsedTime / 1000);
           timer = matchInfoFromSocket.isTimerOn;
+
+          elapsedtime = matchInfoFromSocket.elapsedTime;
+
           setTimeKeeper(matchInfoFromSocket.timeKeeper !== undefined);
           setPointMaker(matchInfoFromSocket.pointMaker !== undefined);
         }
@@ -172,13 +178,11 @@ const GameInterface: React.FC = () => {
               }
               matchEndTimeStamp = matchFromApi.endTimestamp;
             }
-            // If there isn't a winner, check if there is an end timestamp (it's a tie)
-            else if (matchFromApi.endTimestamp !== undefined) {
+            // If there isn't a winner, check if there is an end timestamp
+            // or if elapsed time is over match time (it's a tie)
+            else if (matchFromApi.endTimestamp !== undefined ||
+              matchFromApi.elapsedTime >= MATCH_TIME) {
               matchEndTimeStamp = matchFromApi.endTimestamp;
-              console.log("We have a endTimeStamp from api");
-            }
-            if(matchFromApi.endTimestamp === undefined) {
-              console.log("no endtimestamp from api");
             }
             if (matchFromApi.timeKeeper !== undefined) {
               timerPerson = matchFromApi.timeKeeper;
@@ -190,8 +194,15 @@ const GameInterface: React.FC = () => {
               startTime = matchFromApi.startTimestamp;
             }
             // Get time
-            time = 300 - Math.ceil(matchFromApi.elapsedTime / 1000);
+            if (300 - Math.ceil(matchFromApi.elapsedTime / 1000) >= 0) {
+              time = 300 - Math.ceil(matchFromApi.elapsedTime / 1000);
+            }
+            else {
+              time = 0;
+            }
             timer = matchFromApi.isTimerOn;
+
+            elapsedtime = matchFromApi.elapsedTime;
 
             setTimeKeeper(matchInfo.timeKeeper !== undefined);
             setPointMaker(matchInfo.pointMaker !== undefined);
@@ -206,9 +217,9 @@ const GameInterface: React.FC = () => {
           timeKeeper: timerPerson,
           pointMaker: pointPerson,
           startTimestamp: startTime,
-          isTimerOn: timer
+          isTimerOn: timer,
+          elapsedTime: elapsedtime
         });
-        {console.log(matchInfo.endTimeStamp)}
       } catch (error) {
         setIsError(true);
         showToast(error, "error");
@@ -249,18 +260,26 @@ const GameInterface: React.FC = () => {
     const checkForTieAndStopTimer = async () => {
       if (timer === 0 && matchId !== undefined) {
         try {
-          await api.match.checkForTie(matchId);
+          if (matchInfo.isTimerOn) {
+            await apiTimerRequest(matchId);
+          }
+          
         } catch (error) {
           showToast(error, "error");
         }
-        if (matchInfo.isTimerOn) {
-          await apiTimerRequest(matchId);
+      }
+      if ((matchInfo.elapsedTime >= MATCH_TIME ||  matchInfo.endTimeStamp !== undefined) 
+      && matchId !== undefined) {
+        try {
+          await api.match.checkForTie(matchId);
+        } catch (error) {
+          showToast(error, "error");
         }
       }
     };
   
     checkForTieAndStopTimer();
-  }, [timer]);
+  }, [matchInfo, timer]);
 
   const buttonToTypeMap: Record<string, PointType> = {
     M: "men",
@@ -409,6 +428,18 @@ const GameInterface: React.FC = () => {
     setOpenRoles(false);
   }
 
+  function showButtons(): boolean {
+    if (matchInfo.winner !== undefined) {
+      return false;
+    }
+    else if(matchInfo.winner === undefined && matchInfo.elapsedTime > MATCH_TIME) {
+      return false;
+    }
+    else {
+      return true;
+    }
+  }
+
   return (
     <div className="app-container">
       <main className="main-content">
@@ -531,7 +562,7 @@ const GameInterface: React.FC = () => {
               {/* timer button only shown to time keeper */}
               {userId !== null &&
                 userId !== undefined &&
-                matchInfo.endTimeStamp === undefined &&
+                showButtons() &&
                 matchInfo.timeKeeper === userId && (
                   <TimerButton
                     isTimerRunning={matchInfo.isTimerOn}
@@ -544,7 +575,7 @@ const GameInterface: React.FC = () => {
             {/* point buttons only shown to point maker */}
             {userId !== null &&
               userId !== undefined &&
-              matchInfo.endTimeStamp === undefined && 
+              showButtons() &&
               matchInfo.pointMaker === userId && (
                 <OfficialButtons
                   open={openPoints}
@@ -568,9 +599,9 @@ const GameInterface: React.FC = () => {
               </div>
             )}
             { /* If there isn't a winner, check if there is an end timestamp (it's a tie)*/}
-            {matchInfo.winner === undefined && matchInfo.endTimeStamp !== undefined && (
+            {matchInfo.winner === undefined && (matchInfo.endTimeStamp !== undefined || matchInfo.elapsedTime >= MATCH_TIME) && (
               <div>
-                <Typography>It&apos;s a tie!</Typography>
+                <Typography>{t("game_interface.tie")}</Typography>
               </div>
             )}
           </>

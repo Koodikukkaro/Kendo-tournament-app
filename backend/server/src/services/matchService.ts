@@ -123,9 +123,9 @@ export class MatchService {
     const currentTime = new Date();
     const elapsedMilliseconds =
       currentTime.getTime() - match.timerStartedTimestamp.getTime();
-
-    // Reset the timer timestamp
+    
     match.elapsedTime += elapsedMilliseconds;
+    // Reset the timer timestamp
     match.timerStartedTimestamp = null;
     // Mark the timer to be off
     match.isTimerOn = false;
@@ -318,13 +318,11 @@ export class MatchService {
       const player1: MatchPlayer = match.players[0] as MatchPlayer;
     const player2: MatchPlayer = match.players[1] as MatchPlayer;
     const matchIdAsString: string = match.id.toString();
-    // Check if time has ended 
-    //if (match.elapsedTime >= MATCH_TIME) {
-      console.log("elapsedTime >= 300000");
 
+    // Give the points
       player1.points.forEach((point: MatchPoint) => {
         if (point.type === "hansoku") {
-          // In case of hansoku, the opponent recieves half a point.
+          // In case of hansoku, the opponent receives half a point.
           player2Points += 0.5;
         } else {
           // Otherwise give one point to the player.
@@ -353,8 +351,7 @@ export class MatchService {
       }
 
       // If the points are the same, it's a tie (in round robin)
-      if (match.type === "group") {
-        console.log("I'm inside the right loop!");
+      else if (match.type === "group") {
         match.endTimestamp = new Date();
         // TODO: should this be marked somewhere?
       }

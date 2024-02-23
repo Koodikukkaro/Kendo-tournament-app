@@ -28,6 +28,9 @@ interface TournamentPlayer {
   ties: number;
 }
 
+// const to be changed when match time is got from api
+const MATCH_TIME = 300000;
+
 const Scoreboard: React.FC<{ players: TournamentPlayer[] }> = ({ players }) => {
   const { t } = useTranslation();
 
@@ -190,16 +193,15 @@ const RoundRobinTournamentView: React.FC = () => {
 
   const updatePlayerStats = (): void => {
     const processedMatches = new Set<string>();
-    
-
+  
     setPlayers((prevPlayers) => {
       const updatedPlayers = [...prevPlayers];
-
+  
       for (const match of tournament.matchSchedule) {
         if (processedMatches.has(match.id)) {
           continue;
         }
-        console.log("Match info:", match);
+
         // Add wins and losses
         if (match.winner !== undefined) {
           const winner = updatedPlayers.find(
@@ -208,51 +210,50 @@ const RoundRobinTournamentView: React.FC = () => {
           const loser = updatedPlayers.find(
             (player) => player.id !== match.winner
           );
-
+  
           // Update stats, win equals 3 points
           if (winner !== undefined && loser !== undefined) {
             winner.wins += 1;
             winner.points += 3;
             loser.losses += 1;
           }
-
-          // Add ties
-          if (winner === undefined && loser === undefined && match.endTimestamp !== undefined) {
-            const [player1Id, player2Id] = match.players.map(player => player.id);
-
-            // Find the TournamentPlayer objects corresponding to the player IDs
-            const player1 = updatedPlayers.find(player => player.id === player1Id);
-            const player2 = updatedPlayers.find(player => player.id === player2Id);
-            console.log("player1:", player1?.name);
-
-            // Update their stats, tie equals 1 point
-            if (player1 !== undefined && player2 !== undefined) {
-              player1.ties += 1;
-              player1.points += 1;
-              player2.ties += 1;
-              player2.points +=1;
-
-              console.log("Player1 ties:", player1.ties);
-               console.log("Player2 ties:", player2.ties);
-            }
-            
-          }
-
-          // Add ippons
-          for (const matchPlayer of match.players) {
-            const player = updatedPlayers.find(
-              (player) => player.id === matchPlayer.id
-            );
-            if (player !== undefined) {
-              player.ippons += matchPlayer.points.length;
-            }
-          }
-          processedMatches.add(match.id);
         }
+  
+        // Add ties
+        if (
+          match.winner === undefined &&
+          (match.endTimestamp !== undefined || match.elapsedTime >= MATCH_TIME)
+        ) {
+          const [player1Id, player2Id] = match.players.map((player) => player.id);
+  
+          // Find the TournamentPlayer objects corresponding to the player IDs
+          const player1 = updatedPlayers.find((player) => player.id === player1Id);
+          const player2 = updatedPlayers.find((player) => player.id === player2Id);
+  
+          // Update their stats, tie equals 1 point
+          if (player1 !== undefined && player2 !== undefined) {
+            player1.ties += 1;
+            player1.points += 1;
+            player2.ties += 1;
+            player2.points += 1;
+          }
+        }
+  
+        // Add ippons
+        for (const matchPlayer of match.players) {
+          const player = updatedPlayers.find(
+            (player) => player.id === matchPlayer.id
+          );
+          if (player !== undefined) {
+            player.ippons += matchPlayer.points.length;
+          }
+        }
+        processedMatches.add(match.id);
       }
       return updatedPlayers;
     });
   };
+  
 
   const createMatchButton = (
     match: Match,
