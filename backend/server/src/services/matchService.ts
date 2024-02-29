@@ -301,8 +301,8 @@ export class MatchService {
       else if (match.type === "playoff") {
         console.log("Overtime");
       }
-      match.player1Points = player1Score;
-      match.player2Points = player2Score;
+      match.player1Points = Math.floor(player1Score);
+      match.player2Points = Math.floor(player2Score);
 
       await match.save();
     }
@@ -325,8 +325,8 @@ export class MatchService {
       await this.createPlayoffSchedule(match.id, player2.id);
     }
 
-    match.player1Points = player1Score;
-    match.player2Points = player2Score;
+    match.player1Points = Math.floor(player1Score);
+    match.player2Points = Math.floor(player2Score);
   }
 
   private calculatePoints(player1Points: MatchPoint[], player2Points: MatchPoint[]) {
