@@ -244,8 +244,8 @@ const RoundRobinTournamentView: React.FC = () => {
 
         // Add ippons
         if (player1 !== undefined && player2 !== undefined) {
-          player1.ippons += match.player1Points;
-          player2.ippons += match.player2Points;
+          player1.ippons += match.player1Score;
+          player2.ippons += match.player2Score;
         }
         processedMatches.add(match.id);
       }
