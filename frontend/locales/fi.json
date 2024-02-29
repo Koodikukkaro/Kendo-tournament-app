@@ -178,5 +178,10 @@
     "openSettingsTooltip": "Avaa asetukset",
     "about": "About-sivu",
     "privacy_policy": "Yksityisyyskäytäntö"
+  },
+  "types": {
+    "round_robin": "Kaikki vastaan kaikki",
+    "playoff": "Pudotuspelit",
+    "preliminary_playoff": "Alkulohkot ja pudotuspelit"
   }
 }

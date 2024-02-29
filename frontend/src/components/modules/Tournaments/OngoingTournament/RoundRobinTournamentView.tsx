@@ -243,38 +243,9 @@ const RoundRobinTournamentView: React.FC = () => {
         }
 
         // Add ippons
-        const matchPlayer1 = match.players[0];
-        const matchPlayer2 = match.players[1];
-        let temporaryPoints1 = 0;
-        let temporaryPoints2 = 0;
-
-        if (
-          matchPlayer1 !== undefined &&
-          matchPlayer2 !== undefined &&
-          player1 !== undefined &&
-          player2 !== undefined
-        ) {
-          for (const point of matchPlayer1.points) {
-            if (point.type === "hansoku") {
-              // In case of hansoku, the opponent receives half a point.
-              temporaryPoints2 += 0.5;
-            } else {
-              // Otherwise, give one point to the player.
-              temporaryPoints1 += 1;
-            }
-          }
-          for (const point of matchPlayer2.points) {
-            if (point.type === "hansoku") {
-              // In case of hansoku, the opponent receives half a point.
-              temporaryPoints1 += 0.5;
-            } else {
-              // Otherwise, give one point to the player.
-              temporaryPoints2 += 1;
-            }
-          }
-          // set the rounded points
-          player1.ippons += Math.floor(temporaryPoints1);
-          player2.ippons += Math.floor(temporaryPoints2);
+        if (player1 !== undefined && player2 !== undefined) {
+          player1.ippons += match.player1Score;
+          player2.ippons += match.player2Score;
         }
         processedMatches.add(match.id);
       }

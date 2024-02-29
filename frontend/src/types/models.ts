@@ -47,6 +47,8 @@ export interface Match {
   timeKeeper?: string;
   pointMaker?: string;
   isTimerOn: boolean;
+  player1Score: number;
+  player2Score: number;
 }
 
 export interface Tournament {

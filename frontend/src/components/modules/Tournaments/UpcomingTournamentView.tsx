@@ -74,6 +74,19 @@ const UpcomingTournamentView: React.FC = () => {
   const signedPlayers = tournament.players.length;
   const tournamentFull = maxPlayers <= signedPlayers;
 
+  const getTypeTranslationKey = (type: TournamentType): string => {
+    switch (type) {
+      case "Round Robin":
+        return "types.round_robin";
+      case "Playoff":
+        return "types.playoff";
+      case "Preliminary Playoff":
+        return "types.preliminary_playoff";
+      default:
+        return "";
+    }
+  };
+
   return (
     <Container
       component="main"
@@ -120,7 +133,7 @@ const UpcomingTournamentView: React.FC = () => {
           {t("upcoming_tournament_view.type_header")}:
         </Typography>
         <Typography variant="body1" className="subtext">
-          {tournament.type}
+          {t(getTypeTranslationKey(tournament.type))}
         </Typography>
       </Box>
 

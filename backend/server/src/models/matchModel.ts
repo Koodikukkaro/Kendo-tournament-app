@@ -32,6 +32,8 @@ export interface Match {
   timeKeeper?: Types.ObjectId;
   pointMaker?: Types.ObjectId;
   isTimerOn: boolean;
+  player1Score: number;
+  player2Score: number;
 }
 
 const pointSchema = new Schema<MatchPoint>(
@@ -90,7 +92,9 @@ const matchSchema = new Schema<Match>(
     },
     timeKeeper: { type: Schema.Types.ObjectId, required: false },
     pointMaker: { type: Schema.Types.ObjectId, required: false },
-    isTimerOn: { type: Boolean, required: true, default: false }
+    isTimerOn: { type: Boolean, required: true, default: false },
+    player1Score: { type: Number, required: true, default: 0 },
+    player2Score: { type: Number, required: true, default: 0 }
   },
   {
     toObject: {
