@@ -266,43 +266,6 @@ export class MatchService {
     return await match.toObject();
   }
 
-  private async checkMatchOutcome(match: Match): Promise<void> {
-    const MAXIMUM_POINTS = 2;
-    let player1Points = 0;
-    let player2Points = 0;
-    const player1: MatchPlayer = match.players[0] as MatchPlayer;
-    const player2: MatchPlayer = match.players[1] as MatchPlayer;
-
-    player1.points.forEach((point: MatchPoint) => {
-      if (point.type === "hansoku") {
-        // In case of hansoku, the opponent recieves half a point.
-        player2Points += 0.5;
-      } else {
-        // Otherwise give one point to the player.
-        player1Points++;
-      }
-    });
-
-    player2.points.forEach((point: MatchPoint) => {
-      if (point.type === "hansoku") {
-        player1Points += 0.5;
-      } else {
-        player2Points++;
-      }
-    });
-
-    // Check if player 1 or 2 has 2 points and wins
-    if (player1Points >= MAXIMUM_POINTS) {
-      match.winner = player1.id;
-      match.endTimestamp = new Date();
-      await this.createPlayoffSchedule(match.id, player1.id);
-    } else if (player2Points >= MAXIMUM_POINTS) {
-      match.winner = player2.id;
-      match.endTimestamp = new Date();
-      await this.createPlayoffSchedule(match.id, player2.id);
-    }
-  }
-
   // Check if there is a tie or an overtime whne time has ended
   public async checkForTie(id: string): Promise<void> {
     const match = await MatchModel.findById(id).exec();
@@ -359,6 +322,43 @@ export class MatchService {
         console.log("Overtime");
       }
       await match.save();
+    }
+  }
+
+  private async checkMatchOutcome(match: Match): Promise<void> {
+    const MAXIMUM_POINTS = 2;
+    let player1Points = 0;
+    let player2Points = 0;
+    const player1: MatchPlayer = match.players[0] as MatchPlayer;
+    const player2: MatchPlayer = match.players[1] as MatchPlayer;
+
+    player1.points.forEach((point: MatchPoint) => {
+      if (point.type === "hansoku") {
+        // In case of hansoku, the opponent recieves half a point.
+        player2Points += 0.5;
+      } else {
+        // Otherwise give one point to the player.
+        player1Points++;
+      }
+    });
+
+    player2.points.forEach((point: MatchPoint) => {
+      if (point.type === "hansoku") {
+        player1Points += 0.5;
+      } else {
+        player2Points++;
+      }
+    });
+
+    // Check if player 1 or 2 has 2 points and wins
+    if (player1Points >= MAXIMUM_POINTS) {
+      match.winner = player1.id;
+      match.endTimestamp = new Date();
+      await this.createPlayoffSchedule(match.id, player1.id);
+    } else if (player2Points >= MAXIMUM_POINTS) {
+      match.winner = player2.id;
+      match.endTimestamp = new Date();
+      await this.createPlayoffSchedule(match.id, player2.id);
     }
   }
 
