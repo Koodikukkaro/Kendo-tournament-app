@@ -178,5 +178,10 @@
     "openSettingsTooltip": "Open settings",
     "about": "About",
     "privacy_policy": "Privacy Policy"
+  },
+  "types": {
+    "round_robin": "Round Robin",
+    "playoff": "Playoff",
+    "preliminary_playoff": "Preliminary and playoff"
   }
 }
