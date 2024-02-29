@@ -273,17 +273,22 @@ export class MatchService {
     if (match !== null) {
       const player1: MatchPlayer = match.players[0] as MatchPlayer;
       const player2: MatchPlayer = match.players[1] as MatchPlayer;
-      const { player1CalculatedScore, player2CalculatedScore } = this.calculateScore(player1.points, player2.points);
+      const { player1CalculatedScore, player2CalculatedScore } =
+        this.calculateScore(player1.points, player2.points);
 
       // When time ends, the player with more points wins
       // (rounded down because one hansoku doesn't count)
-      if (Math.floor(player1CalculatedScore) > Math.floor(player2CalculatedScore)) {
+      if (
+        Math.floor(player1CalculatedScore) > Math.floor(player2CalculatedScore)
+      ) {
         match.winner = player1.id;
         match.endTimestamp = new Date();
         if (match.type === "playoff") {
           await this.createPlayoffSchedule(match.id, player1.id);
         }
-      } else if (Math.floor(player2CalculatedScore) > Math.floor(player1CalculatedScore)) {
+      } else if (
+        Math.floor(player2CalculatedScore) > Math.floor(player1CalculatedScore)
+      ) {
         match.winner = player2.id;
         match.endTimestamp = new Date();
         if (match.type === "playoff") {
@@ -312,7 +317,8 @@ export class MatchService {
     const MAXIMUM_POINTS = 2;
     const player1: MatchPlayer = match.players[0] as MatchPlayer;
     const player2: MatchPlayer = match.players[1] as MatchPlayer;
-    const { player1CalculatedScore, player2CalculatedScore } = this.calculateScore(player1.points, player2.points);
+    const { player1CalculatedScore, player2CalculatedScore } =
+      this.calculateScore(player1.points, player2.points);
 
     // Check if player 1 or 2 has 2 points and wins
     if (player1CalculatedScore >= MAXIMUM_POINTS) {
@@ -329,7 +335,10 @@ export class MatchService {
     match.player2Score = Math.floor(player2CalculatedScore);
   }
 
-  private calculateScore(player1Points: MatchPoint[], player2Points: MatchPoint[]) {
+  private calculateScore(
+    player1Points: MatchPoint[],
+    player2Points: MatchPoint[]
+  ): { player1CalculatedScore: number; player2CalculatedScore: number } {
     let player1CalculatedScore = 0;
     let player2CalculatedScore = 0;
 
