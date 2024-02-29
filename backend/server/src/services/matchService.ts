@@ -273,17 +273,17 @@ export class MatchService {
     if (match !== null) {
       const player1: MatchPlayer = match.players[0] as MatchPlayer;
       const player2: MatchPlayer = match.players[1] as MatchPlayer;
-      const { player1Score, player2Score } = this.calculatePoints(player1.points, player2.points);
+      const { player1CalculatedScore, player2CalculatedScore } = this.calculateScore(player1.points, player2.points);
 
       // When time ends, the player with more points wins
       // (rounded down because one hansoku doesn't count)
-      if (Math.floor(player1Score) > Math.floor(player2Score)) {
+      if (Math.floor(player1CalculatedScore) > Math.floor(player2CalculatedScore)) {
         match.winner = player1.id;
         match.endTimestamp = new Date();
         if (match.type === "playoff") {
           await this.createPlayoffSchedule(match.id, player1.id);
         }
-      } else if (Math.floor(player2Score) > Math.floor(player1Score)) {
+      } else if (Math.floor(player2CalculatedScore) > Math.floor(player1CalculatedScore)) {
         match.winner = player2.id;
         match.endTimestamp = new Date();
         if (match.type === "playoff") {
@@ -301,8 +301,8 @@ export class MatchService {
       else if (match.type === "playoff") {
         console.log("Overtime");
       }
-      match.player1Points = Math.floor(player1Score);
-      match.player2Points = Math.floor(player2Score);
+      match.player1Score = Math.floor(player1CalculatedScore);
+      match.player2Score = Math.floor(player2CalculatedScore);
 
       await match.save();
     }
@@ -312,44 +312,44 @@ export class MatchService {
     const MAXIMUM_POINTS = 2;
     const player1: MatchPlayer = match.players[0] as MatchPlayer;
     const player2: MatchPlayer = match.players[1] as MatchPlayer;
-    const { player1Score, player2Score } = this.calculatePoints(player1.points, player2.points);
+    const { player1CalculatedScore, player2CalculatedScore } = this.calculateScore(player1.points, player2.points);
 
     // Check if player 1 or 2 has 2 points and wins
-    if (player1Score >= MAXIMUM_POINTS) {
+    if (player1CalculatedScore >= MAXIMUM_POINTS) {
       match.winner = player1.id;
       match.endTimestamp = new Date();
       await this.createPlayoffSchedule(match.id, player1.id);
-    } else if (player2Score >= MAXIMUM_POINTS) {
+    } else if (player2CalculatedScore >= MAXIMUM_POINTS) {
       match.winner = player2.id;
       match.endTimestamp = new Date();
       await this.createPlayoffSchedule(match.id, player2.id);
     }
 
-    match.player1Points = Math.floor(player1Score);
-    match.player2Points = Math.floor(player2Score);
+    match.player1Score = Math.floor(player1CalculatedScore);
+    match.player2Score = Math.floor(player2CalculatedScore);
   }
 
-  private calculatePoints(player1Points: MatchPoint[], player2Points: MatchPoint[]) {
-    let player1Score = 0;
-    let player2Score = 0;
+  private calculateScore(player1Points: MatchPoint[], player2Points: MatchPoint[]) {
+    let player1CalculatedScore = 0;
+    let player2CalculatedScore = 0;
 
     player1Points.forEach((point: MatchPoint) => {
       if (point.type === "hansoku") {
-        player2Score += 0.5;
+        player2CalculatedScore += 0.5;
       } else {
-        player1Score++;
+        player1CalculatedScore++;
       }
     });
 
     player2Points.forEach((point: MatchPoint) => {
       if (point.type === "hansoku") {
-        player1Score += 0.5;
+        player1CalculatedScore += 0.5;
       } else {
-        player2Score++;
+        player2CalculatedScore++;
       }
     });
 
-    return { player1Score, player2Score };
+    return { player1CalculatedScore, player2CalculatedScore };
   }
 
   // Add assigned point to the correct player
