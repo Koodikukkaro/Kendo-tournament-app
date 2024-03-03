@@ -26,7 +26,9 @@ const Footer: React.FC = () => {
           </Link>
         </Box>
         <Typography variant="body2" color="textSecondary" align="center">
-          © {new Date().getFullYear()} Koodikukkaro
+          <Link href={routePaths.github} target="_blank" color="inherit">
+            © {new Date().getFullYear()} Koodikukkaro & Kendoers
+          </Link>
         </Typography>
       </Container>
     </Box>

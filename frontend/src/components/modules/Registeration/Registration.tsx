@@ -93,7 +93,7 @@ const RegisterForm: React.FC = () => {
             {t("titles.create_account")}
           </Typography>
           <Typography variant="body1">
-            {"Already have an account? "}
+            {t("register_labels.already_have_account")} {" "}
             <Link component={RouterLink} to={routePaths.login}>
               {t("register_labels.sign_in")}
             </Link>
