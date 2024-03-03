@@ -16,7 +16,7 @@ interface BracketProps {
 
 const Bracket: React.FC<BracketProps> = ({ match, players }) => {
   const navigate = useNavigate();
-  // Find the players in the players array using their IDs
+  //  Find the players in the players array using their IDs
   const player1 = players.find(
     (player) => player.id === match.players[0].id
   ) as User;
